@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- Areg Danagoulian -->
+
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/home/aregjan/git/grasshopper/documentation/gdml.xsd">
+
+
+
+   <materials>
+
+    <element Z="26" name="Copper_elemental">
+      <atom unit="g/mole" value="63.546"/>
+    </element>
+
+    <element Z="7" name="Nitrogen">
+      <atom unit="g/mole" value="14.01"/>
+    </element>
+
+    <element Z="8" name="Oxigen">
+      <atom unit="g/mole" value="16"/>
+    </element>
+
+    <material name="Air" state="gas"> <!-- atmospheric pressure at sea level at 15 degrees C-->
+      <D unit="g/cm3" value="0.001225"/>
+      <fraction n="0.7" ref="Nitrogen"/>
+      <fraction n="0.3" ref="Oxigen"/>
+    </material>
+    <material name="Vacuum" state="gas">
+      <D unit="g/cm3" value="0.00000000129"/> <!-- change density based on calculations from pressure -->
+      <fraction n="0.7" ref="Nitrogen"/>
+      <fraction n="0.3" ref="Oxigen"/>
+    </material>
+    <material name="copper" state="solid">
+      <D unit="g/cm3" value="8.96"/>
+      <fraction n="1" ref="Copper_elemental"/>
+    </material>
+     <material name="Soil" state="solid">
+      <D unit="g/cm3" value="1.37555125"/> <!-- This is an average soil density value pulled from google-->
+      <fraction n="0.887535221" ref="G4_SILICON_DIOXIDE"/>
+      <fraction n="0.111699761" ref="G4_WATER"/>
+      <fraction n="0.000293828" ref="Air"/>
+    </material>
+    <material name="drySoil" state="solid">
+      <D unit="g/cm3" value="1.33"/> <!-- This is an average soil density value pulled from google-->
+      <fraction n="0.5" ref="G4_SILICON_DIOXIDE"/>
+      <fraction n="0.1" ref="G4_WATER"/>
+      <fraction n="0.4" ref="Air"/>
+    </material>
+
+    
+  </materials>
+
+    
+  <!-- THE OUTPUT -->
+  <define>
+  	<constant name="TextOutputOn" value="0"/> <!-- the value should be either 1 (true) or 0 -->
+	<constant name="BriefOutputOn" value="1"/> <!-- enable this if you want the shorter version of the text output -->
+  	<constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
+  	<constant name="EventsToAccumulate" value="5"/> <!-- number of tracks to accumulate in the visualization -->
+	
+	<rotation name="rotateTarget" unit="deg" x="0" y="0" z="0"/> <!-- define the rotation of the target/detector geometry so it will actually line up with the beam -->
+	<rotation name="rotateDetector" unit="deg" x="0" y="0" z="0"/>
+  </define>
+  
+  <!-- CUTS...apply various cuts to make the computation more efficient -->
+  <define>
+    <constant name="LightProducingParticle" value="0"/> <!-- the particle which is actually producing light in the detector.  0 means ALL.  It will also kill all particles other than LightProducingParticle in the detector.  If in doubt set to 0. -->
+    <constant name="LowEnergyCutoff" value="0."/><!-- The low energy cuttoff, MeV, for the main track. If in doubt set it to 0 -->
+    <constant name="KeepOnlyMainParticle" value="0"/> <!-- if 1, the simulation will track only the main particle, as defined by ParticleNumber in the beam definition, OUTSIDE the detector volume.  For example, you'll need to set this to 0 to simulate bremmstrahlung, but to 1 for any transmission simulation. If in doubt, set to 0.-->
+    <quantity name="ProductionLowLimit" type="threshold" value="0.05" unit="keV" /> <!-- for neutron processes anything >1keV causes things to hang...set this to a high value for any other process to optimize computational time.  There are still some intricacies with this.  With high enough energy, rather than generating secondaries, all the energy loss will get tagged to the EnergyDeposited for the main particle.  So, the energy scoring (as determined by LighProducingParticle above) needs to be adjusted accordingly. -->
+  </define>
+
+<!-- OUTPUT FILTERS.  What data/entries do you want to keep? -->
+  <define>
+    <constant name="SaveSurfaceHitTrack" value="1"/> <!-- save entries which contain hit information, e.g. if you want to simulate the flux of particles -->
+    <constant name="SaveTrackInfo" value="1"/> <!-- save individual track info (within an event).  This is useful for studying the physics of the various interactions -->
+    <constant name="SaveEdepositedTotalEntry" value="0"/> <!--save entries which summarize the total deposited energy, e.g. in detector response simulations -->
+  </define>
+
+  <!-- THE BEAM -->
+  <define>
+    <constant name="RandomGenSeed" value="1"/>
+    <quantity name="BeamOffsetX"  type="coordinate" value="0" unit="mm"/>
+    <quantity name="BeamOffsetY"  type="coordinate" value="0" unit="mm"/>    
+    <quantity name="BeamOffsetZ"  type="coordinate" value="-1000" unit="mm"/> <!-- all in mm -->    
+    <quantity name="BeamSize" type="coordinate" value="9" unit="mm"/> <!-- fanBeam -->
+
+    <quantity name="BeamEnergy" type="energy" value="-1"  unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
+    <constant name="EventsToRun" value="1000"/>
+    <constant name="ParticleNumber" value="2112"/> 
+    <!-- e- is 11, gamma is 22, neutron is 2112, proton is 2212, alpha is 1000020040 -->
+ 
+  </define>
+
+
+<!-- definition of the simulation geometry relative to other elements
+Every dimension you need to change should be found in here in the define block below-->
+
+	<define>
+		<constant name="topSoilThickness" value="1"/>	 <!-- this is in mm -->	
+		<constant name="diodeThickness" value="1"/>
+		<constant name="diodePosition" value="topSoilThickness/2+diodeThickness/2"/>
+		<constant name="lowerSoilThickness" value="10000"/>
+		<constant name="lowerSoilPosition" value="diodePosition+diodeThickness/2+lowerSoilThickness/2"/>
+	</define>
+
+
+
+  <!-- definition of solid geometries -->
+  <solids>
+    <!-- world volume increse to 30m^3-->
+    <box lunit="mm" name="world_solid" x="30000" y="30000" z="30000"/>    
+    <!-- example definition of tube-->
+    <!-- <tube name = "plate_solid" rmin="0" rmax="0.45" z="12.5" deltaphi="6.28318" startphi="0" aunit="rad" lunit="mm"/> -->
+    <!-- the horizontal absorbe -->
+    <box name = "plate_solid" x="7.5" y="7.5" z="0.12" aunit="rad" lunit="mm"/>
+    <!-- define the upper layer of soil above the detector 10m diameter z=thickness (e.g. 1ft,2ft,3ft,ect.)-->
+    <tube name = "topSoil_solid" rmin="0" rmax="10000" z="topSoilThickness" deltaphi="6.28318" startphi="0" aunit="rad" lunit="mm"/> <!-- -->
+    <!-- define the layer of soil encapsulating the detector-->
+    <tube name = "diodeSoil_solid" rmin="9001" rmax="10000" z="diodeThickness" deltaphi="6.28318" startphi="0" aunit="rad" lunit="mm"/> <!-- -->
+    <!-- define the lower layer of soil-->
+
+    <tube name = "lowerSoil_solid" rmin="0" rmax="10000" z="lowerSoilThickness" deltaphi="6.28318" startphi="0" aunit="rad" lunit="mm"/> <!-- -->
+    <!-- the horizontal detection plane -->
+    <tube name = "det_plane_solid" rmin="10" rmax="9000" z="0.15" deltaphi="6.28318" startphi="0" aunit="rad" lunit="mm"/> <!-- -->
+  </solids>
+
+<!-- from what I can tell, the position of the solids represents their center point (center of mass?)-->
+
+  <!-- PUTTING IT ALL TOGETHER -->
+  <structure>
+    <!-- the horizontal plate --> 
+    <volume name="plate_log">
+      <materialref ref="Soil"/>
+      <solidref ref="plate_solid"/>
+    </volume>
+    <!--top soil layer-->
+	<volume name="topSoil_log">
+	  <materialref ref="Soil"/>
+	  <solidref ref="topSoil_solid"/>
+	</volume>
+	<!--soil layer around the detector-->
+	<volume name="diodeSoil_log">
+	  <materialref ref="Soil"/>
+	  <solidref ref="diodeSoil_solid"/>
+	 </volume>
+	<!--lower soil layer-->
+	<volume name="lowerSoil_log">
+	  <materialref ref="drySoil"/>
+	  <solidref ref="lowerSoil_solid"/>
+	 </volume>
+	  
+    <!-- the horizontal detection plane -->
+    <volume name="det_plane_log">
+      <materialref ref="G4_Si"/> <!-- G4_PLASTIC_SC_VINYLTOLUENE -->
+      <solidref ref="det_plane_solid"/>
+    </volume>
+
+    <!-- top level world volume with all geometry elements -->
+    <volume name="world_log">
+      <materialref ref="Air"/>
+      <solidref ref="world_solid"/>  <!-- This should NEVER be changed -->
+
+    <physvol name="topSoil_phys">
+        <volumeref ref="topSoil_log"/>
+	    <position name="topSoil_phys_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+      
+	  <!--detector soil layer-->
+	  <physvol name="diodeSoil_phys">
+	    <volumeref ref="diodeSoil_log"/>
+		<position name="diodeSoil_pos" unit="mm" x="0" y="0" z="diodePosition"/>
+	  </physvol>
+
+     <!--lower soil layer-->
+	  <physvol name="lowerSoil_phys">
+	    <volumeref ref="lowerSoil_log"/>
+		<position name="lowerSoil_pos" unit="mm" x="0" y="0" z="lowerSoilPosition"/>
+	  </physvol>
+	  
+	
+      <!-- flux planes -->
+      <physvol name="det_phys"> <!-- This should NEVER be changed ...nah, homie, we do what we want!-->
+        <volumeref ref="det_plane_log"/>
+        <position name="det_phys3_pos" unit="mm" x="0" y="0" z="diodePosition"/>
+		<rotationref ref="rotateDetector"/>
+      </physvol>
+	  
+    </volume>
+
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="world_log"/>
+  </setup>
+</gdml>

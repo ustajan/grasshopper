@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- Areg Danagoulian -->
+
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/home/aregjan/git/grasshopper/documentation/gdml.xsd">
+
+
+
+   <materials>
+
+    <element Z="5" name="Boron">
+      <atom unit="g/mole" value="10.81"/>
+    </element>
+
+    <element Z="6" name="Carbon">
+      <atom unit="g/mole" value="12.01"/>
+    </element>
+
+    <element Z="1" name="Hydrogen">
+      <atom unit="g/mole" value="1.008"/>
+    </element>
+
+    <element Z="26" name="Iron_elemental">
+      <atom unit="g/mole" value="55.85"/>
+    </element>
+
+    <element Z="7" name="Nitrogen">
+      <atom unit="g/mole" value="14.01"/>
+    </element>
+
+    <element Z="8" name="Oxigen">
+      <atom unit="g/mole" value="16"/>
+    </element>
+
+    <material name="Air" state="gas">
+      <D unit="g/cm3" value="0.00129"/>
+      <fraction n="0.7" ref="Nitrogen"/>
+      <fraction n="0.3" ref="Oxigen"/>
+    </material>
+    <material name="Vacuum" state="gas">
+      <D unit="g/cm3" value="0.00129"/> <!-- change density based on calculations from pressure -->
+      <fraction n="0.7" ref="Nitrogen"/>
+      <fraction n="0.3" ref="Oxigen"/>
+    </material>
+    <material name="Iron" state="solid">
+      <D unit="g/cm3" value="7.6"/>
+      <fraction n="1" ref="Iron_elemental"/>
+    </material>
+
+    <!-- HEU -->
+    <isotope name="U235" Z="92" N="235"> 
+      <atom type="A" value="235.01"/>
+    </isotope>
+    <isotope name="U238" Z="92" N="238">
+      <atom type="A" value="235.03"/> 
+    </isotope>
+    <element name="enriched_u" > 
+      <fraction ref="U235" n="0.9" /> 
+      <fraction ref="U238" n="0.1" />
+    </element>
+    <material name="WGU" formula="none"> 
+      <D unit="g/cm3" value="19." />
+      <composite n="1" ref="enriched_u" />
+    </material>
+
+    <!-- WGP -->
+
+    <isotope name="U235" Z="92" N="235"> 
+      <atom type="A" value="239"/>
+    </isotope>
+    <isotope name="U239" Z="92" N="238">
+      <atom type="A" value="239"/> 
+    </isotope>
+    <isotope name="U240" Z="92" N="239">
+      <atom type="A" value="239"/> 
+    </isotope>
+    <element name="pu" > 
+      <fraction ref="U235" n="0.9" /> 
+      <fraction ref="U238" n="0.1" />
+    </element>
+    <material name="WGP" formula="none"> 
+      <D unit="g/cm3" value="15." />
+      <composite n="1" ref="pu" />
+    </material>
+
+    <!-- W/Mo/Ag -->
+    <element Z="42" name="Moly">
+      <atom unit="g/mole" value="95.94"/>
+    </element>
+    <element Z="74" name="Tungsten">
+      <atom unit="g/mole" value="183.84"/>
+    </element>
+    <element Z="47" name="Silver">
+      <atom unit="g/mole" value="107.8682"/>
+    </element>
+    <material name="MoW" state="solid">
+      <D unit="g/cm3" value="14.79"/>
+      <fraction n="0.5" ref="Moly"/>
+      <fraction n="0.5" ref="Tungsten"/>
+    </material>
+    <material name="AgW" state="solid">
+      <D unit="g/cm3" value="14.0"/>
+      <fraction n="0.1" ref="Silver"/>
+      <fraction n="0.9" ref="Tungsten"/>
+    </material>
+
+
+    <!-- Borated Polyethylene-->
+
+    <material name="B_Poly" state="solid">
+      <D unit="g/cm3" value="1"/>
+      <fraction n="0.07" ref="Boron"/>
+      <fraction n="0.31" ref="Carbon"/>
+      <fraction n="0.62" ref="Hydrogen"/>
+    </material>
+
+
+    <material name="B_Poly30" state="solid">
+      <D unit="g/cm3" value="1"/>
+      <fraction n="0.34" ref="Boron"/>
+      <fraction n="0.22" ref="Carbon"/>
+      <fraction n="0.44" ref="Hydrogen"/>
+    </material>
+  
+    <material name="B4C" state="solid">
+      <D unit="g/cm3" value="2.52"/>
+      <fraction n="0.8" ref="Boron"/>
+      <fraction n="0.2" ref="Carbon"/>
+    </material>
+  
+  </materials>
+
+    
+
+
+
+
+
+
+
+
+  <!-- THE OUTPUT -->
+  <define>
+  	<constant name="TextOutputOn" value="1"/> <!-- the value should be either 1 (true) or 0 -->
+	<constant name="BriefOutputOn" value="0"/> <!-- enable this if you want the shorter version of the text output -->
+  	<constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
+  	<constant name="EventsToAccumulate" value="250"/> <!-- number of tracks to accumulate in the visualization -->
+  </define>
+  
+  <!-- CUTS...apply various cuts to make the computation more efficient -->
+  <define>
+    <constant name="LightProducingParticle" value="0"/> <!-- the particle which is actually producing light in the detector.  0 means ALL.  It will also kill all particles other than LightProducingParticle in the detector.  If in doubt set to 0. -->
+    <constant name="LowEnergyCutoff" value="0.0000005"/><!-- The low energy cuttoff, MeV, for the main track. If in doubt set it to 0 -->
+    <constant name="KeepOnlyMainParticle" value="1"/> <!-- if 1, the simulation will track only the main particle, as defined by ParticleNumber in the beam definition, OUTSIDE the detector volume.  For example, you'll need to set this to 0 to simulate bremmstrahlung, but to 1 for any transmission simulation. If in doubt, set to 0.-->
+    <quantity name="ProductionLowLimit" type="threshold" value="1" unit="keV" /> <!-- for neutron processes anything >1keV causes things to hang...set this to a high value for any other process to optimize computational time.  There are still some intricacies with this.  With high enough energy, rather than generating secondaries, all the energy loss will get tagged to the EnergyDeposited for the main particle.  So, the energy scoring (as determined by LighProducingParticle above) needs to be adjusted accordingly. -->
+  </define>
+
+<!-- OUTPUT FILTERS.  What data/entries do you want to keep? -->
+  <define>
+    <constant name="SaveSurfaceHitTrack" value="1"/> <!-- save entries which contain hit information, e.g. if you want to simulate the flux of particles -->
+    <constant name="SaveTrackInfo" value="0"/> <!-- save individual track info (within an event).  This is useful for studying the physics of the various interactions -->
+    <constant name="SaveEdepositedTotalEntry" value="0"/> <!--save entries which summarize the total deposited energy, e.g. in detector response simulations -->
+  </define>
+
+  <!-- THE BEAM -->
+  <define>
+    <constant name="RandomGenSeed" value="1"/>
+    <quantity name="BeamOffsetX"  type="coordinate" value="0" unit="mm"/>
+    <quantity name="BeamOffsetY"  type="coordinate" value="0" unit="mm"/>    
+    <quantity name="BeamOffsetZ"  type="coordinate" value="0" unit="m"/> <!-- all in mm -->    
+    <quantity name="BeamSize" type="coordinate" value="-2" unit="mm"/>
+
+    <quantity name="BeamEnergy" type="energy" value="14.1" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
+    <constant name="EventsToRun" value="100"/>
+    <constant name="ParticleNumber" value="2112"/> 
+    <!-- e- is 11, gamma is 22, neutron is 2112, proton is 2212, alpha is 1000020040 -->
+ 
+  </define>
+  <define>
+    <position name="inner_position" unit="mm" x="0" y="0" z="0"/>
+    <position name="room_1h_position" unit="m" x="0" y="0" z="-5.85"/>
+    <position name="scoll_position" unit="m" x="0" y="0" z="0.4"/>
+  </define>
+
+
+
+
+
+
+  <!-- definition of solid geometries -->
+  <solids>
+
+
+
+    <!-- world volume -->
+    <box lunit="m" name="world_solid" x="3" y="3" z="25"/>  
+
+    <!-- Room -->
+    <box lunit="m" name="room_outer_box" unit="m" x="2.9" y="2.9" z="24"/>
+    <box lunit="m" name="room_inner_box" unit="m" x="2.7" y="2.7" z="23"/>
+    <subtraction name="room_solid">
+      <first ref="room_outer_box"/>
+      <second ref="room_inner_box"/>
+      <positionref ref="inner_position"/>
+    </subtraction>
+
+    <!-- Wall -->
+    <box lunit="m" name="wall_outer_box" unit="m" x="2.7" y="2.7" z="1"/>
+    <tube name = "wall_coll" rmin="0" rmax="0.2" z="1" deltaphi="360" startphi="0" aunit="deg" lunit="m"/>
+    <subtraction name="wall_solid">
+      <first ref="wall_outer_box"/>
+      <second ref="wall_coll"/>
+      <positionref ref="inner_position"/>
+    </subtraction>
+
+    <!-- Boron Wall -->
+    <box lunit="m" name="bwall_outer_box" unit="m" x="2.7" y="2.7" z="0.1"/>
+    <tube name = "bwall_coll" rmin="0" rmax="0.1" z="0.1" deltaphi="360" startphi="0" aunit="deg" lunit="m"/>
+    <subtraction name="bwall_solid">
+      <first ref="bwall_outer_box"/>
+      <second ref="bwall_coll"/>
+      <positionref ref="inner_position"/>
+    </subtraction>
+
+    <!-- Spherical Absorber -->
+<!--
+    <sphere name = "modsphere" rmin="0" rmax=".75" deltaphi="6.28316" deltatheta="3.1415" starttheta="0.0" startphi="0.0" aunit="deg" lunit= "m" />
+-->
+    <sphere deltatheta="180.0" rmin="0" lunit="m" name="modsphere" aunit="deg" starttheta="0.0" deltaphi="360" rmax="0.75" startphi="0.0"/>
+    <sphere name = "bsphere" rmin=".76" rmax=".77" deltaphi="360" deltatheta="180" starttheta="0.0" startphi="0.0" aunit="deg" lunit= "m" />
+    <tube name = "sphere_coll" rmin="0" rmax="0.15" z="1" deltaphi="360" startphi="0" aunit="deg" lunit="m"/>
+    <subtraction name="modsphere_solid">
+      <first ref="modsphere"/>
+      <second ref="sphere_coll"/>
+      <positionref ref="scoll_position"/>
+    </subtraction>
+        <subtraction name="bsphere_solid">
+      <first ref="bsphere"/>
+      <second ref="sphere_coll"/>
+      <positionref ref="scoll_position"/>
+    </subtraction>
+
+
+    <!-- Boron Collimator -->
+    <tube name = "bcoll_solid" rmin="0.10" rmax="0.149" z=".9" deltaphi="360" startphi="0" aunit="deg" lunit="m"/>
+    <tube name = "bcollplate_solid" rmin="0" rmax="0.149" z="0.05" deltaphi="360" startphi="0" aunit="deg" lunit="m"/>
+
+    <!-- Moderator Plate -->
+    <tube name = "mod_solid" rmin="0" rmax="0.1" z="0.10" deltaphi="360" startphi="0" aunit="deg" lunit="m"/>
+
+    <!-- Cadmium Plate -->
+    <tube name = "cd_solid" rmin="0" rmax="0.1" z="0.005" deltaphi="360" startphi="0" aunit="deg" lunit="m"/>
+
+    <!-- Target Plate -->
+    <tube name = "target_solid" rmin="0" rmax="0.1" z="0.005" deltaphi="360" startphi="0" aunit="deg" lunit="m"/>
+
+    <!-- the horizontal detection plane -->
+    <tube name = "det_plane_solid" rmin="0" rmax="140" z="10" deltaphi="360" startphi="0" aunit="deg" lunit= "mm"/>
+
+    <!-- detector shielding-->
+    <polycone name = "boron_shield_solid" deltaphi="360" startphi="0" aunit="deg" lunit="mm">
+      <zplane rmin="140" rmax="200" z="-400" />
+      <zplane rmin="80" rmax="200" z="-350" />
+      <zplane rmin="140" rmax="200" z="-300" />
+      <zplane rmin="80" rmax="200" z="-250" />
+      <zplane rmin="140" rmax="200" z="-200" />
+      <zplane rmin="80" rmax="200" z="-150" />
+      <zplane rmin="140" rmax="200" z="-100" />
+      <zplane rmin="80" rmax="200" z="-50" />
+      <zplane rmin="140" rmax="200" z="-5" />
+      <zplane rmin="140" rmax="200" z="5" />
+      <zplane rmin="80" rmax="200" z="50" />
+      <zplane rmin="140" rmax="200" z="100" />
+      <zplane rmin="80" rmax="200" z="150" />
+      <zplane rmin="140" rmax="200" z="200" />
+      <zplane rmin="80" rmax="200" z="250" />
+      <zplane rmin="140" rmax="200" z="300" />
+      <zplane rmin="80" rmax="200" z="350" />
+      <zplane rmin="140" rmax="200" z="400" />
+    </polycone>
+
+    <tube name = "cd_shield_solid" rmin="0" rmax="200" z="2" deltaphi="360" startphi="0" aunit="deg" lunit="mm"/>
+
+<!--
+
+    <sphere deltatheta="180.0" rmin="3000" lunit="mm" name="det_plane_solid" aunit="deg" starttheta="0.0" deltaphi="360.5" rmax="3001" startphi="0.0"/>
+
+-->
+
+  </solids>
+
+
+
+
+
+
+
+
+
+  <!-- LOGICAL ELEMENTS -->
+  <structure>
+
+    <!-- Moderator Plate -->
+    <volume name="mod_log">
+      <materialref ref="G4_POLYETHYLENE"/>
+      <solidref ref="mod_solid"/>
+    </volume>
+
+    <!-- Cadmium Plate -->
+    <volume name="cd_log">
+      <materialref ref="G4_Cd"/>
+      <solidref ref="cd_solid"/>
+    </volume>
+
+    <!-- target Plate -->
+    <volume name="target_log">
+      <materialref ref="AgW"/>
+      <solidref ref="target_solid"/>
+    </volume>
+
+    <!-- Room -->
+    <volume name="room_log">
+      <materialref ref="G4_CONCRETE"/>
+      <solidref ref="room_solid"/>
+    </volume>
+
+    <!-- Concrete Wall -->
+    <volume name="wall_log">
+      <materialref ref="G4_CONCRETE"/>
+      <solidref ref="wall_solid"/>
+    </volume>
+
+    <!-- Boron Wall -->
+    <volume name="bwall_log">
+      <materialref ref="G4_B"/>
+      <solidref ref="bwall_solid"/>
+    </volume>
+
+    <!-- Boron collimator -->
+    <volume name="bcoll_log">
+      <materialref ref="B4C"/>
+      <solidref ref="bcoll_solid"/>
+    </volume>
+    <volume name="bcollplate_log">
+      <materialref ref="B4C"/>
+      <solidref ref="bcollplate_solid"/>
+    </volume>
+
+    <!-- Detector Plate -->
+    <volume name="det_plane_log">
+      <materialref ref="G4_PLASTIC_SC_VINYLTOLUENE"/>
+      <solidref ref="det_plane_solid"/>
+    </volume>
+
+    <!-- detector shield -->
+    <volume name="boron_shield_log">
+      <materialref ref="B4C"/>
+      <solidref ref="boron_shield_solid"/>
+    </volume>
+    <volume name="cd_shield_log">
+      <materialref ref="G4_Cd"/>
+      <solidref ref="cd_shield_solid"/>
+    </volume>
+
+
+    <!-- ABSORBER SPHERE -->
+    <volume name="modsphere_log">
+      <materialref ref="B_Poly"/>
+      <solidref ref="modsphere_solid"/>
+    </volume>
+    <volume name="bsphere_log">
+      <materialref ref="B4C"/>
+      <solidref ref="bsphere_solid"/>
+    </volume>
+
+
+
+
+
+
+
+<!-- WOLRD VOLUME -->
+
+    <!-- top level world volume with all geometry elements -->
+    <volume name="world_log">
+      <materialref ref="Vacuum"/>
+      <solidref ref="world_solid"/> 
+
+
+<!-- PHYSICAL ELEMENTS IN WORLD VOLUME--> 
+
+      <!-- moderator --> 
+      <physvol name="mod_phys">
+        <volumeref ref="mod_log"/>
+        <position name="mod_pos" unit="m" x="0" y="0" z="0.1"/>
+      </physvol>
+
+      <!-- cadmium -->
+      <physvol name="cd_phys">
+        <volumeref ref="cd_log"/>
+        <position name="cd_pos" unit="m" x="0" y="0" z="0.85"/>
+      </physvol>
+
+      <!-- target --> 
+      <physvol name="target_phys">
+        <volumeref ref="target_log"/>
+        <position name="target_pos" unit="m" x="0" y="0" z="1"/>
+      </physvol>
+
+      <!-- detector -->
+      <physvol name="det_phys">
+        <volumeref ref="det_plane_log"/>
+        <position name="det_phys3_pos" unit="m" x="0" y="0" z="2"/>
+      </physvol>
+
+      <!-- detector shield -->
+      <physvol name="boron_shield_phys">
+        <volumeref ref="boron_shield_log"/>
+        <position name="boron_pos" unit="m" x="0" y="0" z="2"/>
+      </physvol>
+
+      
+      <physvol name="cd_shield1_phys">
+        <volumeref ref="cd_shield_log"/>
+        <position name="cd_pos" unit="m" x="0" y="0" z="2.401"/>
+      </physvol>
+      <physvol name="cd_shield2_phys">
+        <volumeref ref="cd_shield_log"/>
+        <position name="cd_pos" unit="m" x="0" y="0" z="1.599"/>
+      </physvol>
+
+      <!-- room
+      <physvol name="room_phys">
+        <volumeref ref="room_log"/>
+        <position name="room_phys_pos" unit="m" x="0" y="0" z="0"/>
+      </physvol>
+-->
+
+      <!-- absorber sphere -->
+
+      <physvol name="modsphere_phys">
+        <volumeref ref="modsphere_log"/>
+        <position name="modsphere_phys_pos" unit="m" x="0" y="0" z="0"/>
+      </physvol>
+
+      <physvol name="bsphere_phys">
+        <volumeref ref="bsphere_log"/>
+        <position name="bsphere_phys_pos" unit="m" x="0" y="0" z="0"/>
+      </physvol>
+
+      <!-- boron collimator -->
+
+
+      <physvol name="bcoll_phys">
+        <volumeref ref="bcoll_log"/>
+        <position name="bcoll_phys_pos" unit="m" x="0" y="0" z="0.4"/>
+      </physvol>
+      <physvol name="bcollplate_phys">
+        <volumeref ref="bcollplate_log"/>
+        <position name="bcollplate_phys_pos" unit="m" x="0" y="0" z="-0.075"/>
+      </physvol>
+
+
+
+
+      <!-- concrete wall 
+      <physvol name="wall_phys">
+        <volumeref ref="wall_log"/>
+        <position name="wall_phys_pos" unit="m" x="0" y="0" z="1"/>
+      </physvol>
+-->
+
+
+      <!-- boron wall 
+      <physvol name="bwall_phys1">
+        <volumeref ref="bwall_log"/>
+        <position name="bwall_phys_pos1" unit="m" x="0" y="0" z="1.55"/>
+      </physvol>
+      <physvol name="bwall_phys2">
+        <volumeref ref="bwall_log"/>
+        <position name="bwall_phys_pos2" unit="m" x="0" y="0" z=".45"/>
+      </physvol>
+-->
+
+
+
+     </volume>
+
+
+
+
+
+
+   </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="world_log"/>
+  </setup>
+</gdml>

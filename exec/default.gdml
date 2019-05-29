@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- Areg Danagoulian -->
+
+<!-- The line below will contact with the server, and perform a compatibility check.  Bad connection may result in aborting the whole job? -->
+
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/GDML_2_10_0/src/GDMLSchema/gdml.xsd">
+
+
+   <materials>
+
+    <element Z="26" name="Iron_elemental">
+      <atom unit="g/mole" value="55.85"/>
+    </element>
+
+    <element Z="7" name="Nitrogen0xfa1d40">
+      <atom unit="g/mole" value="14.01"/>
+    </element>
+
+    <element Z="8" name="Oxigen0xfa1f00">
+      <atom unit="g/mole" value="16"/>
+    </element>
+
+
+    <material name="Air" state="gas">
+      <D unit="g/cm3" value="0.00129"/>
+      <fraction n="0.7" ref="Nitrogen0xfa1d40"/>
+      <fraction n="0.3" ref="Oxigen0xfa1f00"/>
+    </material>
+    <material name="Vacuum" state="gas">
+      <D unit="g/cm3" value="0.00000000129"/>
+      <fraction n="0.7" ref="Nitrogen0xfa1d40"/>
+      <fraction n="0.3" ref="Oxigen0xfa1f00"/>
+    </material>
+    <material name="Iron" state="solid">
+      <D unit="g/cm3" value="7.6"/>
+      <fraction n="1" ref="Iron_elemental"/>
+    </material>
+
+    <material name="NaI" state="solid">
+      <D unit="g/cm3" value="3.7" />
+      <fraction n="1" ref="G4_Na"/>
+      <fraction n="1" ref="G4_I"/>
+    </material>
+    
+  </materials>
+
+    
+  <!-- THE OUTPUT -->
+  <define>
+  	<constant name="TextOutputOn" value="0"/> <!-- the value should be either 1 (true) or 0 -->
+  	<constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
+  	<constant name="EventsToAccumulate" value="100"/> <!-- number of tracks to accumulate in the visualization -->
+  </define>
+  
+  <!-- CUTS...apply various cuts to make the computation more efficient -->
+  <define>
+    <constant name="LightProducingParticle" value="0"/> <!-- the particle which is actually producing light in the detector.  0 means ALL.  It will also kill all particles other than LightProducingParticle in the detector.  If in doubt set to 0. -->
+    <constant name="LowEnergyCutoff" value="0.1"/><!-- The low energy cuttoff, MeV, for the main track. Best to keep it at 0 -->
+    <constant name="KeepOnlyMainParticle" value="0"/> <!-- if 1, the simulation will track only the main particle, as defined by ParticleNumber in the beam definition, OUTSIDE the detector volume.  For example, you'll need to set this to 0 to simulate bremmstrahlung, but to 1 for any transmission simulation. If in doubt, set to 0.-->
+    <quantity name="ProductionLowLimit" type="threshold" value="100" unit="keV" /> <!-- for neutron processes anything >1keV causes things to hang...set this to a high value for any other process to optimize computational time.  There are still some intricacies with this.  With high enough energy, rather than generating secondaries, all the energy loss will get tagged to the EnergyDeposited for the main particle.  So, the energy scoring (as determined by LighProducingParticle above) needs to be adjusted accordingly. -->
+  </define>
+
+  <!-- THE BEAM -->
+  <define>
+    <constant name="RandomGenSeed" value="0"/>
+    <quantity name="BeamOffsetX"  type="coordinate" value="0" unit="mm"/>
+    <quantity name="BeamOffsetY"  type="coordinate" value="0" unit="mm"/>    
+    <quantity name="BeamOffsetZ"  type="coordinate" value="-1200" unit="mm"/> <!-- all in mm -->    
+    <quantity name="BeamSize" type="coordinate" value="-1" unit="mm"/>
+
+    <quantity name="BeamEnergy" type="energy" value="-1" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
+    <constant name="EventsToRun" value="10000"/> <!-- 10mln -->
+    <constant name="ParticleNumber" value="22"/> 
+    <!-- e- is 11, gamma is 22, neutron is 2112, proton is 2212 -->
+  </define>
+
+
+  <!-- definition of solids -->
+  <solids>
+    <!-- world volume -->
+    <box lunit="mm" name="world_solid" x="3000" y="3000" z="3000"/>    
+    <!-- the horizontal plate -->
+    <box lunit="mm" name="plate_solid" unit="mm" x="800" y="400" z="250"/>
+    <!-- the horizontal secondary plate -->
+    <box lunit="mm" name="secondary_plate_solid" unit="mm" x="40" y="101.6" z="20"/> 
+    <!-- 
+	 1st set: 150mm plate, 78 for Iron, 30 for U
+	 2nd set: 250mm plate, 50 for Iron, 20 for U
+	 3rd set: 350mm plate, 70 for Iron, 28 for U
+         4th set: 400mm plate, 100 for Iron, 40 for U
+    -->
+    <!-- the horizontal detection plane -->
+    <box lunit="mm" name="det_plane_solid" unit="mm" x="50.8" y="101.6" z="406.4"/>
+  </solids>
+
+
+  <!-- PUTTING IT ALL TOGETHER -->
+  <structure>
+    <!-- the horizontal plate --> 
+    <volume name="plate_log">
+      <materialref ref="Iron"/>
+      <solidref ref="plate_solid"/>
+    </volume>
+    <volume name="secondary_plate_log">
+      <materialref ref="G4_U"/>
+      <solidref ref="secondary_plate_solid"/>
+    </volume>
+    <!-- the horizontal detection plane -->
+    <volume name="det_plane_log">
+      <materialref ref="NaI"/> <!-- G4_PLASTIC_SC_VINYLTOLUENE -->
+      <solidref ref="det_plane_solid"/>
+    </volume>
+
+    <!-- top level world volume with all geometry elements -->
+    <volume name="world_log">
+      <materialref ref="Air"/>
+      <solidref ref="world_solid"/>  <!-- This should NEVER be changed -->
+
+      <physvol name="plate_phys">
+        <volumeref ref="plate_log"/>
+	<position name="plate_phys_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+      <physvol name="secondary_plate_phys">
+        <volumeref ref="secondary_plate_log"/>
+	<position name="secondary_plate_phys_pos" unit="mm" x="0" y="0" z="155"/> <!-- 165 for 30mm U -->
+      </physvol>
+      <!-- flux planes -->
+      <physvol name="det_phys"> <!-- This should (almost) NEVER be changed -->
+        <volumeref ref="det_plane_log"/>
+        <position name="det_phys3_pos" unit="mm" x="0" y="0" z="1000"/>
+      </physvol>
+    </volume>
+
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="world_log"/>
+  </setup>
+</gdml>

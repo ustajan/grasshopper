@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- latest CAARS collimator and radiator model -->
+<!-- A. Klimenko 9/15/2008 -->
+
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/GDML_2_10_0/src/GDMLSchema/gdml.xsd">
+
+
+
+   <materials>
+    <material Z="29" name="Copper" state="solid">
+      <D unit="g/cm3" value="8.96"/>
+      <atom unit="g/mole" value="63.546"/>
+    </material>
+
+    <material Z="1" name="Vacuum" state="gas">
+      <T unit="K" value="2.73"/>
+      <P unit="pascal" value="3e-18"/>
+      <D unit="g/cm3" value="1e-25"/>
+      <atom unit="g/mole" value="1.01"/>
+    </material>
+
+    <element Z="7" name="Nitrogen0xfa1d40">
+      <atom unit="g/mole" value="14.01"/>
+    </element>
+
+    <element Z="8" name="Oxigen0xfa1f00">
+      <atom unit="g/mole" value="16"/>
+    </element>
+
+    <material name="Air" state="gas">
+      <D unit="g/cm3" value="0.00129"/>
+      <fraction n="0.7" ref="Nitrogen0xfa1d40"/>
+      <fraction n="0.3" ref="Oxigen0xfa1f00"/>
+    </material>
+
+    <element Z="26" name="Iron0xfa0570">
+      <atom unit="g/mole" value="55.85"/>
+    </element>
+
+    <element Z="24" name="Chromium0xfa0750">
+      <atom unit="g/mole" value="52"/>
+    </element>
+
+    <element Z="28" name="Nickel0xfa0930">
+      <atom unit="g/mole" value="58.7"/>
+    </element>
+
+    <element Z="25" name="Manganese0xfa0bb0">
+      <atom unit="g/mole" value="54.94"/>
+    </element>
+
+    <element Z="14" name="Silicon0xfa03e0">
+      <atom unit="g/mole" value="28.09"/>
+    </element>
+
+    <material name="Steel" state="solid">
+      <D unit="g/cm3" value="8.02"/>
+      <fraction n="0.68" ref="Iron0xfa0570"/>
+      <fraction n="0.19" ref="Chromium0xfa0750"/>
+      <fraction n="0.1" ref="Nickel0xfa0930"/>
+      <fraction n="0.02" ref="Manganese0xfa0bb0"/>
+      <fraction n="0.01" ref="Silicon0xfa03e0"/>
+    </material>
+
+    <material Z="79" name="Gold0xfa7b20" state="solid">
+      <D unit="g/cm3" value="19.3"/>
+      <atom unit="g/mole" value="196.966"/>
+    </material>
+
+    <material Z="22" name="Titanium" state="solid">
+      <D unit="g/cm3" value="4.11"/>
+      <atom unit="g/mole" value="47.867"/>
+    </material>
+
+    <element Z="1" name="Hydrogen">
+      <atom unit="g/mole" value="1.01"/>
+    </element>
+    <element Z="8" name="Oxygen">
+      <atom unit="g/mole" value="16"/>
+    </element>
+    <material name="Water" state="solid">
+      <D unit="g/cm3" value="1"/>
+      <composite n="2" ref="Hydrogen"/>
+      <composite n="1" ref="Oxygen"/>
+    </material>
+
+  </materials>
+
+   <define>
+<constant name="RandomGenSeed" value="seedreplace"/>
+<constant name="BeamOffsetCargoDir" value="0"/>
+
+
+    <!-- run configuration constants -->
+
+    <constant name="BeamEnergy" value="9"/>
+    <constant name="EventsToRun" value="10e1"/>
+
+    <constant name="BeamSize" value="5"/>
+    <constant name="BeamOffsetRadiatorDir" value="0"/>
+ 
+    <!-- radiator geometry constants -->
+
+    <variable name="BremRadDiam" value="45.0"/>
+    <variable name="BremRadThick" value="2.5"/>
+
+    <!-- collimator geometry constants -->
+    <!-- dimentions of a single collimator module -->
+
+    <variable name="col_x" value="200.0"/> <!-- the step size of the collimator, in our case 4*50  -->
+    <variable name="col_y" value="50.0"/>
+    <variable name="col_z" value="35.0*25.4"/>
+
+    <!-- length of shadow shield part of the collimator -->
+    <variable name="col_fan_z" value="19.0*25.4" />
+
+    <!-- size of a hole in straight and fanned sections of collimator -->
+    <variable name="col_strt_hole_x" value="50" /> <!-- used to be 4*15  -->
+    <variable name="col_strt_hole_y" value="7" /> <!-- used to be 15  -->
+    <variable name="col_fan_hole_x" value="128" />  <!-- 4*32 -->
+    <variable name="col_fan_hole_y" value="32" />  <!-- 32 -->
+
+    <!-- number of collimator modules to be replicated -->
+    <variable name="col_rep_number" value="16" />
+
+    <!-- shielding thickness along collimator module -->
+    <variable name="col_shielding_thick" value="304.8" />
+
+   </define>
+
+
+   <!-- definition of solids -->
+
+  <solids>
+
+    <!-- world volume -->
+
+    <box lunit="mm" name="world_solid" x="4000" y="2000" z="10000"/>    
+
+    <!-- volume to hold single collimator module -->
+
+    <box lunit="mm" name="col_vol_solid" x="col_x" y="col_y" z="col_z"/>
+
+    <!-- fanned part of collimator -->
+
+    <box lunit="mm" name="col_fan_body_solid" x="col_x" y="col_y" z="col_fan_z"/>
+    <trd lunit="mm" name="col_fan_hole_solid" x1="col_strt_hole_x" x2="col_fan_hole_x" y1="col_strt_hole_y" y2="col_fan_hole_y" z="col_fan_z"/>
+    <subtraction name="col_fan_solid">
+      <first ref="col_fan_body_solid"/>
+      <second ref="col_fan_hole_solid"/>
+    </subtraction>
+
+    <!-- straight section of the collimator -->
+
+    <box lunit="mm" name="col_strt_hole_solid" x="col_strt_hole_x" y="col_strt_hole_y" z="col_z - col_fan_z"/>
+    <box lunit="mm" name="col_strt_solid" x="col_x" y="50" z="406.4"/>
+
+    <!-- volume for col replication -->
+ 
+    <box lunit="mm" name="rep_col_vol_solid" x="col_rep_number * col_x" y="col_y" z="col_z"/>
+
+    <!-- shielding along replicate collimator length-->
+
+    <box lunit="mm" name="col_shielding_solid" x="col_rep_number * col_x" y="304.8" z="889"/>
+
+    <!-- radiator and beam diagnostics solids -->
+
+    <box lunit="mm" name="radiator_vol_box" x="col_rep_number * col_x" y="100" z="220"/>
+
+    <tube aunit="deg" deltaphi="360" lunit="mm" name="ti_solid" rmax="BremRadDiam/2." rmin="(BremRadDiam-BremRadThick)/2" startphi="0" z="3200"/>
+    <tube aunit="deg" deltaphi="360" lunit="mm" name="water_solid" rmax="(BremRadDiam-BremRadThick)/2" rmin="0" startphi="0" z="3200"/>
+
+    <box lunit="mm" name="diag_vol_solid" x="col_rep_number * col_x" y="100" z="11"/>
+    <box lunit="mm" name="plate_solid" x="col_rep_number * col_x" y="50" z="3"/>
+
+    <box lunit="mm" name="det_plane_solid" x="4000" y="2000" z="0.002"/>
+
+  </solids>
+
+  <structure>
+
+
+    <!-- fanned part of collimator -->
+   
+    <volume name="col_fan_log">
+      <materialref ref="Copper"/>
+      <solidref ref="col_fan_solid"/>
+    </volume>
+  
+    <!-- straight hole of the collimator -->
+
+    <volume name="col_strt_hole_log">
+      <materialref ref="Air"/>
+      <solidref ref="col_strt_hole_solid"/>
+    </volume>
+
+    <!-- straight section of the collimator (with hole in it) -->
+
+    <volume name="col_strt_log">
+      <materialref ref="Copper"/>
+      <solidref ref="col_strt_solid"/>
+      <physvol name="col_strt_hole_phys">
+        <volumeref ref="col_strt_hole_log"/>
+      </physvol>
+    </volume>
+
+    <!-- single collimator module that will be replicated 16 time -->
+
+    <volume name="col_vol_log">
+      <materialref ref="Air"/>
+      <solidref ref="col_vol_solid"/>
+      <physvol name="col_fan_phys">
+        <volumeref ref="col_fan_log"/>
+        <position name="col_fan_pos" unit="mm" x="0" y="0" z="col_z/2 - col_fan_z/2"/>
+      </physvol>
+      <physvol name="col_strt_phys">
+        <volumeref ref="col_strt_log"/>
+        <position name="col_strt_pos" unit="mm" x="0" y="0" z="-col_z/2 + (col_z - col_fan_z) /2 "/>
+      </physvol>
+    </volume>
+
+    <!-- replication of collimator volume -->
+
+    <volume name="rep_col_vol_log">
+      <materialref ref="Air"/>
+      <solidref ref="rep_col_vol_solid"/>
+      <replicavol axis="kXAxis" name="col_vol_phys" number="col_rep_number" offset="0" unit="mm" width="col_x">
+        <volumeref ref="col_vol_log"/>
+      </replicavol>
+    </volume>
+
+    <!-- collimator shielding -->
+
+    <volume name="col_shielding_log">
+      <materialref ref="Steel"/>
+      <solidref ref="col_shielding_solid"/>
+    </volume>
+
+    
+    <!-- logical volumes for radiator -->  
+
+    <volume name="ti_log">
+      <materialref ref="Titanium"/>
+      <solidref ref="ti_solid"/>
+    </volume>
+
+    <volume name="water_log">
+      <materialref ref="Water"/>
+      <solidref ref="water_solid"/>
+    </volume>
+
+    <!-- single beam diagnostics plate --> 
+
+    <volume name="plate_log">
+      <materialref ref="Copper"/>
+      <solidref ref="plate_solid"/>
+    </volume>
+
+    <volume name="diag_vol_log">
+      <materialref ref="Vacuum"/>
+      <solidref ref="diag_vol_solid"/>
+      <physvol name="plate_phys1">
+        <volumeref ref="plate_log"/>
+        <position name="plate_phys1_pos" unit="mm" x="0" y="-25" z="3.998"/>
+      </physvol>
+      <physvol name="plate_phys2">
+        <volumeref ref="plate_log"/>
+        <position name="plate_phys2_pos" unit="mm" x="0" y="25" z="3.998"/>
+      </physvol>
+      <physvol name="plate_phys3">
+        <volumeref ref="plate_log"/>
+        <position name="plate_phys3_pos" unit="mm" x="0" y="-25" z="-3.998"/>
+      </physvol>
+      <physvol name="plate_phys4">
+        <volumeref ref="plate_log"/>
+        <position name="plate_phys4_pos" unit="mm" x="0" y="25" z="-3.998"/>
+      </physvol>
+    </volume>
+
+    <volume name="radiator_vol_log">
+      <materialref ref="Vacuum"/>
+      <solidref ref="radiator_vol_box"/>
+      <physvol name="ti_phys">
+        <volumeref ref="ti_log"/>
+        <rotation name="ti_phys_rot" unit="deg" x="0" y="90" z="0"/>
+      </physvol>
+      <physvol name="water_phys">
+        <volumeref ref="water_log"/>
+        <rotation name="water_phys_rot" unit="deg" x="0" y="90" z="0"/>
+      </physvol>
+      <physvol name="diag_vol_phys">
+        <volumeref ref="diag_vol_log"/>
+        <position name="diag_vol_phys_pos" unit="mm" x="0" y="0" z="BremRadDiam"/>
+      </physvol>
+    </volume>
+
+    <volume name="det_plane_log">
+      <materialref ref="Vacuum"/>
+      <solidref ref="det_plane_solid"/>
+    </volume>
+
+    <!-- top level world volume with all geometry elements -->
+
+    <volume name="world_log">
+      <materialref ref="Air"/>
+      <solidref ref="world_solid"/>
+      <physvol name="rep_col_vol_phys">
+        <volumeref ref="rep_col_vol_log"/>
+	<position name="rep_col_vol_phys_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+      <physvol name="col_shielding_phys1">
+        <volumeref ref="col_shielding_log"/>
+        <position name="col_shielding_phys1_pos" unit="mm" x="0" y="177.4" z="0"/>
+      </physvol>
+      <physvol name="col_shielding_phys2">
+        <volumeref ref="col_shielding_log"/>
+        <position name="col_shielding_phys2_pos" unit="mm" x="0" y="-177.4" z="0"/>
+      </physvol>
+      <physvol name="col_shielding_phys3">
+        <volumeref ref="col_shielding_log"/>
+        <position name="col_shielding_phys3_pos" unit="mm" x="0" y="202.4" z="-889"/>
+      </physvol>
+      <physvol name="col_shielding_phys4">
+        <volumeref ref="col_shielding_log"/>
+        <position name="col_shielding_phys4_pos" unit="mm" x="0" y="-202.4" z="-889"/>
+      </physvol>
+      <physvol name="radiator_vol_phys">
+        <volumeref ref="radiator_vol_log"/>
+        <position name="radiator_vol_phys_pos" unit="mm" x="0" y="0" z="-554.5"/>
+      </physvol>
+
+      <!-- flux planes -->
+
+<!--      <physvol name="det_phys00">
+        <volumeref ref="det_plane_log"/>
+        <position name="det_phys1_pos" unit="mm" x="0" y="0" z="445.5"/>
+      </physvol>
+      <physvol name="det_phys01">
+        <volumeref ref="det_plane_log"/>
+        <position name="det_phys2_pos" unit="mm" x="0" y="0" z="1054.1"/>
+      </physvol>
+-->
+      <physvol name="det_phys00">
+        <volumeref ref="det_plane_log"/>
+        <position name="det_phys3_pos" unit="mm" x="0" y="0" z="4444.5"/><!-- used to be 1444.5 -->
+      </physvol>
+
+    </volume>
+
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="world_log"/>
+  </setup>
+</gdml>

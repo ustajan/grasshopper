@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- Areg Danagoulian -->
+
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/home/aregjan/git/grasshopper/documentation/gdml.xsd">
+
+
+
+   <materials>
+
+    <element Z="26" name="Iron_elemental">
+      <atom unit="g/mole" value="55.85"/>
+    </element>
+
+    <element Z="7" name="Nitrogen">
+      <atom unit="g/mole" value="14.01"/>
+    </element>
+
+    <element Z="8" name="Oxigen">
+      <atom unit="g/mole" value="16"/>
+    </element>
+
+    <material name="Air" state="gas">
+      <D unit="g/cm3" value="0.00129"/>
+      <fraction n="0.7" ref="Nitrogen"/>
+      <fraction n="0.3" ref="Oxigen"/>
+    </material>
+    <material name="Vacuum" state="gas">
+      <D unit="g/cm3" value="0.00129"/> <!-- change density based on calculations from pressure -->
+      <fraction n="0.7" ref="Nitrogen"/>
+      <fraction n="0.3" ref="Oxigen"/>
+    </material>
+    <material name="Iron" state="solid">
+      <D unit="g/cm3" value="7.6"/>
+      <fraction n="1" ref="Iron_elemental"/>
+    </material>
+
+    <!-- HEU -->
+    <isotope name="U235" Z="92" N="235"> 
+      <atom type="A" value="235.01"/>
+    </isotope>
+    <isotope name="U238" Z="92" N="238">
+      <atom type="A" value="235.03"/> 
+    </isotope>
+    <element name="enriched_u" > 
+      <fraction ref="U235" n="0.9" /> 
+      <fraction ref="U238" n="0.1" />
+    </element>
+    <material name="WGU" formula="none"> 
+      <D unit="g/cm3" value="19." />
+      <composite n="1" ref="enriched_u" />
+    </material>
+
+    <!-- WGP -->
+
+    <isotope name="U235" Z="92" N="235"> 
+      <atom type="A" value="239"/>
+    </isotope>
+    <isotope name="U239" Z="92" N="238">
+      <atom type="A" value="239"/> 
+    </isotope>
+    <isotope name="U240" Z="92" N="239">
+      <atom type="A" value="239"/> 
+    </isotope>
+    <element name="pu" > 
+      <fraction ref="U235" n="0.9" /> 
+      <fraction ref="U238" n="0.1" />
+    </element>
+    <material name="WGP" formula="none"> 
+      <D unit="g/cm3" value="15." />
+      <composite n="1" ref="pu" />
+    </material>
+
+    
+  </materials>
+
+    
+  <!-- THE OUTPUT -->
+  <define>
+  	<constant name="TextOutputOn" value="0"/> <!-- the value should be either 1 (true) or 0 -->
+	<constant name="BriefOutputOn" value="0"/> <!-- enable this if you want the shorter version of the text output -->
+  	<constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
+  	<constant name="EventsToAccumulate" value="100"/> <!-- number of tracks to accumulate in the visualization -->
+  </define>
+  
+  <!-- CUTS...apply various cuts to make the computation more efficient -->
+  <define>
+    <constant name="LightProducingParticle" value="0"/> <!-- the particle which is actually producing light in the detector.  0 means ALL.  It will also kill all particles other than LightProducingParticle in the detector.  If in doubt set to 0. -->
+    <constant name="LowEnergyCutoff" value="0.0000001"/><!-- The low energy cuttoff, MeV, for the main track. If in doubt set it to 0 -->
+    <constant name="KeepOnlyMainParticle" value="0"/> <!-- if 1, the simulation will track only the main particle, as defined by ParticleNumber in the beam definition, OUTSIDE the detector volume.  For example, you'll need to set this to 0 to simulate bremmstrahlung, but to 1 for any transmission simulation. If in doubt, set to 0.-->
+    <quantity name="ProductionLowLimit" type="threshold" value="100" unit="keV" /> <!-- for neutron processes anything >1keV causes things to hang...set this to a high value for any other process to optimize computational time.  There are still some intricacies with this.  With high enough energy, rather than generating secondaries, all the energy loss will get tagged to the EnergyDeposited for the main particle.  So, the energy scoring (as determined by LighProducingParticle above) needs to be adjusted accordingly. -->
+  </define>
+
+<!-- OUTPUT FILTERS.  What data/entries do you want to keep? -->
+  <define>
+    <constant name="SaveSurfaceHitTrack" value="0"/> <!-- save entries which contain hit information, e.g. if you want to simulate the flux of particles -->
+    <constant name="SaveTrackInfo" value="0"/> <!-- save individual track info (within an event).  This is useful for studying the physics of the various interactions -->
+    <constant name="SaveEdepositedTotalEntry" value="1"/> <!--save entries which summarize the total deposited energy, e.g. in detector response simulations -->
+  </define>
+
+  <!-- THE BEAM -->
+  <define>
+    <constant name="RandomGenSeed" value="1"/>
+    <quantity name="BeamOffsetX"  type="coordinate" value="0" unit="mm"/>
+    <quantity name="BeamOffsetY"  type="coordinate" value="0" unit="mm"/>    
+    <quantity name="BeamOffsetZ"  type="coordinate" value="0" unit="m"/> <!-- all in mm -->    
+    <quantity name="BeamSize" type="coordinate" value="-5" unit="m"/>
+
+    <quantity name="BeamEnergy" type="energy" value="0.662" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
+    <constant name="EventsToRun" value="50000"/>
+    <constant name="ParticleNumber" value="22"/> 
+    <!-- e- is 11, gamma is 22, neutron is 2112, proton is 2212, alpha is 1000020040 -->
+ 
+  </define>
+  <define>
+    <position name="inner_position" unit="mm" x="0" y="0" z="0"/>
+  </define>
+  <!-- definition of solid geometries -->
+  <solids>
+    <!-- world volume -->
+    <box lunit="m" name="world_solid" x="5" y="10" z="5"/>    
+    <!-- the horizontal absorber plate -->
+    <box lunit="mm" name="plate_solid" unit="mm" x="30" y="30" z="20"/>
+    <!-- the moderator sphere -->
+    <sphere deltatheta="180.0" rmin="10" lunit="mm" name="moderator_solid" aunit="deg" starttheta="0.0" deltaphi="360.5" rmax="50" startphi="0.0"/>
+    <!-- the cadmium sphere -->
+    <sphere deltatheta="180.0" rmin="51" lunit="mm" name="cd_solid" aunit="deg" starttheta="0.0" deltaphi="360.5" rmax="55" startphi="0.0"/>
+    <!-- Pb reflector -->
+    <box lunit="mm" name="outer_box" unit="mm" x="400" y="400" z="400"/>
+    <box lunit="mm" name="inner_box" unit="mm" x="115" y="115" z="300"/>
+    <subtraction name="reflector_solid">
+      <first ref="outer_box"/>
+      <second ref="inner_box"/>
+      <positionref ref="inner_position"/>
+    </subtraction>
+
+    <box lunit="m" name="room_outer_box" unit="m" x="2.4" y="6" z="2.4"/>
+    <box lunit="m" name="room_inner_box" unit="m" x="2.39" y="5.99" z="2.39"/>
+    <subtraction name="room_solid">
+      <first ref="room_outer_box"/>
+      <second ref="room_inner_box"/>
+      <positionref ref="inner_position"/>
+    </subtraction>
+    <box lunit="m" name="wall_outer_box" unit="m" x="1" y="1" z="0.2"/>
+    <box lunit="m" name="wall_inner_box" unit="m" x="0.2" y="0.2" z="0.2"/>
+    <subtraction name="wall_solid">
+      <first ref="wall_outer_box"/>
+      <second ref="wall_inner_box"/>
+      <positionref ref="inner_position"/>
+    </subtraction>
+
+
+    <!-- the tungsten sphere -->
+    <sphere deltatheta="180.0" rmin="400" lunit="mm" name="w_solid" aunit="deg" starttheta="0.0" deltaphi="360.5" rmax="403" startphi="0.0"/>
+
+
+    <!-- the horizontal detection plane -->
+
+    <box lunit="cm" name="det_plane_solid" unit="cm" x="50" y="50" z="5"/>
+
+<!--
+
+    <sphere deltatheta="180.0" rmin="3000" lunit="mm" name="det_plane_solid" aunit="deg" starttheta="0.0" deltaphi="360.5" rmax="3001" startphi="0.0"/>
+
+-->
+
+  </solids>
+
+
+  <!-- PUTTING IT ALL TOGETHER -->
+  <structure>
+
+<!--     horizontal plate
+    <volume name="plate_log">
+      <materialref ref="WGU"/>
+      <solidref ref="plate_solid"/>
+    </volume>
+-->
+
+    <volume name="moderator_log">
+      <materialref ref="G4_POLYETHYLENE"/>
+      <solidref ref="moderator_solid"/>
+    </volume>
+    <volume name="cd_log">
+      <materialref ref="G4_Cd"/>
+      <solidref ref="cd_solid"/>
+    </volume>
+    <volume name="w_log">
+      <materialref ref="G4_W"/>
+      <solidref ref="w_solid"/>
+    </volume>
+    <volume name="reflector_log">
+      <materialref ref="G4_Pb"/>
+      <solidref ref="reflector_solid"/>
+      <auxiliary auxtype="Color" auxvalue="blue"/>
+    </volume>
+    <volume name="room_log">
+      <materialref ref="G4_STAINLESS-STEEL"/>
+      <solidref ref="room_solid"/>
+    </volume>
+    <volume name="wall0_log">
+      <materialref ref="G4_CONCRETE"/>
+      <solidref ref="wall_outer_box"/>
+    </volume>
+    <volume name="wall1_log">
+      <materialref ref="G4_CONCRETE"/>
+      <solidref ref="wall_outer_box"/>
+    </volume>
+
+
+
+    <!-- the horizontal detection plane -->
+    <volume name="det_plane_log">
+      <materialref ref="G4_PLASTIC_SC_VINYLTOLUENE"/> <!-- G4_PLASTIC_SC_VINYLTOLUENE -->
+      <solidref ref="det_plane_solid"/>
+    </volume>
+
+    <!-- top level world volume with all geometry elements -->
+    <volume name="world_log">
+      <materialref ref="G4_AIR"/>
+      <solidref ref="world_solid"/>  <!-- This should NEVER be changed -->
+
+<!-- moderator  
+      <physvol name="moderator_phys">
+        <volumeref ref="moderator_log"/>
+        <position name="moderator_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+-->
+<!-- cadmium  
+      <physvol name="cd_phys">
+        <volumeref ref="cd_log"/>
+        <position name="cd_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+-->
+<!--
+      <physvol name="reflector_phys">
+        <volumeref ref="reflector_log"/>
+        <position name="reflector_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+-->
+
+      <!-- plate
+      <physvol name="plate_phys">
+        <volumeref ref="plate_log"/>
+        <position name="plate_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+-->
+<!-- tungsten sphere 
+      <physvol name="w_phys">
+        <volumeref ref="w_log"/>
+        <position name="w_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+-->
+      <!-- flux planes -->
+      <physvol name="det_phys"> <!-- This should NEVER be changed -->
+        <volumeref ref="det_plane_log"/>
+        <position name="det_phys3_pos" unit="m" x="0" y="0" z="1.5"/>
+        <rotation name="object_rot" unit="deg" x="0" y="0" z="0" /> <!-- ROTATION -->
+      </physvol>
+      <physvol name="room_phys">
+        <volumeref ref="room_log"/>
+        <position name="room_phys_pos" unit="m" x="0" y="0" z="0"/>
+      </physvol>
+      <physvol name="wall0_phys">
+        <volumeref ref="wall0_log"/>
+        <position name="wall_phys_pos" unit="m" x="0" y="0" z="0.5"/>
+      </physvol>
+      <physvol name="wall1_phys">
+        <volumeref ref="wall1_log"/>
+        <position name="wall_phys_pos" unit="m" x="0" y="0" z="-0.5"/>
+      </physvol>
+    </volume>
+
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="world_log"/>
+  </setup>
+</gdml>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- latest CAARS collimator and radiator model -->
+<!-- A. Klimenko 9/15/2008 -->
+
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/GDML_2_10_0/src/GDMLSchema/gdml.xsd">
+
+
+
+   <materials>
+    <material Z="29" name="Copper" state="solid">
+      <D unit="g/cm3" value="8.96"/>
+      <atom unit="g/mole" value="63.546"/>
+    </material>
+
+    <material Z="1" name="Vacuum" state="gas">
+      <T unit="K" value="2.73"/>
+      <P unit="pascal" value="3e-18"/>
+      <D unit="g/cm3" value="1e-25"/>
+      <atom unit="g/mole" value="1.01"/>
+    </material>
+
+    <element Z="7" name="Nitrogen0xfa1d40">
+      <atom unit="g/mole" value="14.01"/>
+    </element>
+
+    <element Z="8" name="Oxigen0xfa1f00">
+      <atom unit="g/mole" value="16"/>
+    </element>
+
+    <material name="Air" state="gas">
+      <D unit="g/cm3" value="0.00129"/>
+      <fraction n="0.7" ref="Nitrogen0xfa1d40"/>
+      <fraction n="0.3" ref="Oxigen0xfa1f00"/>
+    </material>
+
+    <element Z="26" name="Iron0xfa0570">
+      <atom unit="g/mole" value="55.85"/>
+    </element>
+
+    <element Z="24" name="Chromium0xfa0750">
+      <atom unit="g/mole" value="52"/>
+    </element>
+
+    <element Z="28" name="Nickel0xfa0930">
+      <atom unit="g/mole" value="58.7"/>
+    </element>
+
+    <element Z="25" name="Manganese0xfa0bb0">
+      <atom unit="g/mole" value="54.94"/>
+    </element>
+
+    <element Z="14" name="Silicon0xfa03e0">
+      <atom unit="g/mole" value="28.09"/>
+    </element>
+
+    <material name="Steel" state="solid">
+      <D unit="g/cm3" value="8.02"/>
+      <fraction n="0.68" ref="Iron0xfa0570"/>
+      <fraction n="0.19" ref="Chromium0xfa0750"/>
+      <fraction n="0.1" ref="Nickel0xfa0930"/>
+      <fraction n="0.02" ref="Manganese0xfa0bb0"/>
+      <fraction n="0.01" ref="Silicon0xfa03e0"/>
+    </material>
+
+    <material Z="79" name="Gold0xfa7b20" state="solid">
+      <D unit="g/cm3" value="19.3"/>
+      <atom unit="g/mole" value="196.966"/>
+    </material>
+
+    <material Z="22" name="Titanium" state="solid">
+      <D unit="g/cm3" value="4.11"/>
+      <atom unit="g/mole" value="47.867"/>
+    </material>
+
+    <element Z="1" name="Hydrogen">
+      <atom unit="g/mole" value="1.01"/>
+    </element>
+    <element Z="8" name="Oxygen">
+      <atom unit="g/mole" value="16"/>
+    </element>
+    <material name="Water" state="solid">
+      <D unit="g/cm3" value="1"/>
+      <composite n="2" ref="Hydrogen"/>
+      <composite n="1" ref="Oxygen"/>
+    </material>
+
+  </materials>
+
+  <!-- THE OUTPUT -->
+
+  <!-- THE BEAM -->
+  <define>
+    <constant name="RandomGenSeed" value="0"/>
+    <constant name="BeamOffsetX" value="0"/>
+    <constant name="BeamOffsetY" value="0"/>    
+    <constant name="BeamSize" value="5"/>
+
+    <constant name="BeamEnergy" value="16"/> <!-- this is in MeV -->
+    <constant name="EventsToRun" value="10000"/>
+    <constant name="ParticleNumber" value="2112"/> 
+    <!-- e- is 11, gamma is 22, neutron is 2112 -->
+  </define>
+
+
+  <!-- definition of solids -->
+  <solids>
+    <!-- world volume -->
+    <box lunit="mm" name="world_solid" x="2000" y="2000" z="2000"/>    
+    <!-- the horizontal plate -->
+    <box lunit="mm" name="plate_solid" unit="mm" x="200" y="200" z="220"/>
+    <!-- the horizontal detection plane -->
+    <box lunit="mm" name="det_plane_solid" unit="mm" x="1000" y="1000" z="200"/>
+  </solids>
+
+
+  <!-- PUTTING IT ALL TOGETHER -->
+  <structure>
+    <!-- the horizontal plate --> 
+    <volume name="plate_log">
+      <materialref ref="G4_Pb"/>
+      <solidref ref="plate_solid"/>
+    </volume>
+    <!-- the horizontal detection plane -->
+    <volume name="det_plane_log">
+      <materialref ref="G4_PLASTIC_SC_VINYLTOLUENE"/>
+      <solidref ref="det_plane_solid"/>
+    </volume>
+
+    <!-- top level world volume with all geometry elements -->
+    <volume name="world_log">
+      <materialref ref="Air"/>
+      <solidref ref="world_solid"/>  <!-- This should NEVER be changed -->
+      <physvol name="plate_phys">
+        <volumeref ref="plate_log"/>
+	<position name="plate_phys_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+      <!-- flux planes -->
+      <physvol name="det_phys"> <!-- This should NEVER be changed -->
+        <volumeref ref="det_plane_log"/>
+        <position name="det_phys3_pos" unit="mm" x="0" y="0" z="1000"/>
+      </physvol>
+    </volume>
+
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="world_log"/>
+  </setup>
+</gdml>

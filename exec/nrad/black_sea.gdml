@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gdml="http://cern.ch/2001/Schemas/GDML" xsi:noNamespaceSchemaLocation="gdml.xsd">
+
+
+    <!-- THE OUTPUT -->
+    <define>
+      <constant name="TextOutputOn" value="0"/> <!-- the value should be either 1 (true) or 0 -->
+      <constant name="BriefOutputOn" value="1"/> <!-- enable this if you want the shorter version of the text output -->
+      <constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
+      <constant name="EventsToAccumulate" value="50"/> <!-- number of tracks to accumulate in the visualization -->
+    </define>
+    
+    <!-- CUTS...apply various cuts to make the computation more efficient -->
+    <define>
+      <constant name="LightProducingParticle" value="0"/> <!-- the particle which is actually producing light in the detector.  0 means ALL.  It will also kill all particles other than LightProducingParticle in the detector.  If in doubt set to 0. -->
+      <constant name="LowEnergyCutoff" value="0."/><!-- The low energy cuttoff, MeV, for the main track. If in doubt set it to 0 -->
+      <constant name="KeepOnlyMainParticle" value="1"/> <!-- if 1, the simulation will track only the main particle, as defined by ParticleNumber in the beam definition, OUTSIDE the detector volume.  For example, you'll need to set this to 0 to simulate bremmstrahlung, but to 1 for any transmission simulation. If in doubt, set to 0.-->
+      <quantity name="ProductionLowLimit" type="threshold" value="100" unit="keV" /> <!-- for neutron processes anything >1keV causes things to hang...set this to a high value for any other process to optimize computational time.  There are still some intricacies with this.  With high enough energy, rather than generating secondaries, all the energy loss will get tagged to the EnergyDeposited for the main particle.  So, the energy scoring (as determined by LighProducingParticle above) needs to be adjusted accordingly. -->
+    </define>
+
+    <!-- OUTPUT FILTERS.  What data/entries do you want to keep? -->
+    <define>
+      <constant name="SaveSurfaceHitTrack" value="1"/> <!-- save entries which contain hit information, e.g. if you want to simulate the flux of particles -->
+      <constant name="SaveTrackInfo" value="0"/> <!-- save individual track info (within an event).  This is useful for studying the physics of the various interactions -->
+      <constant name="SaveEdepositedTotalEntry" value="0"/> <!--save entries which summarize the total deposited energy, e.g. in detector response simulations -->
+    </define>
+
+    <!-- THE BEAM -->
+    <define>
+      <constant name="RandomGenSeed" value="0"/>
+      <quantity name="BeamOffsetX"  type="coordinate" value="0" unit="mm"/>
+      <quantity name="BeamOffsetY"  type="coordinate" value="0" unit="mm"/>    
+      <quantity name="BeamOffsetZ"  type="coordinate" value="-1" unit="m"/> <!-- all in mm -->    
+      <quantity name="BeamSize" type="coordinate" value="134" unit="mm"/>
+
+      <quantity name="BeamEnergy" type="energy" value="-1" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
+      <constant name="EventsToRun" value="1000000"/>
+      <constant name="ParticleNumber" value="2112"/> 
+      <!-- e- is 11, gamma is 22, neutron is 2112, proton is 2212, alpha is 1000020040 -->
+      
+    </define>
+
+    <define>
+      <position y="0.0" x="0.0" z="0.0" name="zeropos" unit="mm"/>
+      <rotation y="0.0" x="0.0" z="0.0" name="zerorot" unit="deg"/>
+    </define>
+    <materials>
+      <isotope Z="92" name="U235" N="235">
+        <atom value="235.044" unit="g/mole"/>
+      </isotope>
+      <element name="PureU235">
+        <fraction ref="U235" n="1.0"/>
+      </element>
+      <isotope Z="92" name="U238" N="238">
+        <atom value="238.051" unit="g/mole"/>
+      </isotope>
+      <element name="PureU238">
+        <fraction ref="U238" n="1.0"/>
+      </element>
+      <isotope Z="92" name="Pu239" N="239">
+        <atom value="239.052" unit="g/mole"/>
+      </isotope>
+      <element name="PurePu239">
+        <fraction ref="Pu239" n="1.0"/>
+      </element>
+      <isotope Z="92" name="Pu240" N="240">
+        <atom value="240.054" unit="g/mole"/>
+      </isotope>
+      <element name="PurePu240">
+        <fraction ref="Pu240" n="1.0"/>
+      </element>
+      <material state="solid" name="composite_25pc">
+        <MEE value="905.435872645" unit="eV"/>
+        <D value="19.0" unit="g/cm3"/>
+        <T value="293.15" unit="K"/>
+        <fraction ref="PurePu239" n="0.25"/>
+        <fraction ref="PureU235" n="0.25"/>
+        <fraction ref="PurePu240" n="0.25"/>
+        <fraction ref="PureU238" n="0.25"/>
+      </material>
+      <isotope Z="1" name="H1" N="1">
+        <atom value="1.00782503081" unit="g/mole"/>
+      </isotope>
+      <isotope Z="1" name="H2" N="2">
+        <atom value="2.01410199967" unit="g/mole"/>
+      </isotope>
+      <element name="NaturalHydrogen">
+        <fraction ref="H2" n="0.000115"/>
+        <fraction ref="H1" n="0.999885"/>
+      </element>
+      <material state="gas" name="G4_Galactic">
+        <MEE value="21.8" unit="eV"/>
+        <P value="3e-18" unit="pascal"/>
+        <D value="1e-25" unit="g/cm3"/>
+        <T value="2.73" unit="K"/>
+        <fraction ref="NaturalHydrogen" n="1.0"/>
+      </material>
+      <isotope Z="32" name="Ge70" N="70">
+        <atom value="69.9243" unit="g/mole"/>
+      </isotope>
+      <isotope Z="32" name="Ge72" N="72">
+        <atom value="71.9221" unit="g/mole"/>
+      </isotope>
+      <isotope Z="32" name="Ge73" N="73">
+        <atom value="72.9235" unit="g/mole"/>
+      </isotope>
+      <isotope Z="32" name="Ge74" N="74">
+        <atom value="73.9212" unit="g/mole"/>
+      </isotope>
+      <isotope Z="32" name="Ge76" N="76">
+        <atom value="75.9214" unit="g/mole"/>
+      </isotope>
+      <element name="Ge">
+        <fraction ref="Ge70" n="0.2084"/>
+        <fraction ref="Ge73" n="0.0773"/>
+        <fraction ref="Ge72" n="0.2754"/>
+        <fraction ref="Ge74" n="0.3628"/>
+        <fraction ref="Ge76" n="0.0761"/>
+      </element>
+      <material state="solid" name="Germanium">
+        <MEE value="350.0" unit="eV"/>
+        <D value="5.323" unit="g/cm3"/>
+        <T value="293.15" unit="K"/>
+        <fraction ref="Ge" n="1.0"/>
+      </material>
+      <material state="solid" name="SimpleWgPu">
+        <MEE value="921.0" unit="eV"/>
+        <D value="19.84" unit="g/cm3"/>
+        <T value="293.15" unit="K"/>
+        <fraction ref="PurePu239" n="0.94"/>
+        <fraction ref="PurePu240" n="0.06"/>
+      </material>
+      <isotope Z="6" name="C12" N="12">
+        <atom value="12.0" unit="g/mole"/>
+      </isotope>
+      <isotope Z="6" name="C13" N="13">
+        <atom value="13.003" unit="g/mole"/>
+      </isotope>
+      <element name="NaturalCarbon">
+        <fraction ref="C13" n="0.0111"/>
+        <fraction ref="C12" n="0.9889"/>
+      </element>
+      <isotope Z="7" name="N14" N="14">
+        <atom value="14.003" unit="g/mole"/>
+      </isotope>
+      <isotope Z="7" name="N15" N="16">
+        <atom value="15.0" unit="g/mole"/>
+      </isotope>
+      <element name="NaturalNitrogen">
+        <fraction ref="N14" n="0.9964"/>
+        <fraction ref="N15" n="0.0036"/>
+      </element>
+      <isotope Z="8" name="O16" N="16">
+        <atom value="15.995" unit="g/mole"/>
+      </isotope>
+      <isotope Z="8" name="O17" N="17">
+        <atom value="16.999" unit="g/mole"/>
+      </isotope>
+      <isotope Z="8" name="O18" N="18">
+        <atom value="17.922" unit="g/mole"/>
+      </isotope>
+      <element name="NaturalOxygen">
+        <fraction ref="O17" n="0.00038"/>
+        <fraction ref="O16" n="0.99757"/>
+        <fraction ref="O18" n="0.00205"/>
+      </element>
+      <material state="solid" name="HMX">
+        <MEE value="80.680287035" unit="eV"/>
+        <D value="1.89" unit="g/cm3"/> <!-- actual density: 1.89 g/cc -->
+        <T value="293.15" unit="K"/>
+        <fraction ref="NaturalOxygen" n="0.43219"/>
+        <fraction ref="NaturalNitrogen" n="0.378361"/>
+        <fraction ref="NaturalHydrogen" n="0.027227"/>
+        <fraction ref="NaturalCarbon" n="0.162222"/>
+      </material>
+      <material state="solid" name="95pcwenricheduranium">
+        <MEE value="890.0" unit="eV"/>
+        <D value="18.7" unit="g/cm3"/>
+        <T value="293.15" unit="K"/>
+        <fraction ref="PureU235" n="0.95"/>
+        <fraction ref="PureU238" n="0.05"/>
+      </material>
+    </materials>
+    <solids>
+      <sphere deltatheta="180.0" rmin="62.7" lunit="mm" name="Pu_BS_S" aunit="deg" starttheta="0.0" deltaphi="360.5" rmax="67.0" startphi="0.0"/>
+      <sphere deltatheta="180.0" rmin="67.0" lunit="mm" name="HE_BS_S" aunit="deg" starttheta="0.0" deltaphi="360.5" rmax="87" startphi="0.0"/> <!-- rmax=132 -->
+      <sphere deltatheta="180.0" rmin="132.0" lunit="mm" name="WU_BS_S" aunit="deg" starttheta="0.0" deltaphi="360.5" rmax="134.5" startphi="0.0"/>
+      <tube name = "det_plane_solid" rmin="0" rmax="150" z="10" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/>
+      <box name = "HMX_slab_s" x="400" y="400" z="20" lunit="mm" />
+      <box y="1" x="1" lunit="m" z="21" name="world_S"/>
+    </solids>
+    <structure>
+      <volume name="Pu_BS_L">
+        <materialref ref="SimpleWgPu"/>
+        <solidref ref="Pu_BS_S"/>
+        <auxiliary auxtype="Color" auxvalue="f999999999"/>
+      </volume>
+      <volume name="HE_BS_L">
+        <materialref ref="HMX"/>
+        <solidref ref="HE_BS_S"/>
+        <auxiliary auxtype="Color" auxvalue="f999999999"/>
+      </volume>
+      <volume name="WU_BS_L">
+        <materialref ref="95pcwenricheduranium"/>
+        <solidref ref="WU_BS_S"/>
+        <auxiliary auxtype="Color" auxvalue="f999999999"/>
+      </volume>
+      <volume name="HMX_slab_L">
+        <materialref ref="HMX"/>
+        <solidref ref="HMX_slab_s"/>
+        <auxiliary auxtype="Color" auxvalue="f999999999"/>
+      </volume>
+      <volume name="det_plane_log">
+	<materialref ref="G4_PLASTIC_SC_VINYLTOLUENE"/> <!-- G4_PLASTIC_SC_VINYLTOLUENE -->
+	<solidref ref="det_plane_solid"/>
+      </volume>
+
+      <volume name="world_log">
+        <materialref ref="G4_Galactic"/>
+        <solidref ref="world_S"/>
+<!--        <auxiliary auxtype="Color" auxvalue="f999999999"/> -->
+
+<!-- The weapon itself -->
+
+        <physvol name="BlackSeaPlutonium">
+          <volumeref ref="Pu_BS_L"/>
+          <positionref ref="zeropos"/>
+          <rotationref ref="zerorot"/>
+        </physvol>
+        <physvol name="BlackSeaHighExplosive">
+          <volumeref ref="HE_BS_L"/>
+          <positionref ref="zeropos"/>
+          <rotationref ref="zerorot"/>
+        </physvol>
+        <physvol name="BlackSeaUranium">
+          <volumeref ref="WU_BS_L"/>
+          <positionref ref="zeropos"/>
+          <rotationref ref="zerorot"/>
+        </physvol>
+
+<!--
+        <physvol name="HMX_slab">
+          <volumeref ref="HMX_slab_L"/>
+          <positionref ref="zeropos"/>
+          <rotationref ref="zerorot"/>
+        </physvol>
+-->
+
+<!-- The detector -->
+	<physvol name="det_phys"> <!-- This should NEVER be changed -->
+          <volumeref ref="det_plane_log"/>
+          <position name="det_phys3_pos" unit="m" x="0" y="0" z="10"/>
+	</physvol>
+      </volume>
+    </structure>
+
+    <setup version="3.0" name="Default">
+      <world ref="world_log"/>
+    </setup>
+
+  </gdml>
+
