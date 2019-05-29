@@ -10,7 +10,7 @@ goal is to allow users with no C++ and Geant4 knowledge *quickly* set up and run
 Author:  		Areg Danagoulian
 
 Creation time:  11/2015
-Last update:    12/2017
+Last update:    continous
 
 To install
 ==
@@ -45,6 +45,9 @@ geant> /run/beamOn 100
 will generate 100 events, and will produce a (very useful) g4_00.wrl output with geometric rendering,
 which can then be viewed in paraview (or some other code).
 
+Tutorial
+==
+The best way to learn how to use grasshopper is by using the tutorial on the project wiki, [here](https://github.com/ustajan/grasshopper/wiki/grasshopper-tutorial).  You can also get there by going to Wiki link above --> "grasshopper tutorial".
 
 Input
 ==
@@ -123,7 +126,7 @@ for a particular type of detector the SaveEdepositedTotalEntry needs to be set. 
 
 General status
 ==
-In its current form, the code has been tested with <12MeV photons, neutrons, and electrons.  Very
+In its current form, the code has been tested with <12MeV photons, neutrons, gammas, and electrons.  Very
 general checks indicate that most processes are being simulated correctly.
 
 
