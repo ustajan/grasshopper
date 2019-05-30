@@ -41,7 +41,7 @@ To run
 
 Tutorial
 ==
-The best way to learn how to use grasshopper is by using the tutorial on the project wiki, [here](https://github.com/ustajan/grasshopper/wiki/grasshopper-tutorial).  You can also get there by going to Wiki link above --> "grasshopper tutorial".
+The best way to learn how to use grasshopper is by using the tutorial on the project wiki, [here](https://github.com/ustajan/grasshopper/wiki).  You can also get there by going to Wiki link above.
 
 Input
 ==
