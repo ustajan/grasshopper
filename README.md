@@ -12,6 +12,8 @@ Author:  		Areg Danagoulian
 Creation time:  11/2015  
 Last update:    continous
 
+For copyright and licensing see files COPYRIGHT and LICENSE.
+
 To install
 ==
 The user is required to have the following
