@@ -17,16 +17,16 @@ To install
 The user is required to have the following
 
 	* xerces.  This will allow the GDML parser capability.
-	* built and installed geant4 libraries (best to use something newer than geant4.10.2).  Also, in the cmake stage, the following flag needs to be passed:
+	* Built and installed geant4 libraries.  Also, in the cmake stage, the following flag needs to be passed:
 	`-DGEANT4_USE_GDML=ON`.  In some cases you also have to also add the location for Xerces with flags such as 	
         `-DXERCESC_INCLUDE_DIR=/usr/local/include/ -DXERCESC_LIBRARY=/usr/local/lib/libxerces-c.so`.  See the geant4 instructions on how 	to add Xerces for more detail on the paths.
-	* ROOT.  Has been tested with version 5.34/20.  In future version we want to make this optional.
+	* ROOT -- optional.  Has been tested with version 6.16.  If you do not have ROOT the make process will recognize that and exclude 		it from the build.
 	* When building grasshopper, the compiler might not find the GDML header files.  In that case just determine the actual file directories, and add them to the include list by appending `-I/directory_to_headers` to the `CPPFLAGS` env variable.
 
 
 If all the regular geant4 installations and configurations are ready, then the user can get the code by
 
-`> git clone git@github.mit.edu:LNSP/grasshopper.git`
+`> git clone git@github.com:ustajan/grasshopper.git`
 
 To build
 ==
@@ -38,12 +38,6 @@ To run
 ==
 `> grasshopper input.gdml output.root`
 
-It is also possible to run grasshopper interactively in the geant4 shell, but adding a "1" at the end of the command above, after which you can do
-
-geant> /run/beamOn 100
-
-will generate 100 events, and will produce a (very useful) g4_00.wrl output with geometric rendering,
-which can then be viewed in paraview (or some other code).
 
 Tutorial
 ==
