@@ -9,7 +9,7 @@ goal is to allow users with no C++ and Geant4 knowledge *quickly* set up and run
 
 Author:  		Areg Danagoulian
 
-Creation time:  11/2015
+Creation time:  11/2015  
 Last update:    continous
 
 To install
