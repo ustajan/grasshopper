@@ -25,6 +25,9 @@ The user is required to have the following
 	* ROOT -- optional.  Has been tested with version 6.16.  If you do not have ROOT the make process will recognize that and exclude 		it from the build.
 	* When building grasshopper, the compiler might not find the GDML header files.  In that case just determine the actual file directories, and add them to the include list by appending `-I/directory_to_headers` to the `CPPFLAGS` env variable.
 
+__Important note__:  these days geant4 primarily works via the cmake framework.  However grasshopper uses the older Makefile framework.  It is important that you source the appropriate shell script in geant4 directories to enable all the env. variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
+
+`. /usr/local/geant4/geant4.10.05-install/share/Geant4-10.5.0/geant4make/geant4make.sh`
 
 If all the regular geant4 installations and configurations are ready, then the user can get the code by
 
@@ -141,7 +144,7 @@ Below is a prioritized list of future tasks.
 	* OUTPUT
 	  + Implement "simple" ascii text output, along with ROOT  -- DONE
 	  + Make the code be able to reliably switch between ROOT (when ROOT is available) and ASCII output -- DONE
-	* Write the python front end to the gdml <-- need a UROP
+	* Write the python front end to the gdml? <-- need a UROP
 	* Check the physics, by comparing to data and validated geant4 simulations
 	  + Did some basic comparisons of gamma transmission to exp(-mu*x)
 	* automatic wrl generation (even in batch mode), limited to 300 tracks -- DONE
