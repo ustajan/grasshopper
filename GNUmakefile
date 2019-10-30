@@ -3,10 +3,9 @@
 # GNUmakefile for examples module.  Gabriele Cosmo, 06/04/98.
 # --------------------------------------------------------------
 
-
 G4UI_USE_QT=
 G4VIS_USE_OPENGLQT=
-#ROOTSYS= #uncomment to disable root
+ROOTSYS= #uncomment to disable root
 
 name := grasshopper
 G4TARGET := $(name)
