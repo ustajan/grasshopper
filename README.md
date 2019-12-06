@@ -1,4 +1,4 @@
-grasshopper
+# Grasshopper
 ===========
 
 This application is based on the geant4 development toolkit, which allows to program complex particle
