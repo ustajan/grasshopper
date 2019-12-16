@@ -3,6 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+=======================================
 Grasshopper: A Geant4 Simulation Program!
 =======================================
 
@@ -21,6 +22,13 @@ In addition, Geant4 relies on various databases shared by institutes such as NIS
 Unfortunately, Geant4 and the related libraries are not a common program to install and use for scientific simulation users or the general public interested in this work [2]. 
 However, a widely applicable simulation engine using Geant4, called Grasshopper, has been developed to allow for generating straightforward Monte Carlo simulations for engineers 
 and scientists in a wide range of fields.
+
+
+.. admonition:: Recommended publication for citing
+   :class: tip
+
+   Jacob N. Miske and Areg Danagoulian "`Grasshopper: A Geant4 code for
+   Research and Development of Radiation Transport`"
 
 Indices and tables
 ==================
