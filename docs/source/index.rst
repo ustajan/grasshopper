@@ -7,19 +7,6 @@
 Grasshopper: A Geant4 Simulation Program!
 =======================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-    quickinstall
-    examples/index
-    releasenotes/index
-    methods/index
-    usersguide/index
-    devguide/index
-    pythonapi/index
-    io_formats/index
-    publications
-    license
 
 Current Work
 ==================
@@ -47,3 +34,23 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. only:: html
+
+   --------
+   Contents
+   --------
+
+.. toctree::
+    :maxdepth: 1
+
+    quickinstall
+    examples/index
+    releasenotes/index
+    methods/index
+    usersguide/index
+    devguide/index
+    pythonapi/index
+    capi/index
+    io_formats/index
+    publications
+    license
