@@ -27,8 +27,10 @@ and scientists in a wide range of fields.
    Jacob N. Miske and Areg Danagoulian "`Grasshopper: A Geant4 code for
    Research and Development of Radiation Transport`"
 
+
 Indices and tables
 ==================
+
 
 * :ref:`genindex`
 * :ref:`modindex`
@@ -44,6 +46,7 @@ Indices and tables
     :maxdepth: 1
 
     quickinstall
+    getting_started/index
     examples/index
     releasenotes/index
     methods/index
