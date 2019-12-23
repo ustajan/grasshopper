@@ -1,0 +1,412 @@
+<html>
+<HEAD>
+
+<META NAME="description" CONTENT="ESTAR program calculates 
+stopping-power and range tables for electrons in various materials">
+
+<META NAME="KEYWORDS" CONTENT="c.s.d.a. range, CSDA range, csda range, 
+electronic stopping power, nuclear stopping power, projected range, 
+continuous-slowing-down approximation, total stopping power, 
+NIST Physics Laboratory">
+<script async type="text/javascript" id="_fed_an_ua_tag" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=DOC&subagency=NIST&pua=UA-37115410-46&yt=true&exts=ppsx,pps,f90,sch,rtf,wrl,txz,m1v,xlsm,msi,xsd,f,tif,eps,mpg,xml,pl,xlt,c"></script>
+</head>
+
+<body bgcolor="#FFFFFF">
+<DIV ALIGN="center">
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td align="left"><img src="/Images/But/nist-pl-black.gif" width="136" 
+height="68" usemap="#NIST-PL" alt="NIST Physical Measurement Laboratory" border="0"></td>
+<td align="center"><img src="../Images/estar_alt.gif" alt="ESTAR Logo" 
+vspace="10" height="80" width="500"></td>
+<td align="right"><img src="/Images/space.gif" width="136" height="68" alt=""></td>
+</tr></table></DIV>
+<br clear="all">
+<map name="NIST-PL">
+    <area shape="rect" coords="0,0,1,1" href="#start" alt="[skip navigation]">
+    <area shape="rect" coords="1,1,135,48" href="http://www.nist.gov" 
+    alt="National Institute of Standards and Technology">
+    <area shape="rect" coords="1,50,135,67" href="/" alt="NIST Physical Measurement Laboratory">
+</map>
+<A name="start"><!-- filler --></A>
+<BR><BR>
+
+
+<BLOCKQUOTE>
+The ESTAR program calculates stopping power, density effect parameters, range, 
+and radiation yield tables for electrons in various materials. Select a 
+material and enter the desired energies or use the default energies. Energies 
+are specified in MeV, and must be in the range from 0.001&nbsp;MeV to 
+10000&nbsp;MeV.</BLOCKQUOTE>
+<p>
+
+<DIV ALIGN="center">
+<a href="method.html">Help</a> &#160; &#160; &#160; &#160; &#160; &#160; &#160; 
+  &#160; &#160; &#160; &#160; &#160;
+<a href="ESTAR-t.html">Text version</a> &#160; &#160; &#160; &#160; &#160; 
+  &#160; &#160; &#160; &#160; &#160; &#160; &#160;
+<a href="/cgi-bin/Star/compos.pl"><nobr>Material composition data</nobr></a></DIV>
+
+<p>
+<form action="/cgi-bin/Star/e_table.pl" enctype="multipart/form-data" 
+  method="POST">
+
+<DIV ALIGN="center">
+<table bgcolor="#CC99CC" cellpadding="8" border="0" cellspacing="0">
+<tr><td colspan="2" align="left">
+<b>Select a common material:</b><br>
+<DIV ALIGN="center">
+<select name="matno">
+<option value="001"> 1: Hydrogen</option>
+<option value="002"> 2: Helium</option>
+<option value="003"> 3: Lithium</option>
+<option value="004"> 4: Beryllium</option>
+<option value="005"> 5: Boron</option>
+<option value="006"> 6: Carbon, Amorphous (density2.0g/cm3)</option>
+<option value="906"> 6: Graphite (density 1.7 g/cm3)</option>
+<option value="007"> 7: Nitrogen</option>
+<option value="008"> 8: Oxygen</option>
+<option value="009"> 9: Fluorine</option>
+<option value="010">10: Neon</option>
+<option value="011">11: Sodium</option>
+<option value="012">12: Magnesium</option>
+<option value="013">13: Aluminum</option>
+<option value="014">14: Silicon</option>
+<option value="015">15: Phosphorus</option>
+<option value="016">16: Sulfur</option>
+<option value="017">17: Chlorine</option>
+<option value="018">18: Argon</option>
+<option value="019">19: Potassium</option>
+<option value="020">20: Calcium</option>
+<option value="021">21: Scandium</option>
+<option value="022">22: Titanium</option>
+<option value="023">23: Vanadium</option>
+<option value="024">24: Chromium</option>
+<option value="025">25: Manganese</option>
+<option value="026">26: Iron</option>
+<option value="027">27: Cobalt</option>
+<option value="028">28: Nickel</option>
+<option value="029">29: Copper</option>
+<option value="030">30: Zinc</option>
+<option value="031">31: Gallium</option>
+<option value="032">32: Germanium</option>
+<option value="033">33: Arsenic</option>
+<option value="034">34: Selenium</option>
+<option value="035">35: Bromine</option>
+<option value="036">36: Krypton</option>
+<option value="037">37: Rubidium</option>
+<option value="038">38: Strontium</option>
+<option value="039">39: Yttrium</option>
+<option value="040">40: Zirconium</option>
+<option value="041">41: Niobium</option>
+<option value="042">42: Molybdenum</option>
+<option value="043">43: Technetium</option>
+<option value="044">44: Ruthenium</option>
+<option value="045">45: Rhodium</option>
+<option value="046">46: Palladium</option>
+<option value="047">47: Silver</option>
+<option value="048">48: Cadmium</option>
+<option value="049">49: Indium</option>
+<option value="050">50: Tin</option>
+<option value="051">51: Antimony</option>
+<option value="052">52: Tellurium</option>
+<option value="053">53: Iodine</option>
+<option value="054">54: Xenon</option>
+<option value="055">55: Cesium</option>
+<option value="056">56: Barium</option>
+<option value="057">57: Lanthanum</option>
+<option value="058">58: Cerium</option>
+<option value="059">59: Praseodymium</option>
+<option value="060">60: Neodymium</option>
+<option value="061">61: Promethium</option>
+<option value="062">62: Samarium</option>
+<option value="063">63: Europium</option>
+<option value="064">64: Gadolinium</option>
+<option value="065">65: Terbium</option>
+<option value="066">66: Dysprosium</option>
+<option value="067">67: Holmium</option>
+<option value="068">68: Erbium</option>
+<option value="069">69: Thulium</option>
+<option value="070">70: Ytterbium</option>
+<option value="071">71: Lutetium</option>
+<option value="072">72: Hafnium</option>
+<option value="073">73: Tantalum</option>
+<option value="074">74: Tungsten</option>
+<option value="075">75: Rhenium</option>
+<option value="076">76: Osmium</option>
+<option value="077">77: Iridium</option>
+<option value="078">78: Platinum</option>
+<option value="079">79: Gold</option>
+<option value="080">80: Mercury</option>
+<option value="081">81: Thallium</option>
+<option value="082">82: Lead</option>
+<option value="083">83: Bismuth</option>
+<option value="084">84: Polonium</option>
+<option value="085">85: Astatine</option>
+<option value="086">86: Radon</option>
+<option value="087">87: Francium</option>
+<option value="088">88: Radium</option>
+<option value="089">89: Actinium</option>
+<option value="090">90: Thorium</option>
+<option value="091">91: Protactinium</option>
+<option value="092">92: Uranium</option>
+<option value="093">93: Neptunium</option>
+<option value="094">94: Plutonium</option>
+<option value="095">95: Americium</option>
+<option value="096">96: Curium</option>
+<option value="097">97: Berkelium</option>
+<option value="098">98: Californium
+<option value="099">A-150 Tissue-Equivalent Plastic</option>
+<option value="100">Acetone</option>
+<option value="101">Acetylene</option>Adenine</option>
+<option value="102">Adenine</option>
+<option value="103">Adipose Tissue (ICRP)</option>
+<option value="104">Air, Dry (near sea level)</option>
+<option value="105">Alanine</option>
+<option value="106">Aluminum Oxide</option>
+<option value="107">Amber</option>
+<option value="108">Ammonia</option>
+<option value="109">Aniline</option>
+<option value="110">Anthracene</option>
+<option value="111">B-100 Bone-Equivalent Plastic</option>
+<option value="112">Bakelite</option>
+<option value="113">Barium Fluoride</option>
+<option value="114">Barium Sulfate</option>
+<option value="115">Benzene</option>
+<option value="116">Beryllium oxide</option>
+<option value="117">Bismuth Germanium oxide</option>
+<option value="118">Blood (ICRP)</option>
+<option value="119">Bone, Compact (ICRU)</option>
+<option value="120">Bone, Cortical (ICRP)</option>
+<option value="121">Boron Carbide</option>
+<option value="122">Boron Oxide</option>
+<option value="123">Brain (ICRP)</option>
+<option value="124">Butane</option>
+<option value="125">N-Butyl Alcohol</option>
+<option value="126">C-552 Air-Equivalent Plastic</option>
+<option value="127">Cadmium Telluride</option>
+<option value="128">Cadmium Tungstate</option>
+<option value="129">Calcium Carbonate</option>
+<option value="130">Calcium Fluoride</option>
+<option value="131">Calcium Oxide</option>
+<option value="132">Calcium Sulfate</option>
+<option value="133">Calcium Tungstate</option>
+<option value="134">Carbon Dioxide</option>
+<option value="135">Carbon Tetrachloride</option>
+<option value="136">Cellulose Acetate, Cellophane</option>
+<option value="137">Cellulose Acetate Butyrate</option>
+<option value="138">Cellulose Nitrate</option>
+<option value="139">Ceric Sulfate Dosimeter Solution</option>
+<option value="140">Cesium Fluoride</option>
+<option value="141">Cesium Iodide</option>
+<option value="142">Chlorobenzene</option>
+<option value="143">Chloroform</option>
+<option value="144">Concrete, Portland</option>
+<option value="145">Cyclohexane</option>
+<option value="146">1,2-Ddihlorobenzene</option>
+<option value="147">Dichlorodiethyl Ether</option>
+<option value="148">1,2-Dichloroethane</option>
+<option value="149">Diethyl Ether</option>
+<option value="150">N,N-Dimethyl Formamide</option>
+<option value="151">Dimethyl Sulfoxide</option>
+<option value="152">Ethane</option>
+<option value="153">Ethyl Alcohol</option>
+<option value="154">Ethyl Cellulose</option>
+<option value="155">Ethylene</option>
+<option value="156">Eye Lens (ICRP)</option>
+<option value="157">Ferric Oxide</option>
+<option value="158">Ferroboride</option>
+<option value="159">Ferrous Oxide</option>
+<option value="160">Ferrous Sulfate Dosimeter Solution</option>
+<option value="161">Freon-12</option>
+<option value="162">Freon-12B2</option>
+<option value="163">Freon-13</option>
+<option value="164">Freon-13B1</option>
+<option value="165">Freon-13I1</option>
+<option value="166">Gadolinium Oxysulfide</option>
+<option value="167">Gallium Arsenide</option>
+<option value="168">Gel in Photographic Emulsion</option>
+<option value="170">Glass, Lead</option>
+<option value="171">Glass, Plate</option>
+<option value="169">Glass, Pyrex</option>
+<option value="172">Glucose</option>
+<option value="173">Glutamine</option>
+<option value="174">Glycerol</option>
+<option value="175">Guanine</option>
+<option value="176">Gypsum, Plaster of Paris</option>
+<option value="177">N-Heptane</option>
+<option value="178">N-Hexane</option>
+<option value="179">Kapton Polyimide Film</option>
+<option value="180">Lanthanum Oxybromide</option>
+<option value="181">Lanthanum Oxysulfide</option>
+<option value="182">Lead Oxide</option>
+<option value="183">Lithium Amide</option>
+<option value="184">Lithium Carbonate</option>
+<option value="185">Lithium Fluoride</option>
+<option value="186">Lithium Hydride</option>
+<option value="187">Lithium Iodide</option>
+<option value="188">Lithium Oxide</option>
+<option value="189">Lithium Tetraborate</option>
+<option value="190">Lung (ICRP)</option>
+<option value="191">M3 Wax</option>
+<option value="192">Magnesium Carbonate</option>
+<option value="193">Magnesium Fluoride</option>
+<option value="194">Magnesium Oxide</option>
+<option value="195">Magnesium Tetraborate</option>
+<option value="196">Mercuric Iodide</option>
+<option value="197">Methane</option>
+<option value="198">Methanol</option>
+<option value="199">Mix D Wax</option>
+<option value="200">MS20 Tissue Substitute</option>
+<option value="201">Muscle, Skeletal</option>
+<option value="202">Muscle, Striated</option>
+<option value="203">Muscle-Equivalent Liquid, with Sucrose</option>
+<option value="204">Muscle-Equivalent Liquid, without Sucrose</option>
+<option value="205">Naphthalene</option>
+<option value="206">Nitrobenzene</option>
+<option value="207">Nitrous Oxide</option>
+<option value="208">Nylon, Du Pont ELVAmide 8062</option>
+<option value="209">Nylon, type 6 and type 6/6</option>
+<option value="210">Nylon, type 6/10</option>
+<option value="211">Nylon, type 11 (Rilsan)</option>
+<option value="212">Octane, Liquid</option>
+<option value="213">Paraffin Wax</option>
+<option value="214">N-Pentane</option>
+<option value="215">Photographic Emulsion</option>
+<option value="216">Plastic Scintillator (Vinyltoluene based)</option>
+<option value="217">Plutonium Dioxide</option>
+<option value="218">Polyacrylonitrile</option>
+<option value="219">Polycarbonate (Makrolon, Lexan)</option>
+<option value="220">Polychlorostyrene</option>
+<option value="221">Polyethylene</option>
+<option value="222">Polyethylene Terephthalate (Mylar)</option>
+<option value="223">Polymethyl Methacralate (Lucite, Perspex)</option>
+<option value="224">Polyoxymethylene</option>
+<option value="225">Polypropylene</option>
+<option value="226">Polystyrene</option>
+<option value="227">Polytetrafluoroethylene (Teflon<sup>®</sup>)</option>
+<option value="228">Polytrifluorochloroethylene</option>
+<option value="229">Polyvinyl Acetate</option>
+<option value="230">Polyvinyl Alcohol</option>
+<option value="231">Polyvinyl Butyral</option>
+<option value="232">Polyvinyl Chloride</option>
+<option value="233">Polyvinylidene Chloride, Saran</option>
+<option value="234">Polyvinylidene Fluoride</option>
+<option value="235">Polyvinyl Pyrrolidone</option>
+<option value="236">Potassium Iodide</option>
+<option value="237">Potassium Oxide</option>
+<option value="238">Propane</option>
+<option value="239">Propane, Liquid</option>
+<option value="240">N-Propyl Alcohol</option>
+<option value="241">Pyridine</option>
+<option value="242">Rubber, Butyl</option>
+<option value="243">Rubber, Natural</option>
+<option value="244">Rubber, Neoprene</option>
+<option value="245">Silicon Dioxide</option>
+<option value="246">Silver Bromide</option>
+<option value="247">Silver Chloride</option>
+<option value="248">Silver Halides in Photographic Emulsion</option>
+<option value="249">Silver Iodide</option>
+<option value="250">Skin (ICRP)</option>
+<option value="251">Sodium Carbonate</option>
+<option value="252">Sodium Iodide</option>
+<option value="253">Sodium Monoxide</option>
+<option value="254">Sodium Nitrate</option>
+<option value="255">Stilbene</option>
+<option value="256">Sucrose</option>
+<option value="257">Terphenyl</option>
+<option value="258">Testes (ICRP)</option>
+<option value="259">Tetrachloroethylene</option>
+<option value="260">Thallium Chloride</option>
+<option value="261">Tissue, Soft (ICRP)</option>
+<option value="262">Tissue, Soft (ICRU four-component)</option>
+<option value="263">Tissue-Equivalent GAS (Methane based)</option>
+<option value="264">Tissue-Equivalent GAS (Propane based)</option>
+<option value="265">Titanium Dioxide</option>
+<option value="266">Toluene</option>
+<option value="267">Trichloroethylene</option>
+<option value="268">Triethyl Phosphate</option>
+<option value="269">Tungsten Hexafluoride</option>
+<option value="270">Uranium Dicarbide</option>
+<option value="271">Uranium Monocarbide</option>
+<option value="272">Uranium Oxide</option>
+<option value="273">Urea</option>
+<option value="274">Valine</option>
+<option value="275">Viton<sup>®</sup> Fluoroelastomer</option>
+<option value="276">Water, Liquid</option>
+<option value="277">Water Vapor</option>
+<option value="278">Xylene</option>
+</select><br>
+<B>or enter a <a href="ESTAR-u.html">unique material</a></b></DIV>
+</td></tr>
+<tr><td valign=top align=left>
+<table border cellpadding=5><tr><td>
+<input type="radio" name="GraphType" value="StopPwr" checked
+ onClick=" 
+   document.forms[0].elements[2].checked=true; 
+   document.forms[0].elements[3].checked=false; 
+   document.forms[0].elements[4].checked=false;
+ ">
+<b>Graph stopping power:</b><br>
+&nbsp;&nbsp;&nbsp;
+<input type="checkbox" name="Graph3" checked
+ onClick=" document.forms[0].elements[1].checked=true; if ((document.forms[0].elements[2].checked == false)  && (document.forms[0].elements[3].checked == false) && (document.forms[0].elements[4].checked == false)) { document.forms[0].elements[3].checked = true; }
+ ">
+Total Stopping Power<br>
+&nbsp;&nbsp;&nbsp;
+<input type="checkbox" name="Graph1"
+ onClick=" document.forms[0].elements[1].checked=true; if ((document.forms[0].elements[2].checked == false)  && (document.forms[0].elements[3].checked == false) && (document.forms[0].elements[4].checked == false)) { document.forms[0].elements[4].checked = true; }
+ ">
+Collision Stopping Power<br>
+&nbsp;&nbsp;&nbsp;
+<input type="checkbox" name="Graph2"
+ onClick=" document.forms[0].elements[1].checked=true; if ((document.forms[0].elements[2].checked == false)  && (document.forms[0].elements[3].checked == false) && (document.forms[0].elements[4].checked == false)) { document.forms[0].elements[2].checked = true; }
+ ">
+Radiative Stopping Power<br>
+</td></tr><tr><td>
+<input type="radio" name="GraphType" value="Delta"
+ onClick=" document.forms[0].elements[2].checked=false; document.forms[0].elements[3].checked=false; document.forms[0].elements[4].checked=false;
+ ">
+<b>Graph density effect parameter</b>
+</td></tr><tr><td>
+<input type="radio" name="GraphType" value="Range"
+ onClick=" document.forms[0].elements[2].checked=false; document.forms[0].elements[3].checked=false; document.forms[0].elements[4].checked=false;
+ ">
+<b>Graph CSDA range</b>
+</td></tr><tr><td>
+<input type="radio" name="GraphType" value="Radiation"
+ onClick=" document.forms[0].elements[2].checked=false; document.forms[0].elements[3].checked=false; document.forms[0].elements[4].checked=false;
+ ">
+<b>Graph radiation yield</b>
+</td></tr><tr><td>
+<input type="radio" name="GraphType" value="None"
+ onClick=" document.forms[0].elements[2].checked=false; document.forms[0].elements[3].checked=false; document.forms[0].elements[4].checked=false;
+ ">
+<b>No graph</b><br>
+</td></tr></table>
+</td>
+<td ALIGN="left">
+<b>Additional Energies (optional)</b>:
+<p>
+Use energies from a file*<br>
+<input type=file size=36 name="userfile">
+<p><b>or</b><p>
+Use energies entered below (one per line)<br>
+<textarea name="Energies" rows=4 cols=15></textarea>
+ &#160; &#160;
+<input type="checkbox" checked name="ShowDefault" value="on"> Include default energies<br>
+</td></tr>
+<tr><td colspan="2" align="left">
+<b><i>Note</i></b>: Only stopping powers and the density effect parameter will be calculated if additional energies are used.<p>
+<input type=submit value="Submit"> <input type=reset value="Reset"></td></tr>
+</table></DIV>
+</form>
+* Your browser must be file-upload compatible.
+
+<HR SIZE="1" NOSHADE>
+
+<a href="contents.html"><img src="../Images/contents.gif" alt="Contents" 
+width="219" height="50" border="0"></a>
+
+</body>
+</html>

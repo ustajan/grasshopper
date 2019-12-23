@@ -10,11 +10,11 @@ goal is to allow users with no C++ and Geant4 knowledge *quickly* set up and run
 Author:  		Areg Danagoulian
 
 Creation time:  11/2015  
-Last update:    continous
+Last update:    Continuous since 11/2015
 
 For copyright and licensing see files COPYRIGHT and LICENSE.
 
-To install
+To Install
 ==
 The user is required to have the following
 
@@ -25,28 +25,29 @@ The user is required to have the following
 	* ROOT -- optional.  Has been tested with version 6.16.  If you do not have ROOT the make process will recognize that and exclude 		it from the build.
 	* When building grasshopper, the compiler might not find the GDML header files.  In that case just determine the actual file directories, and add them to the include list by appending `-I/directory_to_headers` to the `CPPFLAGS` env variable.
 
-__Important note__:  these days geant4 primarily works via the cmake framework.  However grasshopper uses the older Makefile framework.  It is important that you source the appropriate shell script in geant4 directories to enable all the env. variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
+__Important note__:  these days geant4 primarily works via the cmake framework.  However Grasshopper uses the older Makefile framework.  It is important that you source the appropriate shell script in Geant4 directories to enable all the env. Variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
 
 `. /usr/local/geant4/geant4.10.05-install/share/Geant4-10.5.0/geant4make/geant4make.sh`
 
-If all the regular geant4 installations and configurations are ready, then the user can get the code by
+If all the regular Geant4 installations and configurations are ready, then the user can get the code by
 
 `> git clone git@github.com:ustajan/grasshopper.git`
 
-To build
+To Build
 ==
 `> cd grasshopper`
 
 `> make`
 
-To run
+To Run
 ==
 `> grasshopper input.gdml output.root`
 
 
 Tutorial
 ==
-The best way to learn how to use grasshopper is by using the tutorial on the project wiki, [here](https://github.com/ustajan/grasshopper/wiki).  You can also get there by going to Wiki link above.
+The best way to learn how to use grasshopper is by using the tutorial on the project wiki, 
+[here](https://github.com/ustajan/grasshopper/wiki).  You can also get there by going to Wiki link above.
 
 Input
 ==
@@ -64,14 +65,14 @@ Output
 The code will generate three files:
 
  * output.root -- The code will always generate a root file, as specified in the input arguments.
- * output.dat  -- depending on the settings in the gdml file, it can also generate a simple ascii file, output.dat,  which can then be read into python/matlab/etc.
+ * output.dat  -- depending on the settings in the gdml file, it can also generate a simple ASCII file, output.dat,  which can then be read into python/matlab/etc.
  * g4_00.wrl.  This is the VRML visualization file.  The settings for this file's content are defined in the gdml file.
    The wrl file can be loaded in paraview (http://www.paraview.org/download/), thus allowing for a rendering of the
    geometries and some particle tracks.
 
-The root output structure (which is identical to the ascii output) can be somewhat complex. The output of the simulation can be
+The root output structure (which is identical to the ASCII output) can be somewhat complex. The output of the simulation can be
 thought of as a table -- where every line is an entry corresponding to a **particular set of information**
-within an event. To visualize the structure of the root output, below is the (reduced) set of entries in the ascii output from a simulation of a 0.5MeV photon hitting a 2" NaI detector:
+within an event. To visualize the structure of the root output, below is the (reduced) set of entries in the ASCII output from a simulation of a 0.5MeV photon hitting a 2" NaI detector:
 
 
   E\_incident(MeV)   E\_deposited(MeV) ...    z_incident   EventID    TrackID   ParticleID   ParticleName  CreatorProcessName   IsEdepositedTotalEntry    IsSurfaceHitTrack
@@ -137,26 +138,28 @@ A few known problems:
    *  EnergyDeposited analysis - providing deposited energy for every event.  Here the code is less sharp - if multiple tracks enter the detector, it will combine their deposited energies.  As long as you specify which particle type's energy deposition is of interest (e.g. electrons for photons, or protons for neutrons) this is sufficiently accurate as most detectors will not be able to time-resolve the multiple hits from tracks that originate from a single track.  This, however can fail for a) very fast detectors or b) when you have a process which produces a low energy electron and a photon.  If you have to deal with complex processes like (b) then grasshopper is probably not the best thing to use (least you want to modify the code or see if various cuts on particle type allow you to isolate individual responses).
  * More importantly, the above circumstance results in some (mostly minor) issues where the user tries to determine the energy deposition for a whole range of energies of incident particle.  If the incident particle creaters an electromagnetic or hadronic shower, then an E_incident vs. E_deposited comparison may yield strange results, as E_deposited>E_incident in some cases - this is due to the fact that E_deposited may have captured deposited energy from multiple tracks, while E_incident is the energy of an individual track. 
 
-To do
+To Do List
 ==
 Below is a prioritized list of future tasks.
 
-	* OUTPUT
-	  + Implement "simple" ascii text output, along with ROOT  -- DONE
-	  + Make the code be able to reliably switch between ROOT (when ROOT is available) and ASCII output -- DONE
-	* Write the python front end to the gdml? <-- need a UROP
-	* Check the physics, by comparing to data and validated geant4 simulations
-	  + Did some basic comparisons of gamma transmission to exp(-mu*x)
-	* automatic wrl generation (even in batch mode), limited to 300 tracks -- DONE
-	* Implement the keeper list, which should allow to dramatically speed up the simulations -- DONE
-	* Clean up the code:
-	  + Replace the char arrays in TTree with actual strings -- DONE
+Output
+- [x] Implement "simple" ASCII text output, along with ROOT 
+- [x] Make the code be able to reliably switch between ROOT (when ROOT is available) and ASCII output
+Front End
+- [ ] Write the python front end to generate the GDML
+- [ ] Check the physics, by comparing to data and validated geant4 simulations
+(this is the main point of the thesis project by J. Miske)
+Visualization
+- [x] Automatic wrl generation (even in batch mode), limited to 300 tracks
+Other
+- [x] Implement the keeper list, which should allow to dramatically speed up the simulations
+- [ ] Replace the char arrays in TTree with actual strings
 
-
-Requirements for the python front end
+ 
+Requirements for the Python front-end
 ==
-The python front end will read in a simple ASCII text file with "human readable" descriptions, parse it,
-populate a gdml file based on some template, and run the geant4 simulation.  The ASCII input file needs
+The Python front end will read in a simple ASCII text file with "human readable" descriptions, parse it,
+populate a GDML file based on some template, and run the Geant4 simulation.  The ASCII input file needs
 to have the following fields and sections
 
 	* Particle Event Generator parameters
