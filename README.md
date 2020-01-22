@@ -1,22 +1,28 @@
-grasshopper
-===========
+# Grasshopper
 
-This application is based on the geant4 development toolkit, which allows to program complex particle
-tracking (e.g. gamma, electrons, protons, etc) and particle-matter interaction MC simulations.
-Grasshopper is a simple geant4 application, where all the geometries and even generators parameters are 
-defined in a gdml file, with the purpose of setting up quick and simple simulations.  The
-goal is to allow users with no C++ and Geant4 knowledge *quickly* set up and run simulations.
+This application is based on the Geant4 development toolkit, which allows to program complex particle
+tracking (e.g. gamma, electrons, protons, etc) and particle-matter interaction, Monte Carlo (MC) simulations.
+Grasshopper is a simple Geant4 application, where all the geometries and even generators parameters are 
+defined in a Geometry Description Markup Language (GDML) file, with the purpose of setting up quick and 
+simple simulations.  The goal is to allow users with no C++ and Geant4 knowledge quickly set up and run simulations.
 
 Author:  		Areg Danagoulian
 
 Creation time:  11/2015  
-Last update:    Continuous since 11/2015
+Last update:    Continuous Development since 11/2015
 
 For copyright and licensing see files COPYRIGHT and LICENSE.
 
-To Install
-==
-The user is required to have the following
+## External Documentation
+A ReadTheDocs resources on Grasshopper is available at: https://grasshopper.readthedocs.io/en/latest/.
+
+This website seeks to be an exhaustive resource on using Grasshopper. Please reach out if you have 
+improvements in mind.
+
+
+## Installation
+
+The user is required to have the following on their machine
 
 	* xerces.  This will allow the GDML parser capability.
 	* Built and installed geant4 libraries.  Also, in the cmake stage, the following flag needs to be passed:
@@ -25,7 +31,7 @@ The user is required to have the following
 	* ROOT -- optional.  Has been tested with version 6.16.  If you do not have ROOT the make process will recognize that and exclude 		it from the build.
 	* When building grasshopper, the compiler might not find the GDML header files.  In that case just determine the actual file directories, and add them to the include list by appending `-I/directory_to_headers` to the `CPPFLAGS` env variable.
 
-__Important note__:  these days geant4 primarily works via the cmake framework.  However Grasshopper uses the older Makefile framework.  It is important that you source the appropriate shell script in Geant4 directories to enable all the env. Variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
+__Important note__:  These days Geant4 primarily works via the cmake framework.  However Grasshopper uses the older Makefile framework.  It is important that you source the appropriate shell script in Geant4 directories to enable all the env. Variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
 
 `. /usr/local/geant4/geant4.10.05-install/share/Geant4-10.5.0/geant4make/geant4make.sh`
 
@@ -33,21 +39,25 @@ If all the regular Geant4 installations and configurations are ready, then the u
 
 `> git clone git@github.com:ustajan/grasshopper.git`
 
-To Build
-==
-`> cd grasshopper`
+## Building Grasshopper
 
-`> make`
+```
+$ cd grasshopper/
+$ make -j4
+```
 
-To Run
-==
-`> grasshopper input.gdml output.root`
+## Running Grasshopper
 
+```
+$ grasshopper input.gdml output.root
+```
 
 Tutorial
 ==
 The best way to learn how to use grasshopper is by using the tutorial on the project wiki, 
-[here](https://github.com/ustajan/grasshopper/wiki).  You can also get there by going to Wiki link above.
+[here](https://github.com/ustajan/grasshopper/wiki).  
+
+You can also get there by going to Wiki link above.
 
 Input
 ==

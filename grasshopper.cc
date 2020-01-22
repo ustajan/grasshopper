@@ -1,10 +1,11 @@
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// Author:
+// Authors:
 // Areg Danagoulian, 2015
+// Jacob Miske, 2020
 // MIT, NSE
 // Input:
 //    gdml file
-//    the root output file.  If text output requested in gdml input, a .dat ASCII file will be produced instead
+//    the root output filename.  If text output requested in gdml input, a .dat ASCII file will be produced instead
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -22,9 +23,6 @@
 // * statement, and all its terms.                                    *
 // ********************************************************************
 //
-
-
-
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 #include "G4UIterminal.hh"
@@ -65,7 +63,7 @@
 
 G4bool drawEvent;
 G4String RootOutputFile;
-
+// The Geant4 tool to read/parse a GDML file
 G4GDMLParser parser;
 
 #ifdef G4VIS_USE
@@ -78,7 +76,6 @@ G4GDMLParser parser;
 
 int main(int argc,char** argv)
 {
-
   bool commandlineseed = false;
 	G4int seed;
 
@@ -95,56 +92,39 @@ int main(int argc,char** argv)
 		else
 		  UI_flag = atoi(argv[3]); //do we want an interactive interface?
 
-    if (argc==5)
-    {
+    if (argc==5) {
       seed = atoi(argv[4]);
       commandlineseed = true;
     }
-	}
-	else if(argc==1){
+	} else if(argc==1) {
 		std::cout<<"\n grasshopper <gdml_configuration_file> <root_output_filename> <User Interface y/n flag> \n\n";
 		parser.Read("default.gdml");
 		UI_flag=0;
 		RootOutputFile = "test.root";
-	}
-	else{
+	} else {
 		std::cout<<"\n grasshopper <gdml_configuration_file> <root_output_filename> <User Interface y/n flag> \n\n";
 		return -1;
 	}
-
 	G4int run_evnt;
-
   if (!commandlineseed)
   	seed = parser.GetConstant("RandomGenSeed");
-
-
-
 	run_evnt = parser.GetConstant("EventsToRun");
-
 	// output configuration information
 	std::cout<<"\nRandomGenSeed: "<<seed;
 	std::cout<<"\nEventsToRun: "<<run_evnt;
-
 	// choose the Random engine
 	CLHEP::HepRandom::setTheEngine(new CLHEP::RanluxEngine);
 	CLHEP::HepRandom::setTheSeed(seed);
-
 	// Construct the default run manager
 	G4RunManager* runManager = new G4RunManager;
-
 	// start filling ntuple
 	Analysis *analysis = new Analysis();
-
 	// exporting geometry from specified GDML file
 	runManager->SetUserInitialization(new DetectorConstruction(parser.GetWorldVolume()));
-
 	runManager->SetUserInitialization(new physicsList(true,false)); //<- DADE's version, not very different from DMX (used to be (false,false))
 	//	runManager->SetUserInitialization(new DMXPhysicsList);
-
 	G4UIsession* session=0;
-
 	// G4UIterminal is a (dumb) terminal.
-
 //#ifdef G4UI_USE_XM
 //	session = new G4UIXm(argc,argv);
 //#else           
@@ -154,37 +134,25 @@ int main(int argc,char** argv)
 //	session = new G4UIterminal();
 //#endif
 //#endif
-
-
-
 #ifdef G4VIS_USE
 	// visualization manager
 	G4VisManager* visManager = new VisManager;
 	visManager->Initialize();
-
 	G4TrajectoryDrawByParticleID* model = new G4TrajectoryDrawByParticleID;
-
 	model->SetDefault("cyan");
 	model->Set("neutron","green");
 	model->Set("gamma", "red");
 	model->Set("e+", "magenta");
 	model->Set("e-", "blue");
-
 	visManager->RegisterModel(model);
 	visManager->SelectTrajectoryModel(model->Name());
 #endif
-
 	// set mandatory user action class
 	runManager->SetUserAction(new PrimaryGeneratorAction);
-
-
-
 	runManager->SetUserAction(new RunAction);
 	runManager->SetUserAction(new EventAction);
 	runManager->SetUserAction(new SteppingAction);
 	runManager->SetUserAction(new StackingAction);
-
-
 	// Initialize G4 kernel
 	runManager->Initialize();
 
@@ -217,13 +185,10 @@ int main(int argc,char** argv)
 		}
 		runManager->BeamOn(run_evnt); //now do the big run
 	}
-
 	if(UI_flag==1)
 	{
-
-		// get the pointer to the User Interface manager
+		// Get the pointer to the User Interface manager
 		G4UImanager* UI = G4UImanager::GetUIpointer();
-
 		if (session)   // Define UI session for interactive mode.
 		{
 			// G4UIterminal is a (dumb) terminal.
@@ -234,36 +199,26 @@ int main(int argc,char** argv)
 #endif
 			session->SessionStart();
 			delete session;
-		}
-		else           // Batch mode
-		{
+		} else {
+		    // Batch mode
 			G4String command = "/control/execute vis.mac";
 			UI->ApplyCommand(command);
 		}
 	}
-
-
 	if (analysis == AnalysisManager::GetAnalysisManager())
 		delete analysis;
-
-	// job termination
+	// Job termination
 #ifdef G4VIS_USE
 	delete visManager;
 #endif
-
 	delete runManager;
-
 	G4int stop_time = time(NULL);
 	t2=clock();
-
 	std::cout << " The initialization took:\t" << beam_on_start_time - start_time <<"s"<< std::endl;
 	std::cout<<" The MC took:\t\t" << stop_time - beam_on_start_time <<"s"<< std::endl;
-
 	std::cout << " The initialization took:\t" 	<< (float)(t1-t0)/CLOCKS_PER_SEC <<" CPU seconds"<< std::endl;
 	std::cout <<" The MC took:\t\t" 			<< (float)(t2-t1)/CLOCKS_PER_SEC <<" CPU seconds"<< std::endl;
-
 	G4cout << " Run completed!"<< G4endl;
-
 	return 0;
 }
 

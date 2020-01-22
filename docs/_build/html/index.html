@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Grasshopper: A Geant4 Simulation Program! &mdash; Grasshopper Docs</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="getting_started/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="#" class="icon icon-home"> Grasshopper
+          
+
+          
+            
+            <img src="_static/grasshopper_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes/index.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methods/index.html">Theory and Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usersguide/index.html">Users Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devguide/index.html">Dev Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io_formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="publications.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License Agreement</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Grasshopper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Grasshopper: A Geant4 Simulation Program!</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="grasshopper-a-geant4-simulation-program">
+<h1>Grasshopper: A Geant4 Simulation Program!<a class="headerlink" href="#grasshopper-a-geant4-simulation-program" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="current-work">
+<h1>Current Work<a class="headerlink" href="#current-work" title="Permalink to this headline">¶</a></h1>
+<p>Current particle physics simulations take place largely within small communities developing limited tools for specific areas of study.
+These particle simulations are essential to evaluating environments outside of the realm of experimentation in the radiation sciences.
+While multi-use toolkits exist for particles simulation (such as MCNP or SRIM), these computational tools are often difficult for untrained users to adapt into their projects.
+Geant4 is one such toolkit used widely by physicists in radiology, fission reactor work, and space irradiation studies among many other fields [1].
+Geant4 can be adapted for use in other programs using the methods supplied by the open source code provided.
+In addition, Geant4 relies on various databases shared by institutes such as NIST.
+Unfortunately, Geant4 and the related libraries are not a common program to install and use for scientific simulation users or the general public interested in this work [2].
+However, a widely applicable simulation engine using Geant4, called Grasshopper, has been developed to allow for generating straightforward Monte Carlo simulations for engineers
+and scientists in a wide range of fields.</p>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started/index.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/index.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/index.html#for-mit-nuclear-science-students">For MIT Nuclear Science Students</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="getting_started/index.html#installing-geant4-on-your-own-machine">Installing Geant4 on your own machine</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/index.html#on-linux-ubuntu">On Linux (Ubuntu)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/index.html#on-mac">On Mac</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started/index.html#on-pc">On PC</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes/index.html">Release Notes</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="methods/index.html">Theory and Methodology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="methods/index.html#theory">Theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="methods/index.html#gdml">GDML</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="methods/index.html#references">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usersguide/index.html">Users Guide</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="devguide/index.html">Dev Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="devguide/index.html#grasshopper-specific-files">Grasshopper Specific Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pythonapi/index.html">Python API</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="io_formats/index.html">Formats</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="publications.html">Publications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="publications.html#overviews">Overviews</a></li>
+<li class="toctree-l2"><a class="reference internal" href="publications.html#benchmarking">Benchmarking</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License Agreement</a></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="getting_started/index.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, J. Miske, A. Danagoulian
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

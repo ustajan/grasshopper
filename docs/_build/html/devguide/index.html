@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dev Guide &mdash; Grasshopper Docs</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Python API" href="../pythonapi/index.html" />
+    <link rel="prev" title="Users Guide" href="../usersguide/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Grasshopper
+          
+
+          
+            
+            <img src="../_static/grasshopper_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes/index.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../methods/index.html">Theory and Methodology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usersguide/index.html">Users Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dev Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#grasshopper-specific-files">Grasshopper Specific Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../pythonapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../io_formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License Agreement</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Grasshopper</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Dev Guide</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/devguide/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dev-guide">
+<span id="devguide"></span><h1>Dev Guide<a class="headerlink" href="#dev-guide" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p>This Dev Guide serves to brief Grasshopper users on the functionality of each file
+in the codebase of the Grasshopper program. For devs, the shorthand for Grasshopper
+will be GRSHPR, a recursive acronym for “Grasshopper Realistically Simulates High-Energy
+Particles &amp; Radiation”.</p>
+<p># Bugs
+Grasshoppers hate bugs. The code has been tested fairly well, however there are probably still some bugs in it.
+If you run against a strange behavior, please prepare a brief report with the following information</p>
+<ul class="simple">
+<li><p>the platform you are running it on</p></li>
+<li><p>the gdml file (attach it)</p></li>
+<li><p>a description of the symptoms, along with the relevant part of the screen output</p></li>
+</ul>
+<p>Email the bug report to <a class="reference external" href="mailto:aregjan&#37;&#52;&#48;mit&#46;edu">mailto:aregjan<span>&#64;</span>mit<span>&#46;</span>edu</a>.</p>
+<p>Please generate a GitHub pull request if you believe that you have source code changes
+to make in order to avoid the bug.</p>
+<div class="section" id="grasshopper-specific-files">
+<h2>Grasshopper Specific Files<a class="headerlink" href="#grasshopper-specific-files" title="Permalink to this headline">¶</a></h2>
+<p>The base of Grasshopper which interacts with G4 is written in C++.</p>
+<p>The files included in the src/ and include/ directories from root are as follows.</p>
+<p>src/</p>
+<p>Analysis.cc</p>
+<p>AnalysisManager.cc</p>
+<p>DADEphysicsList.cc</p>
+<p>DMXMaxTimeCuts.cc</p>
+<p>DMXMinEkineCuts.cc</p>
+<p>DMXPhysicsList.cc</p>
+<p>EventAction.cc</p>
+<p>EventActionMessenger.cc</p>
+<p>GammaNuclearPhysics.cc</p>
+<p>PhysicsList.cc</p>
+<p>PrimaryGeneratorAction.cc</p>
+<p>RunAction.cc</p>
+<p>StackingAction.cc</p>
+<p>SteppingAction.cc</p>
+<p>VisManager.cc</p>
+<p>src/</p>
+<p>Analysis.hh</p>
+<p>AnalysisManager.hh</p>
+<p>DADEphysicsList.hh</p>
+<p>DetectorConstruction.hh</p>
+<p>DMXMaxTimeCuts.hh</p>
+<p>DMXMinEkineCuts.hh</p>
+<p>DMXPhysicsList.hh</p>
+<p>DMXSpecialCuts.hh</p>
+<p>EventAction.hh</p>
+<p>EventActionMessenger.hh</p>
+<p>GammaNuclearPhysics.hh</p>
+<p>PhysicsList.hh</p>
+<p>PhysicsListLowEnergy.hh</p>
+<p>PrimaryGeneratorAction.hh</p>
+<p>RunAction.hh</p>
+<p>StackingAction.hh</p>
+<p>SteppingAction.hh</p>
+<p>VisManager.hh</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../pythonapi/index.html" class="btn btn-neutral float-right" title="Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../usersguide/index.html" class="btn btn-neutral float-left" title="Users Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, J. Miske, A. Danagoulian
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

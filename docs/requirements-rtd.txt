@@ -2,3 +2,5 @@ sphinx-numfig
 jupyter
 sphinxcontrib-katex
 sphinxcontrib-svg2pdfconverter
+sphinx_rtd_theme
+recommonmark

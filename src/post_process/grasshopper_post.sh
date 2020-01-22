@@ -3,5 +3,5 @@
 
 python main.py
 
-python GrasshopperScript.py
+python OutputProcessor.py
 
