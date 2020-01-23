@@ -175,6 +175,24 @@ class TestRavelUnravelIndex(object):
         assert_raises_regex(
             ValueError, "out of bounds", np.unravel_index, [1], ())
 
+    @pytest.mark.parametrize("mode", ["clip", "wrap", "raise"])
+    def test_empty_array_ravel(self, mode):
+        res = np.ravel_multi_index(
+                    np.zeros((3, 0), dtype=np.intp), (2, 1, 0), mode=mode)
+        assert(res.shape == (0,))
+
+        with assert_raises(ValueError):
+            np.ravel_multi_index(
+                    np.zeros((3, 1), dtype=np.intp), (2, 1, 0), mode=mode)
+
+    def test_empty_array_unravel(self):
+        res = np.unravel_index(np.zeros(0, dtype=np.intp), (2, 1, 0))
+        # res is a tuple of three empty arrays
+        assert(len(res) == 3)
+        assert(all(a.shape == (0,) for a in res))
+
+        with assert_raises(ValueError):
+            np.unravel_index([1], (2, 1, 0))
 
 class TestGrid(object):
     def test_basic(self):
@@ -190,7 +208,7 @@ class TestGrid(object):
         assert_almost_equal(a[1]-a[0], 2.0/9.0, 11)
 
     def test_linspace_equivalence(self):
-        y, st = np.linspace(2, 10, retstep=1)
+        y, st = np.linspace(2, 10, retstep=True)
         assert_almost_equal(st, 8/49.0)
         assert_array_almost_equal(y, mgrid[2:10:50j], 13)
 

@@ -542,15 +542,18 @@ def average(a, axis=None, weights=None, returned=False):
         Data to be averaged.
         Masked entries are not taken into account in the computation.
     axis : int, optional
-        Axis along which to average `a`. If `None`, averaging is done over
+        Axis along which to average `a`. If None, averaging is done over
         the flattened array.
     weights : array_like, optional
         The importance that each element has in the computation of the average.
         The weights array can either be 1-D (in which case its length must be
         the size of `a` along the given axis) or of the same shape as `a`.
         If ``weights=None``, then all data in `a` are assumed to have a
-        weight equal to one.   If `weights` is complex, the imaginary parts
-        are ignored.
+        weight equal to one.  The 1-D calculation is::
+
+            avg = sum(a * weights) / sum(weights)
+
+        The only constraint on `weights` is that `sum(weights)` must not be 0.
     returned : bool, optional
         Flag indicating whether a tuple ``(result, sum of weights)``
         should be returned as output (True), or just the result (False).
@@ -934,7 +937,7 @@ def compress_cols(a):
         raise NotImplementedError("compress_cols works for 2D arrays only.")
     return compress_rowcols(a, 1)
 
-def mask_rows(a, axis=None):
+def mask_rows(a, axis=np._NoValue):
     """
     Mask rows of a 2D array that contain masked values.
 
@@ -976,9 +979,15 @@ def mask_rows(a, axis=None):
       fill_value=1)
 
     """
+    if axis is not np._NoValue:
+        # remove the axis argument when this deprecation expires
+        # NumPy 1.18.0, 2019-11-28
+        warnings.warn(
+            "The axis argument has always been ignored, in future passing it "
+            "will raise TypeError", DeprecationWarning, stacklevel=2)
     return mask_rowcols(a, 0)
 
-def mask_cols(a, axis=None):
+def mask_cols(a, axis=np._NoValue):
     """
     Mask columns of a 2D array that contain masked values.
 
@@ -1019,6 +1028,12 @@ def mask_cols(a, axis=None):
       fill_value=1)
 
     """
+    if axis is not np._NoValue:
+        # remove the axis argument when this deprecation expires
+        # NumPy 1.18.0, 2019-11-28
+        warnings.warn(
+            "The axis argument has always been ignored, in future passing it "
+            "will raise TypeError", DeprecationWarning, stacklevel=2)
     return mask_rowcols(a, 1)
 
 

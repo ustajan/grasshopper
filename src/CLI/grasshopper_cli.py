@@ -1,20 +1,17 @@
 # Copyright 2019
 #!/usr/bin/env python3
-
-# For OS level libs
 import os
 import cmd
 import sys
 import json
 import getpass
-
-
-# For grasshopper specific functions
-from grasshopper_funcs.ls_func import Ls
-from grasshopper_funcs.status_func import Status
-from grasshopper_funcs.run_sim_func import RunSim
-
-# For Utilities
+import datetime
+# Grasshopper specific functions
+from grasshopper_funcs.ListTools import ListTools
+from grasshopper_funcs.StatusFunction import StatusFunction
+from grasshopper_funcs.RunSim import RunSim
+from grasshopper_funcs.OutputProcessor import OutputProcessor
+# Utilities
 import urllib3
 
 # For design of CLI
@@ -23,15 +20,19 @@ from terminaltables import SingleTable  # For creating tables
 
 
 class Grasshopper(cmd.Cmd):
-    """A simple cmd application using cmd. For the STW grasshopper project."""
+    """
+    A simple cmd application using cmd. For the STW grasshopper project.
+    """
     custom_fig = Figlet(font='slant')
     intro = 'Welcome to the Grasshopper shell.   Type help or ? to list commands.\n'
     prompt = '> '
     file = None
     print(custom_fig.renderText('  Grasshopper'))
 
-    def do_ls(self, arg):
-        """Lists the current sensors"""
+    def do_list_tools(self, arg):
+        """
+        Lists the current sensors
+        """
         def list_sensors():
             """
             Grasshopper ls: Runs the sensors list generation.
@@ -41,7 +42,7 @@ class Grasshopper(cmd.Cmd):
             custom_fig = Figlet(font='slant')
             print(custom_fig.renderText(' Grasshopper sims '))
         list_sensors()
-        list_sensor = Ls()
+        list_sensor = ListTools()
         table = list_sensor.sensor_table()
         print(table)
 
@@ -57,14 +58,14 @@ class Grasshopper(cmd.Cmd):
             custom_fig = Figlet(font='slant')
             print(custom_fig.renderText('Grasshopper status'))
         status()
-        list_status = Status()
+        list_status = StatusFunction()
         list_status.status_table()
 
-    def do_run_sim(self, arg):
+    def do_run_simulation(self, arg):
         """
-        Grasshopper status: Runs a specific sensor.
+        Grasshopper tool: Runs a specific simulation.
 
-        Returns selector tool to pick sensor to run data from grasshopper unit.
+        Returns selector tool to pick simulation to run from grasshopper.
         """
         def run_sim():
             'Runs a given sensor'
@@ -82,9 +83,9 @@ class Grasshopper(cmd.Cmd):
             import datetime
             try:
                 print('Time: ')
-                print(str(datetime.time()) + '\n')
+                print('{0}\n'.format(str(datetime.time())))
                 print('Date: ')
-                print(str(datetime.date()) + '\n')
+                print('{0}\n'.format(str(datetime.date())))
             except TypeError:
                 print('TypeError Occurred, sorry about that.')
         time()
@@ -101,9 +102,9 @@ class Grasshopper(cmd.Cmd):
             print("Files in '%s': %s" % (cwd, files))
         whoami()
 
-    def do_bye(self, arg):
+    def do_exit(self, arg):
         """
-        Stop cmd, close the grasshopper window, and exit:  BYE
+        Stop cmd, close the grasshopper window, and exit program
         """
         print('Thank you for using Grasshopper')
         self.close()

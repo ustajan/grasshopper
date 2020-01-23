@@ -627,7 +627,7 @@ def hermder(c, m=1, scl=1, axis=0):
     array([1., 2., 3.])
 
     """
-    c = np.array(c, ndmin=1, copy=1)
+    c = np.array(c, ndmin=1, copy=True)
     if c.dtype.char in '?bBhHiIlLqQpP':
         c = c.astype(np.double)
     cnt = pu._deprecate_as_int(m, "the order of derivation")
@@ -738,7 +738,7 @@ def hermint(c, m=1, k=[], lbnd=0, scl=1, axis=0):
     array([ 1.66666667, -0.5       ,  0.125     ,  0.08333333,  0.0625    ]) # may vary
 
     """
-    c = np.array(c, ndmin=1, copy=1)
+    c = np.array(c, ndmin=1, copy=True)
     if c.dtype.char in '?bBhHiIlLqQpP':
         c = c.astype(np.double)
     if not np.iterable(k):
@@ -846,7 +846,7 @@ def hermval(x, c, tensor=True):
            [115.,  203.]])
 
     """
-    c = np.array(c, ndmin=1, copy=0)
+    c = np.array(c, ndmin=1, copy=False)
     if c.dtype.char in '?bBhHiIlLqQpP':
         c = c.astype(np.double)
     if isinstance(x, (tuple, list)):
@@ -1130,7 +1130,7 @@ def hermvander(x, deg):
     if ideg < 0:
         raise ValueError("deg must be non-negative")
 
-    x = np.array(x, copy=0, ndmin=1) + 0.0
+    x = np.array(x, copy=False, ndmin=1) + 0.0
     dims = (ideg + 1,) + x.shape
     dtyp = x.dtype
     v = np.empty(dims, dtype=dtyp)
@@ -1193,7 +1193,7 @@ def hermvander2d(x, y, deg):
     .. versionadded:: 1.7.0
 
     """
-    return pu._vander2d(hermvander, x, y, deg)
+    return pu._vander_nd_flat((hermvander, hermvander), (x, y), deg)
 
 
 def hermvander3d(x, y, z, deg):
@@ -1247,7 +1247,7 @@ def hermvander3d(x, y, z, deg):
     .. versionadded:: 1.7.0
 
     """
-    return pu._vander3d(hermvander, x, y, z, deg)
+    return pu._vander_nd_flat((hermvander, hermvander, hermvander), (x, y, z), deg)
 
 
 def hermfit(x, y, deg, rcond=None, full=False, w=None):

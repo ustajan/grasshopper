@@ -59,14 +59,14 @@ __all__ = [
     'choose', 'clip', 'common_fill_value', 'compress', 'compressed',
     'concatenate', 'conjugate', 'convolve', 'copy', 'correlate', 'cos', 'cosh',
     'count', 'cumprod', 'cumsum', 'default_fill_value', 'diag', 'diagonal',
-    'diff', 'divide', 'dump', 'dumps', 'empty', 'empty_like', 'equal', 'exp',
+    'diff', 'divide', 'empty', 'empty_like', 'equal', 'exp',
     'expand_dims', 'fabs', 'filled', 'fix_invalid', 'flatten_mask',
     'flatten_structured_array', 'floor', 'floor_divide', 'fmod',
     'frombuffer', 'fromflex', 'fromfunction', 'getdata', 'getmask',
     'getmaskarray', 'greater', 'greater_equal', 'harden_mask', 'hypot',
     'identity', 'ids', 'indices', 'inner', 'innerproduct', 'isMA',
     'isMaskedArray', 'is_mask', 'is_masked', 'isarray', 'left_shift',
-    'less', 'less_equal', 'load', 'loads', 'log', 'log10', 'log2',
+    'less', 'less_equal', 'log', 'log10', 'log2',
     'logical_and', 'logical_not', 'logical_or', 'logical_xor', 'make_mask',
     'make_mask_descr', 'make_mask_none', 'mask_or', 'masked',
     'masked_array', 'masked_equal', 'masked_greater',
@@ -77,7 +77,7 @@ __all__ = [
     'maximum_fill_value', 'mean', 'min', 'minimum', 'minimum_fill_value',
     'mod', 'multiply', 'mvoid', 'ndim', 'negative', 'nomask', 'nonzero',
     'not_equal', 'ones', 'outer', 'outerproduct', 'power', 'prod',
-    'product', 'ptp', 'put', 'putmask', 'rank', 'ravel', 'remainder',
+    'product', 'ptp', 'put', 'putmask', 'ravel', 'remainder',
     'repeat', 'reshape', 'resize', 'right_shift', 'round', 'round_',
     'set_fill_value', 'shape', 'sin', 'sinh', 'size', 'soften_mask',
     'sometrue', 'sort', 'sqrt', 'squeeze', 'std', 'subtract', 'sum',
@@ -602,8 +602,10 @@ def filled(a, fill_value=None):
     ----------
     a : MaskedArray or array_like
         An input object.
-    fill_value : scalar, optional
-        Filling value. Default is None.
+    fill_value : array_like, optional.
+        Can be scalar or non-scalar. If non-scalar, the
+        resulting filled array should be broadcastable
+        over input array. Default is None.
 
     Returns
     -------
@@ -623,10 +625,19 @@ def filled(a, fill_value=None):
     array([[999999,      1,      2],
            [999999,      4,      5],
            [     6,      7,      8]])
+    >>> x.filled(fill_value=333)
+    array([[333,   1,   2],
+           [333,   4,   5],
+           [  6,   7,   8]])
+    >>> x.filled(fill_value=np.arange(3))
+    array([[0, 1, 2],
+           [0, 4, 5],
+           [6, 7, 8]])
 
     """
     if hasattr(a, 'filled'):
         return a.filled(fill_value)
+
     elif isinstance(a, ndarray):
         # Should we check for contiguity ? and a.flags['CONTIGUOUS']:
         return a
@@ -800,7 +811,7 @@ class _DomainCheckInterval(object):
 
     def __init__(self, a, b):
         "domain_check_interval(a,b)(x) = true where x < a or y > b"
-        if (a > b):
+        if a > b:
             (a, b) = (b, a)
         self.a = a
         self.b = b
@@ -1060,7 +1071,7 @@ class _MaskedBinaryOperation(_MaskedUFunc):
         if t.shape == ():
             t = t.reshape(1)
             if m is not nomask:
-                m = make_mask(m, copy=1)
+                m = make_mask(m, copy=True)
                 m.shape = (1,)
 
         if m is nomask:
@@ -1165,7 +1176,7 @@ class _DomainedBinaryOperation(_MaskedUFunc):
         if domain is not None:
             m |= domain(da, db)
         # Take care of the scalar case first
-        if (not m.ndim):
+        if not m.ndim:
             if m:
                 return masked
             else:
@@ -1554,7 +1565,7 @@ def make_mask(m, copy=False, shrink=True, dtype=MaskType):
     Return `m` as a boolean mask, creating a copy if necessary or requested.
     The function can accept any sequence that is convertible to integers,
     or ``nomask``.  Does not require that contents must be 0s and 1s, values
-    of 0 are interepreted as False, everything else as True.
+    of 0 are interpreted as False, everything else as True.
 
     Parameters
     ----------
@@ -1743,7 +1754,7 @@ def mask_or(m1, m2, copy=False, shrink=True):
     if m1 is m2 and is_mask(m1):
         return m1
     (dtype1, dtype2) = (getattr(m1, 'dtype', None), getattr(m2, 'dtype', None))
-    if (dtype1 != dtype2):
+    if dtype1 != dtype2:
         raise ValueError("Incompatible dtypes '%s'<>'%s'" % (dtype1, dtype2))
     if dtype1.names is not None:
         # Allocate an output mask array with the properly broadcast shape.
@@ -2681,15 +2692,13 @@ class MaskedIterator(object):
         --------
         >>> x = np.ma.array([3, 2], mask=[0, 1])
         >>> fl = x.flat
-        >>> fl.next()
+        >>> next(fl)
         3
-        >>> fl.next()
+        >>> next(fl)
         masked
-        >>> fl.next()
+        >>> next(fl)
         Traceback (most recent call last):
-          File "<stdin>", line 1, in <module>
-          File "/home/ralf/python/numpy/numpy/ma/core.py", line 2243, in next
-            d = self.dataiter.next()
+          ...
         StopIteration
 
         """
@@ -3077,7 +3086,7 @@ class MaskedArray(ndarray):
 
     def view(self, dtype=None, type=None, fill_value=None):
         """
-        Return a view of the MaskedArray data
+        Return a view of the MaskedArray data.
 
         Parameters
         ----------
@@ -3091,6 +3100,14 @@ class MaskedArray(ndarray):
         type : Python type, optional
             Type of the returned view, either ndarray or a subclass.  The
             default None results in type preservation.
+        fill_value : scalar, optional
+            The value to use for invalid entries (None by default).
+            If None, then this argument is inferred from the passed `dtype`, or
+            in its absence the original array, as discussed in the notes below.
+
+        See Also
+        --------
+        numpy.ndarray.view : Equivalent method on ndarray object.
 
         Notes
         -----
@@ -3143,7 +3160,7 @@ class MaskedArray(ndarray):
         # also make the mask be a view (so attr changes to the view's
         # mask do no affect original object's mask)
         # (especially important to avoid affecting np.masked singleton)
-        if (getmask(output) is not nomask):
+        if getmask(output) is not nomask:
             output._mask = output._mask.view()
 
         # Make sure to reset the _fill_value if needed
@@ -3156,7 +3173,6 @@ class MaskedArray(ndarray):
             else:
                 output.fill_value = fill_value
         return output
-    view.__doc__ = ndarray.view.__doc__
 
     def __getitem__(self, indx):
         """
@@ -3382,7 +3398,7 @@ class MaskedArray(ndarray):
         if mask is masked:
             mask = True
 
-        if (current_mask is nomask):
+        if current_mask is nomask:
             # Make sure the mask is set
             # Just don't do anything if there's nothing to do.
             if mask is nomask:
@@ -3648,6 +3664,14 @@ class MaskedArray(ndarray):
     @fill_value.setter
     def fill_value(self, value=None):
         target = _check_fill_value(value, self.dtype)
+        if not target.ndim == 0:
+            # 2019-11-12, 1.18.0
+            warnings.warn(
+                "Non-scalar arrays for the fill value are deprecated. Use "
+                "arrays with scalar values instead. The filled function "
+                "still supports any array as `fill_value`.",
+                DeprecationWarning, stacklevel=2)
+
         _fill_value = self._fill_value
         if _fill_value is None:
             # Create the attribute if it was undefined
@@ -3668,9 +3692,11 @@ class MaskedArray(ndarray):
 
         Parameters
         ----------
-        fill_value : scalar, optional
-            The value to use for invalid entries (None by default).
-            If None, the `fill_value` attribute of the array is used instead.
+        fill_value : array_like, optional
+            The value to use for invalid entries. Can be scalar or non-scalar.
+            If non-scalar, the resulting ndarray must be broadcastable over
+            input array. Default is None, in which case, the `fill_value`
+            attribute of the array is used instead.
 
         Returns
         -------
@@ -3689,6 +3715,8 @@ class MaskedArray(ndarray):
         >>> x = np.ma.array([1,2,3,4,5], mask=[0,0,1,0,1], fill_value=-999)
         >>> x.filled()
         array([   1,    2, -999,    4, -999])
+        >>> x.filled(fill_value=1000)
+        array([   1,    2, 1000,    4, 1000])
         >>> type(x.filled())
         <class 'numpy.ndarray'>
 
@@ -4389,7 +4417,7 @@ class MaskedArray(ndarray):
         ----------
         axis : None or int or tuple of ints, optional
             Axis or axes along which the count is performed.
-            The default (`axis` = `None`) performs the count over all
+            The default, None, performs the count over all
             the dimensions of the input array. `axis` may be negative, in
             which case it counts from the last to the first axis.
 
@@ -4769,7 +4797,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.all : corresponding function for ndarrays
+        numpy.ndarray.all : corresponding function for ndarrays
         numpy.all : equivalent function
 
         Examples
@@ -4807,7 +4835,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.any : corresponding function for ndarrays
+        numpy.ndarray.any : corresponding function for ndarrays
         numpy.any : equivalent function
 
         """
@@ -4861,7 +4889,7 @@ class MaskedArray(ndarray):
         flatnonzero :
             Return indices that are non-zero in the flattened version of the input
             array.
-        ndarray.nonzero :
+        numpy.ndarray.nonzero :
             Equivalent ndarray method.
         count_nonzero :
             Counts the number of non-zero elements in the input array.
@@ -4989,7 +5017,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.sum : corresponding function for ndarrays
+        numpy.ndarray.sum : corresponding function for ndarrays
         numpy.sum : equivalent function
 
         Examples
@@ -5036,7 +5064,7 @@ class MaskedArray(ndarray):
         result = self.filled(0).sum(axis, dtype=dtype, out=out, **kwargs)
         if isinstance(out, MaskedArray):
             outmask = getmask(out)
-            if (outmask is nomask):
+            if outmask is nomask:
                 outmask = out._mask = make_mask_none(out.shape)
             outmask.flat = newmask
         return out
@@ -5060,7 +5088,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.cumsum : corresponding function for ndarrays
+        numpy.ndarray.cumsum : corresponding function for ndarrays
         numpy.cumsum : equivalent function
 
         Examples
@@ -5097,7 +5125,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.prod : corresponding function for ndarrays
+        numpy.ndarray.prod : corresponding function for ndarrays
         numpy.prod : equivalent function
         """
         kwargs = {} if keepdims is np._NoValue else {'keepdims': keepdims}
@@ -5118,7 +5146,7 @@ class MaskedArray(ndarray):
         result = self.filled(1).prod(axis, dtype=dtype, out=out, **kwargs)
         if isinstance(out, MaskedArray):
             outmask = getmask(out)
-            if (outmask is nomask):
+            if outmask is nomask:
                 outmask = out._mask = make_mask_none(out.shape)
             outmask.flat = newmask
         return out
@@ -5143,7 +5171,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.cumprod : corresponding function for ndarrays
+        numpy.ndarray.cumprod : corresponding function for ndarrays
         numpy.cumprod : equivalent function
         """
         result = self.filled(1).cumprod(axis=axis, dtype=dtype, out=out)
@@ -5166,7 +5194,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.mean : corresponding function for ndarrays
+        numpy.ndarray.mean : corresponding function for ndarrays
         numpy.mean : Equivalent function
         numpy.ma.average: Weighted average.
 
@@ -5197,7 +5225,7 @@ class MaskedArray(ndarray):
             out.flat = result
             if isinstance(out, MaskedArray):
                 outmask = getmask(out)
-                if (outmask is nomask):
+                if outmask is nomask:
                     outmask = out._mask = make_mask_none(out.shape)
                 outmask.flat = getmask(result)
             return out
@@ -5239,9 +5267,9 @@ class MaskedArray(ndarray):
             return m
 
         if not axis:
-            return (self - m)
+            return self - m
         else:
-            return (self - expand_dims(m, axis))
+            return self - expand_dims(m, axis)
 
     def var(self, axis=None, dtype=None, out=None, ddof=0,
             keepdims=np._NoValue):
@@ -5255,7 +5283,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.var : corresponding function for ndarrays
+        numpy.ndarray.var : corresponding function for ndarrays
         numpy.var : Equivalent function
         """
         kwargs = {} if keepdims is np._NoValue else {'keepdims': keepdims}
@@ -5318,7 +5346,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.std : corresponding function for ndarrays
+        numpy.ndarray.std : corresponding function for ndarrays
         numpy.std : Equivalent function
         """
         kwargs = {} if keepdims is np._NoValue else {'keepdims': keepdims}
@@ -5339,7 +5367,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.around : corresponding function for ndarrays
+        numpy.ndarray.around : corresponding function for ndarrays
         numpy.around : equivalent function
         """
         result = self._data.round(decimals=decimals, out=out).view(type(self))
@@ -5401,7 +5429,7 @@ class MaskedArray(ndarray):
         --------
         MaskedArray.sort : Describes sorting algorithms used.
         lexsort : Indirect stable sort with multiple keys.
-        ndarray.sort : Inplace sort.
+        numpy.ndarray.sort : Inplace sort.
 
         Notes
         -----
@@ -5553,7 +5581,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.sort : Method to sort an array in-place.
+        numpy.ndarray.sort : Method to sort an array in-place.
         argsort : Indirect sort.
         lexsort : Indirect stable sort on multiple keys.
         searchsorted : Find elements in a sorted array.
@@ -5616,6 +5644,10 @@ class MaskedArray(ndarray):
         fill_value : {var}, optional
             Value used to fill in the masked values.
             If None, use the output of `minimum_fill_value`.
+        keepdims : bool, optional
+            If this is set to True, the axes which are reduced are left
+            in the result as dimensions with size one. With this option,
+            the result will broadcast correctly against the array.
 
         Returns
         -------
@@ -5652,7 +5684,7 @@ class MaskedArray(ndarray):
         result = self.filled(fill_value).min(axis=axis, out=out, **kwargs)
         if isinstance(out, MaskedArray):
             outmask = getmask(out)
-            if (outmask is nomask):
+            if outmask is nomask:
                 outmask = out._mask = make_mask_none(out.shape)
             outmask.flat = newmask
         else:
@@ -5746,6 +5778,10 @@ class MaskedArray(ndarray):
         fill_value : {var}, optional
             Value used to fill in the masked values.
             If None, use the output of maximum_fill_value().
+        keepdims : bool, optional
+            If this is set to True, the axes which are reduced are left
+            in the result as dimensions with size one. With this option,
+            the result will broadcast correctly against the array.
 
         Returns
         -------
@@ -5782,7 +5818,7 @@ class MaskedArray(ndarray):
         result = self.filled(fill_value).max(axis=axis, out=out, **kwargs)
         if isinstance(out, MaskedArray):
             outmask = getmask(out)
-            if (outmask is nomask):
+            if outmask is nomask:
                 outmask = out._mask = make_mask_none(out.shape)
             outmask.flat = newmask
         else:
@@ -5810,6 +5846,10 @@ class MaskedArray(ndarray):
             but the type will be cast if necessary.
         fill_value : {var}, optional
             Value used to fill in the masked values.
+        keepdims : bool, optional
+            If this is set to True, the axes which are reduced are left
+            in the result as dimensions with size one. With this option,
+            the result will broadcast correctly against the array.
 
         Returns
         -------
@@ -5961,7 +6001,7 @@ class MaskedArray(ndarray):
 
         See Also
         --------
-        ndarray.tobytes
+        numpy.ndarray.tobytes
         tolist, tofile
 
         Notes
@@ -6203,9 +6243,11 @@ class mvoid(MaskedArray):
 
         Parameters
         ----------
-        fill_value : scalar, optional
-            The value to use for invalid entries (None by default).
-            If None, the `fill_value` attribute is used instead.
+        fill_value : array_like, optional
+            The value to use for invalid entries. Can be scalar or
+            non-scalar. If latter is the case, the filled array should
+            be broadcastable over input array. Default is None, in
+            which case the `fill_value` attribute is used instead.
 
         Returns
         -------
@@ -6720,7 +6762,7 @@ def power(a, b, third=None):
     invalid = np.logical_not(np.isfinite(result.view(ndarray)))
     # Add the initial mask
     if m is not nomask:
-        if not (result.ndim):
+        if not result.ndim:
             return masked
         result._mask = np.logical_or(m, invalid)
     # Fix the invalid parts
@@ -7081,23 +7123,6 @@ def resize(x, new_shape):
     return result
 
 
-def rank(obj):
-    """
-    maskedarray version of the numpy function.
-
-    .. note::
-        Deprecated since 1.10.0
-
-    """
-    # 2015-04-12, 1.10.0
-    warnings.warn(
-        "`rank` is deprecated; use the `ndim` function instead. ",
-        np.VisibleDeprecationWarning, stacklevel=2)
-    return np.ndim(getdata(obj))
-
-rank.__doc__ = np.rank.__doc__
-
-
 def ndim(obj):
     """
     maskedarray version of the numpy function.
@@ -7280,7 +7305,7 @@ def choose(indices, choices, out=None, mode='raise'):
     # Construct the mask
     outputmask = np.choose(c, masks, mode=mode)
     outputmask = make_mask(mask_or(outputmask, getmask(indices)),
-                           copy=0, shrink=True)
+                           copy=False, shrink=True)
     # Get the choices.
     d = np.choose(c, data, mode=mode, out=out).view(MaskedArray)
     if out is not None:
@@ -7532,7 +7557,7 @@ def outer(a, b):
         return masked_array(d)
     ma = getmaskarray(a)
     mb = getmaskarray(b)
-    m = make_mask(1 - np.outer(1 - ma, 1 - mb), copy=0)
+    m = make_mask(1 - np.outer(1 - ma, 1 - mb), copy=False)
     return masked_array(d, mask=m)
 outer.__doc__ = doc_note(np.outer.__doc__,
                          "Masked values are replaced by 0.")
@@ -7884,93 +7909,6 @@ def _pickle_warn(method):
             .format(method=method),
         DeprecationWarning,
         stacklevel=3)
-
-
-def dump(a, F):
-    """
-    Pickle a masked array to a file.
-
-    This is a wrapper around ``cPickle.dump``.
-
-    Parameters
-    ----------
-    a : MaskedArray
-        The array to be pickled.
-    F : str or file-like object
-        The file to pickle `a` to. If a string, the full path to the file.
-
-    """
-    _pickle_warn('dump')
-    if not hasattr(F, 'readline'):
-        with open(F, 'w') as F:
-            pickle.dump(a, F)
-    else:
-        pickle.dump(a, F)
-
-
-def dumps(a):
-    """
-    Return a string corresponding to the pickling of a masked array.
-
-    This is a wrapper around ``cPickle.dumps``.
-
-    Parameters
-    ----------
-    a : MaskedArray
-        The array for which the string representation of the pickle is
-        returned.
-
-    """
-    _pickle_warn('dumps')
-    return pickle.dumps(a)
-
-
-def load(F):
-    """
-    Wrapper around ``cPickle.load`` which accepts either a file-like object
-    or a filename.
-
-    Parameters
-    ----------
-    F : str or file
-        The file or file name to load.
-
-    See Also
-    --------
-    dump : Pickle an array
-
-    Notes
-    -----
-    This is different from `numpy.load`, which does not use cPickle but loads
-    the NumPy binary .npy format.
-
-    """
-    _pickle_warn('load')
-    if not hasattr(F, 'readline'):
-        with open(F, 'r') as F:
-            return pickle.load(F)
-    else:
-        return pickle.load(F)
-
-
-def loads(strg):
-    """
-    Load a pickle from the current string.
-
-    The result of ``cPickle.loads(strg)`` is returned.
-
-    Parameters
-    ----------
-    strg : str
-        The string to load.
-
-    See Also
-    --------
-    dumps : Return a string corresponding to the pickling of a masked array.
-
-    """
-    _pickle_warn('loads')
-    return pickle.loads(strg)
 
 
 def fromfile(file, dtype=float, count=-1, sep=''):

@@ -1254,6 +1254,39 @@ class TestNonzero(object):
         a = np.array([[False], [TrueThenFalse()]])
         assert_raises(RuntimeError, np.nonzero, a)
 
+    def test_nonzero_exception_safe(self):
+        # gh-13930
+
+        class ThrowsAfter:
+            def __init__(self, iters):
+                self.iters_left = iters
+
+            def __bool__(self):
+                if self.iters_left == 0:
+                    raise ValueError("called `iters` times")
+
+                self.iters_left -= 1
+                return True
+
+        """
+        Test that a ValueError is raised instead of a SystemError
+
+        If the __bool__ function is called after the error state is set,
+        Python (cpython) will raise a SystemError.
+        """
+
+        # assert that an exception in first pass is handled correctly
+        a = np.array([ThrowsAfter(5)]*10)
+        assert_raises(ValueError, np.nonzero, a)
+
+        # raise exception in second pass for 1-dimensional loop
+        a = np.array([ThrowsAfter(15)]*10)
+        assert_raises(ValueError, np.nonzero, a)
+
+        # raise exception in second pass for n-dimensional loop
+        a = np.array([[ThrowsAfter(15)]]*10)
+        assert_raises(ValueError, np.nonzero, a)
+
 
 class TestIndex(object):
     def test_boolean(self):
@@ -1307,6 +1340,11 @@ class TestBinaryRepr(object):
             num = -2**(width - 1)
             exp = '1' + (width - 1) * '0'
             assert_equal(np.binary_repr(num, width=width), exp)
+
+    def test_large_neg_int64(self):
+        # See gh-14289.
+        assert_equal(np.binary_repr(np.int64(-2**62), width=64),
+                     '11' + '0'*62)
 
 
 class TestBaseRepr(object):
@@ -2529,6 +2567,11 @@ class TestCorrelate(object):
         z = np.correlate(y, x, mode='full')
         assert_array_almost_equal(z, r_z)
 
+    def test_zero_size(self):
+        with pytest.raises(ValueError):
+            np.correlate(np.array([]), np.ones(1000), mode='full')
+        with pytest.raises(ValueError):
+            np.correlate(np.ones(1000), np.array([]), mode='full')
 
 class TestConvolve(object):
     def test_object(self):
@@ -2545,6 +2588,30 @@ class TestConvolve(object):
 
 
 class TestArgwhere(object):
+
+    @pytest.mark.parametrize('nd', [0, 1, 2])
+    def test_nd(self, nd):
+        # get an nd array with multiple elements in every dimension
+        x = np.empty((2,)*nd, bool)
+
+        # none
+        x[...] = False
+        assert_equal(np.argwhere(x).shape, (0, nd))
+
+        # only one
+        x[...] = False
+        x.flat[0] = True
+        assert_equal(np.argwhere(x).shape, (1, nd))
+
+        # all but one
+        x[...] = True
+        x.flat[0] = False
+        assert_equal(np.argwhere(x).shape, (x.size - 1, nd))
+
+        # all
+        x[...] = True
+        assert_equal(np.argwhere(x).shape, (x.size, nd))
+
     def test_2D(self):
         x = np.arange(6).reshape((2, 3))
         assert_array_equal(np.argwhere(x > 1),
@@ -2886,7 +2953,7 @@ class TestIndices(object):
         assert_array_equal(x, np.array([[0], [1], [2], [3]]))
         assert_array_equal(y, np.array([[0, 1, 2]]))
 
-    @pytest.mark.parametrize("dtype", [np.int, np.float32, np.float64])
+    @pytest.mark.parametrize("dtype", [np.int32, np.int64, np.float32, np.float64])
     @pytest.mark.parametrize("dims", [(), (0,), (4, 3)])
     def test_return_type(self, dtype, dims):
         inds = np.indices(dims, dtype=dtype)

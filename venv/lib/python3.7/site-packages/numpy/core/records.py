@@ -163,7 +163,7 @@ class format_parser(object):
         self._createdescr(byteorder)
         self.dtype = self._descr
 
-    def _parseFormats(self, formats, aligned=0):
+    def _parseFormats(self, formats, aligned=False):
         """ Parse the field formats """
 
         if formats is None:
@@ -496,8 +496,7 @@ class recarray(ndarray):
         except Exception:
             fielddict = ndarray.__getattribute__(self, 'dtype').fields or {}
             if attr not in fielddict:
-                exctype, value = sys.exc_info()[:2]
-                raise exctype(value)
+                raise
         else:
             fielddict = ndarray.__getattribute__(self, 'dtype').fields or {}
             if attr not in fielddict:

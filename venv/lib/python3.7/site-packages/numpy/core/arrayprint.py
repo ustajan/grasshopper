@@ -89,8 +89,10 @@ def _make_options_dict(precision=None, threshold=None, edgeitems=None,
                       "`False`", stacklevel=3)
     if threshold is not None:
         # forbid the bad threshold arg suggested by stack overflow, gh-12351
-        if not isinstance(threshold, numbers.Number) or np.isnan(threshold):
-            raise ValueError("threshold must be numeric and non-NAN, try "
+        if not isinstance(threshold, numbers.Number):
+            raise TypeError("threshold must be numeric")
+        if np.isnan(threshold):
+            raise ValueError("threshold must be non-NAN, try "
                              "sys.maxsize for untruncated representation")
     return options
 
@@ -109,11 +111,12 @@ def set_printoptions(precision=None, threshold=None, edgeitems=None,
     ----------
     precision : int or None, optional
         Number of digits of precision for floating point output (default 8).
-        May be `None` if `floatmode` is not `fixed`, to print as many digits as
+        May be None if `floatmode` is not `fixed`, to print as many digits as
         necessary to uniquely specify the value.
     threshold : int, optional
         Total number of array elements which trigger summarization
         rather than full repr (default 1000).
+        To always use the full repr without summarization, pass `sys.maxsize`.
     edgeitems : int, optional
         Number of array items in summary at beginning and end of
         each dimension (default 3).
@@ -191,11 +194,13 @@ def set_printoptions(precision=None, threshold=None, edgeitems=None,
 
     See Also
     --------
-    get_printoptions, set_string_function, array2string
+    get_printoptions, printoptions, set_string_function, array2string
 
     Notes
     -----
     `formatter` is always reset with a call to `set_printoptions`.
+
+    Use `printoptions` as a context manager to set the values temporarily.
 
     Examples
     --------
@@ -233,9 +238,16 @@ def set_printoptions(precision=None, threshold=None, edgeitems=None,
 
     To put back the default options, you can use:
 
-    >>> np.set_printoptions(edgeitems=3,infstr='inf',
+    >>> np.set_printoptions(edgeitems=3, infstr='inf',
     ... linewidth=75, nanstr='nan', precision=8,
     ... suppress=False, threshold=1000, formatter=None)
+
+    Also to temporarily override options, use `printoptions` as a context manager:
+
+    >>> with np.printoptions(precision=2, suppress=True, threshold=5):
+    ...     np.linspace(0, 10, 10)
+    array([ 0.  ,  1.11,  2.22, ...,  7.78,  8.89, 10.  ])
+
     """
     legacy = kwarg.pop('legacy', None)
     if kwarg:
@@ -282,7 +294,7 @@ def get_printoptions():
 
     See Also
     --------
-    set_printoptions, set_string_function
+    set_printoptions, printoptions, set_string_function
 
     """
     return _format_options.copy()
@@ -981,20 +993,6 @@ class FloatingFormat(object):
                                       pad_left=self.pad_left,
                                       pad_right=self.pad_right)
 
-# for back-compatibility, we keep the classes for each float type too
-class FloatFormat(FloatingFormat):
-    def __init__(self, *args, **kwargs):
-        warnings.warn("FloatFormat has been replaced by FloatingFormat",
-                      DeprecationWarning, stacklevel=2)
-        super(FloatFormat, self).__init__(*args, **kwargs)
-
-
-class LongFloatFormat(FloatingFormat):
-    def __init__(self, *args, **kwargs):
-        warnings.warn("LongFloatFormat has been replaced by FloatingFormat",
-                      DeprecationWarning, stacklevel=2)
-        super(LongFloatFormat, self).__init__(*args, **kwargs)
-
 
 @set_module('numpy')
 def format_float_scientific(x, precision=None, unique=True, trim='k',
@@ -1193,21 +1191,6 @@ class ComplexFloatingFormat(object):
 
         return r + i
 
-# for back-compatibility, we keep the classes for each complex type too
-class ComplexFormat(ComplexFloatingFormat):
-    def __init__(self, *args, **kwargs):
-        warnings.warn(
-            "ComplexFormat has been replaced by ComplexFloatingFormat",
-            DeprecationWarning, stacklevel=2)
-        super(ComplexFormat, self).__init__(*args, **kwargs)
-
-class LongComplexFormat(ComplexFloatingFormat):
-    def __init__(self, *args, **kwargs):
-        warnings.warn(
-            "LongComplexFormat has been replaced by ComplexFloatingFormat",
-            DeprecationWarning, stacklevel=2)
-        super(LongComplexFormat, self).__init__(*args, **kwargs)
-
 
 class _TimelikeFormat(object):
     def __init__(self, data):
@@ -1316,16 +1299,6 @@ class StructuredVoidFormat(object):
             return "({},)".format(str_fields[0])
         else:
             return "({})".format(", ".join(str_fields))
-
-
-# for backwards compatibility
-class StructureFormat(StructuredVoidFormat):
-    def __init__(self, *args, **kwargs):
-        # NumPy 1.14, 2018-02-14
-        warnings.warn(
-            "StructureFormat has been replaced by StructuredVoidFormat",
-            DeprecationWarning, stacklevel=2)
-        super(StructureFormat, self).__init__(*args, **kwargs)
 
 
 def _void_scalar_repr(x):
@@ -1506,7 +1479,11 @@ def array_repr(arr, max_line_width=None, precision=None, suppress_small=None):
         arr, max_line_width, precision, suppress_small)
 
 
-_guarded_str = _recursive_guard()(str)
+@_recursive_guard()
+def _guarded_repr_or_str(v):
+    if isinstance(v, bytes):
+        return repr(v)
+    return str(v)
 
 
 def _array_str_implementation(
@@ -1524,7 +1501,7 @@ def _array_str_implementation(
         # obtain a scalar and call str on it, avoiding problems for subclasses
         # for which indexing with () returns a 0d instead of a scalar by using
         # ndarray's getindex. Also guard against recursive 0d object arrays.
-        return _guarded_str(np.ndarray.__getitem__(a, ()))
+        return _guarded_repr_or_str(np.ndarray.__getitem__(a, ()))
 
     return array2string(a, max_line_width, precision, suppress_small, ' ', "")
 
@@ -1641,5 +1618,5 @@ def set_string_function(f, repr=True):
     else:
         return multiarray.set_string_function(f, repr)
 
-set_string_function(_default_array_str, 0)
-set_string_function(_default_array_repr, 1)
+set_string_function(_default_array_str, False)
+set_string_function(_default_array_repr, True)

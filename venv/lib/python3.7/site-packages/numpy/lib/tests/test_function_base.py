@@ -423,27 +423,17 @@ class TestSelect(object):
         assert_equal(select([m], [d]), [0, 0, 0, np.nan, 0, 0])
 
     def test_deprecated_empty(self):
-        with warnings.catch_warnings(record=True):
-            warnings.simplefilter("always")
-            assert_equal(select([], [], 3j), 3j)
-
-        with warnings.catch_warnings():
-            warnings.simplefilter("always")
-            assert_warns(DeprecationWarning, select, [], [])
-            warnings.simplefilter("error")
-            assert_raises(DeprecationWarning, select, [], [])
+        assert_raises(ValueError, select, [], [], 3j)
+        assert_raises(ValueError, select, [], [])
 
     def test_non_bool_deprecation(self):
         choices = self.choices
         conditions = self.conditions[:]
-        with warnings.catch_warnings():
-            warnings.filterwarnings("always")
-            conditions[0] = conditions[0].astype(np.int_)
-            assert_warns(DeprecationWarning, select, conditions, choices)
-            conditions[0] = conditions[0].astype(np.uint8)
-            assert_warns(DeprecationWarning, select, conditions, choices)
-            warnings.filterwarnings("error")
-            assert_raises(DeprecationWarning, select, conditions, choices)
+        conditions[0] = conditions[0].astype(np.int_)
+        assert_raises(TypeError, select, conditions, choices)
+        conditions[0] = conditions[0].astype(np.uint8)
+        assert_raises(TypeError, select, conditions, choices)
+        assert_raises(TypeError, select, conditions, choices)
 
     def test_many_arguments(self):
         # This used to be limited by NPY_MAXARGS == 32
@@ -1094,6 +1084,40 @@ class TestGradient(object):
         assert_raises(ValueError, gradient, np.arange(1), edge_order=2)
         assert_raises(ValueError, gradient, np.arange(2), edge_order=2)
 
+    @pytest.mark.parametrize('f_dtype', [np.uint8, np.uint16,
+                                         np.uint32, np.uint64])
+    def test_f_decreasing_unsigned_int(self, f_dtype):
+        f = np.array([5, 4, 3, 2, 1], dtype=f_dtype)
+        g = gradient(f)
+        assert_array_equal(g, [-1]*len(f))
+
+    @pytest.mark.parametrize('f_dtype', [np.int8, np.int16,
+                                         np.int32, np.int64])
+    def test_f_signed_int_big_jump(self, f_dtype):
+        maxint = np.iinfo(f_dtype).max
+        x = np.array([1, 3])
+        f = np.array([-1, maxint], dtype=f_dtype)
+        dfdx = gradient(f, x)
+        assert_array_equal(dfdx, [(maxint + 1) // 2]*2)
+
+    @pytest.mark.parametrize('x_dtype', [np.uint8, np.uint16,
+                                         np.uint32, np.uint64])
+    def test_x_decreasing_unsigned(self, x_dtype):
+        x = np.array([3, 2, 1], dtype=x_dtype)
+        f = np.array([0, 2, 4])
+        dfdx = gradient(f, x)
+        assert_array_equal(dfdx, [-2]*len(x))
+
+    @pytest.mark.parametrize('x_dtype', [np.int8, np.int16,
+                                         np.int32, np.int64])
+    def test_x_signed_int_big_jump(self, x_dtype):
+        minint = np.iinfo(x_dtype).min
+        maxint = np.iinfo(x_dtype).max
+        x = np.array([-1, maxint], dtype=x_dtype)
+        f = np.array([minint // 2, 0])
+        dfdx = gradient(f, x)
+        assert_array_equal(dfdx, [0.5, 0.5])
+
 
 class TestAngle(object):
 
@@ -1105,7 +1129,7 @@ class TestAngle(object):
             np.arctan(3.0 / 1.0),
             np.arctan(1.0), 0, np.pi / 2, np.pi, -np.pi / 2.0,
             -np.arctan(3.0 / 1.0), np.pi - np.arctan(3.0 / 1.0)]
-        z = angle(x, deg=1)
+        z = angle(x, deg=True)
         zo = np.array(yo) * 180 / np.pi
         assert_array_almost_equal(y, yo, 11)
         assert_array_almost_equal(z, zo, 11)
@@ -1920,9 +1944,9 @@ class TestCov(object):
                                          [-np.inf, np.inf]]))
 
     def test_1D_rowvar(self):
-        assert_allclose(cov(self.x3), cov(self.x3, rowvar=0))
+        assert_allclose(cov(self.x3), cov(self.x3, rowvar=False))
         y = np.array([0.0780, 0.3107, 0.2111, 0.0334, 0.8501])
-        assert_allclose(cov(self.x3, y), cov(self.x3, y, rowvar=0))
+        assert_allclose(cov(self.x3, y), cov(self.x3, y, rowvar=False))
 
     def test_1D_variance(self):
         assert_allclose(cov(self.x3, ddof=1), np.var(self.x3, ddof=1))
@@ -2533,7 +2557,7 @@ class TestPercentile(object):
         assert_equal(np.percentile(x, 0, interpolation='nearest'), np.nan)
 
     def test_fraction(self):
-        x = [Fraction(i, 2) for i in np.arange(8)]
+        x = [Fraction(i, 2) for i in range(8)]
 
         p = np.percentile(x, Fraction(0))
         assert_equal(p, Fraction(0))
@@ -2953,7 +2977,7 @@ class TestQuantile(object):
 
     def test_fraction(self):
         # fractional input, integral quantile
-        x = [Fraction(i, 2) for i in np.arange(8)]
+        x = [Fraction(i, 2) for i in range(8)]
 
         q = np.quantile(x, 0)
         assert_equal(q, 0)

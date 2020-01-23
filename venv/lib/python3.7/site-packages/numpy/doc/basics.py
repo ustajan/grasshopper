@@ -18,7 +18,7 @@ The primitive types supported are tied closely to those in C:
       - C type
       - Description
 
-    * - `np.bool`
+    * - `np.bool_`
       - ``bool``
       - Boolean (True or False) stored as a byte
 
@@ -283,7 +283,7 @@ NumPy provides `numpy.iinfo` and `numpy.finfo` to verify the
 minimum or maximum values of NumPy integer and floating point values
 respectively ::
 
-    >>> np.iinfo(np.int) # Bounds of the default integer on this system.
+    >>> np.iinfo(int) # Bounds of the default integer on this system.
     iinfo(min=-9223372036854775808, max=9223372036854775807, dtype=int64)
     >>> np.iinfo(np.int32) # Bounds of a 32-bit integer
     iinfo(min=-2147483648, max=2147483647, dtype=int32)
@@ -314,8 +314,8 @@ compiler's ``long double`` available as ``np.longdouble`` (and
 ``np.clongdouble`` for the complex numbers). You can find out what your
 numpy provides with ``np.finfo(np.longdouble)``.
 
-NumPy does not provide a dtype with more precision than C
-``long double``\\s; in particular, the 128-bit IEEE quad precision
+NumPy does not provide a dtype with more precision than C's
+``long double``\\; in particular, the 128-bit IEEE quad precision
 data type (FORTRAN's ``REAL*16``\\) is not available.
 
 For efficient memory alignment, ``np.longdouble`` is usually stored
