@@ -1,11 +1,11 @@
 .. _io_formats:
 
-======================
-Formats
+Grasshopper Formats
 ======================
 
 .. toctree::
     :numbered:
     :maxdepth: 3
 
-Formats
+Grasshopper is built to accept an input file in the form of a GDML file. Use of other interfaces to generate the GDML
+input are available.

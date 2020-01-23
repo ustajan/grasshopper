@@ -90,7 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usersguide/index.html">Users Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="devguide/index.html">Dev Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pythonapi/index.html">Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="io_formats/index.html">Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io_formats/index.html">Grasshopper Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="publications.html">Publications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License Agreement</a></li>
 </ul>
@@ -159,9 +159,8 @@
             
   <div class="section" id="grasshopper-a-geant4-simulation-program">
 <h1>Grasshopper: A Geant4 Simulation Program!<a class="headerlink" href="#grasshopper-a-geant4-simulation-program" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="current-work">
-<h1>Current Work<a class="headerlink" href="#current-work" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
 <p>Current particle physics simulations take place largely within small communities developing limited tools for specific areas of study.
 These particle simulations are essential to evaluating environments outside of the realm of experimentation in the radiation sciences.
 While multi-use toolkits exist for particles simulation (such as MCNP or SRIM), these computational tools are often difficult for untrained users to adapt into their projects.
@@ -171,6 +170,30 @@ In addition, Geant4 relies on various databases shared by institutes such as NIS
 Unfortunately, Geant4 and the related libraries are not a common program to install and use for scientific simulation users or the general public interested in this work [2].
 However, a widely applicable simulation engine using Geant4, called Grasshopper, has been developed to allow for generating straightforward Monte Carlo simulations for engineers
 and scientists in a wide range of fields.</p>
+</div>
+<div class="section" id="current-work">
+<h2>Current Work<a class="headerlink" href="#current-work" title="Permalink to this headline">¶</a></h2>
+<p>Grasshopper is currently being benchmarked against other particle simulation tools. By comparing results of major
+databases of particle physics constants, we can evaluate the real world simularity of the simulation.</p>
+</div>
+<div class="section" id="screenshots-from-grasshopper">
+<h2>Screenshots from Grasshopper<a class="headerlink" href="#screenshots-from-grasshopper" title="Permalink to this headline">¶</a></h2>
+<p>A view of your workspace:</p>
+<a class="reference internal image-reference" href="_images/GRSHPRdoc3.png"><img alt="_images/GRSHPRdoc3.png" src="_images/GRSHPRdoc3.png" style="width: 600px;" /></a>
+<p>A visualization of a 1 MeV neutron beam entering a water volume, undergoing thermalization.</p>
+<a class="reference internal image-reference" href="_images/GRSHPRdoc2.png"><img alt="_images/GRSHPRdoc2.png" src="_images/GRSHPRdoc2.png" style="width: 600px;" /></a>
+<p>For this particular simulation, you can see the energy distribution of the electrons hitting the detector in the plot
+below (from ROOT):</p>
+<a class="reference internal image-reference" href="_images/GRSHPRdoc1.png"><img alt="_images/GRSHPRdoc1.png" src="_images/GRSHPRdoc1.png" style="width: 600px;" /></a>
+<p>Here is the view of a ‘.wrl’ file in Paraview:</p>
+<a class="reference internal image-reference" href="_images/GRSHPRdoc0.png"><img alt="_images/GRSHPRdoc0.png" src="_images/GRSHPRdoc0.png" style="width: 600px;" /></a>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Recommended publication for citing
+A. Danagoulian, J. Miske “<cite>Grasshopper: A Geant4 code for
+Research and Development of Radiation Transport</cite>”</p>
+</div>
+</div>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -195,7 +218,8 @@ and scientists in a wide range of fields.</p>
 <li class="toctree-l2"><a class="reference internal" href="getting_started/index.html#on-pc">On PC</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/index.html#example-alpha-particle-energy-loss">Example Alpha Particle Energy Loss</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="releasenotes/index.html">Release Notes</a><ul class="simple">
@@ -204,6 +228,11 @@ and scientists in a wide range of fields.</p>
 <li class="toctree-l1"><a class="reference internal" href="methods/index.html">Theory and Methodology</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="methods/index.html#theory">Theory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="methods/index.html#gdml">GDML</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="methods/index.html#materials-section">Materials section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="methods/index.html#define-section">Define section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="methods/index.html#solids-section">Solids section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="methods/index.html#structure-section">Structure section</a></li>
+<li class="toctree-l3"><a class="reference internal" href="methods/index.html#setup">Setup</a></li>
 <li class="toctree-l3"><a class="reference internal" href="methods/index.html#references">References</a></li>
 </ul>
 </li>
@@ -219,7 +248,7 @@ and scientists in a wide range of fields.</p>
 <li class="toctree-l1"><a class="reference internal" href="pythonapi/index.html">Python API</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="io_formats/index.html">Formats</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="io_formats/index.html">Grasshopper Formats</a><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="publications.html">Publications</a><ul>
@@ -250,7 +279,7 @@ and scientists in a wide range of fields.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, J. Miske, A. Danagoulian
+        &copy; Copyright 2020, J. Miske, A. Danagoulian
 
     </p>
   </div>

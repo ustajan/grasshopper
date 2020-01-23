@@ -1,17 +1,13 @@
-# Copyright 2019
-"""
-For development of grasshopper Project Shell
-"""
-
+#!/venv/bin/python3.7
 import os
-from pyfiglet import Figlet             # For printing ascii art
-from terminaltables import SingleTable, ascii_table, AsciiTable  # For creating tables
+from pyfiglet import Figlet
+from terminaltables import SingleTable, ascii_table, AsciiTable
 import json
 
 
 class RunSim:
     """
-    Class for functions associated with jarvis shell script list sensors feature
+    Class for functions associated with grasshopper shell script list sensors feature
     """
     def __init__(self):
         self.questions = ["How many unique materials are used in the simulation? ",
@@ -26,10 +22,11 @@ class RunSim:
         :return:
         """
         answers = self.set_questions()
+        return 0
 
     def set_questions(self):
         """
-        Has the user set answers to a variety of questions
+        Method to query the user to set answers to a variety of questions.
         :return:
         """
         answer_list = []

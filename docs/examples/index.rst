@@ -1,6 +1,5 @@
 .. _examples:
 
-======================
 Examples
 ======================
 
@@ -9,4 +8,7 @@ Examples
     :maxdepth: 3
 
 
-Examples
+This page shows some examples of a Grasshopper GDML input file.
+
+Example Alpha Particle Energy Loss
+----------------------------------

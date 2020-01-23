@@ -37,23 +37,23 @@ xmlns:xsi
 xsi:noNamespaceSchemaLocation
 
 Materials section
-
+-----------------
 Consists of objects that are materials, isotopes, elements, etc.
 
 Define section
-
+--------------
 
 
 Solids section
-
+--------------
 
 
 Structure section
-
+-----------------
 
 
 Setup
-
+-----
 
 
 References

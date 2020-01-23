@@ -1,12 +1,6 @@
-# Copyright 2019
-
-"""
-For development of grasshopper Project Shell
-"""
-
+#!/venv/bin/python3.7
 from terminaltables import AsciiTable
 
-# Hardcoded
 table_data = [
     ['Status Table'],
     ['Network','Power','WiFi','BT'],
@@ -14,7 +8,7 @@ table_data = [
 ]
 
 
-class Status:
+class StatusFunction:
     """
     Class for functions associated with grasshopper shell script status feature
     """
@@ -25,7 +19,3 @@ class Status:
         table = AsciiTable(table_data)
         print(table.table)
 
-
-# Testing
-# list = status()
-# list.status_table()

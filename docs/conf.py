@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = u'Grasshopper'
-copyright = u'2019, J. Miske, A. Danagoulian'
+copyright = u'2020, J. Miske, A. Danagoulian'
 author = u'J. Miske, A. Danagoulian'
 
 # The short X.Y version
