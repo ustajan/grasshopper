@@ -31,7 +31,7 @@ __Important note__:  these days geant4 primarily works via the cmake framework. 
 
 If all the regular geant4 installations and configurations are ready, then the user can get the code by
 
-`> git clone git@github.com:ustajan/grasshopper.git`
+`> git clone https://github.com/ustajan/grasshopper.git`
 
 To build
 ==
