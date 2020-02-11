@@ -25,6 +25,8 @@ The user is required to have the following
 	* ROOT -- optional.  Has been tested with version 6.16.  If you do not have ROOT the make process will recognize that and exclude 		it from the build.
 	* When building grasshopper, the compiler might not find the GDML header files.  In that case just determine the actual file directories, and add them to the include list by appending `-I/directory_to_headers` to the `CPPFLAGS` env variable.
 
+__Version__:  grasshopper and been built against and tested with Geant4 10.5.  Geant4 10.6 has important modifications that require changes in the code.
+
 __Important note__:  these days geant4 primarily works via the cmake framework.  However grasshopper uses the older Makefile framework.  It is important that you source the appropriate shell script in geant4 directories to enable all the env. variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
 
 `. /usr/local/geant4/geant4.10.05-install/share/Geant4-10.5.0/geant4make/geant4make.sh`
