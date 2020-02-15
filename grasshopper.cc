@@ -132,8 +132,6 @@ int main(int argc,char** argv)
 	// Construct the default run manager
 	G4RunManager* runManager = new G4RunManager;
 
-	// start filling ntuple
-	Analysis *analysis = new Analysis();
 
 	// exporting geometry from specified GDML file
 	runManager->SetUserInitialization(new DetectorConstruction(parser.GetWorldVolume()));
@@ -175,8 +173,11 @@ int main(int argc,char** argv)
 #endif
 
 	// set mandatory user action class
-	runManager->SetUserAction(new PrimaryGeneratorAction);
+	PrimaryGeneratorAction *primary_action=new PrimaryGeneratorAction();
+	runManager->SetUserAction(primary_action);
 
+	// start filling ntuple
+	Analysis *analysis = new Analysis(primary_action->GetParticleGun());
 
 
 	runManager->SetUserAction(new RunAction);

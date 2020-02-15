@@ -50,7 +50,7 @@ class G4Step;
 #include "TMath.h"
 #include "TString.h"
 #include "TRandom.h"
-
+#include "G4ParticleGun.hh"
 #endif
 
 #include <time.h>
@@ -74,7 +74,7 @@ class TBranch;
 class Analysis : public AnalysisManager {
   
 public:
-  Analysis();
+  Analysis(G4ParticleGun*);
   ~Analysis();
   
 public:
@@ -132,8 +132,8 @@ private:
   bool textoutput,briefoutput;
 
   G4int npart;
-
-  G4double E,Edep;
+  G4ParticleGun* particle_gun_local;
+  G4double E,Edep,E_beam;
   G4double x;
   G4double y;
   G4double z;

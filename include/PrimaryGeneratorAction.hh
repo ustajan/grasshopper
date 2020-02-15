@@ -23,14 +23,14 @@ class G4Event;
 ///////////////////////////////////////////////////////////////////////////////
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
-  public:
-    PrimaryGeneratorAction();
-    ~PrimaryGeneratorAction();
-
-  public:
-    void GeneratePrimaries(G4Event* anEvent);
-
-
+public:
+  PrimaryGeneratorAction();
+  ~PrimaryGeneratorAction();
+  
+public:
+  void GeneratePrimaries(G4Event* anEvent);
+  inline double GetBeamEnergy(){return energy;}
+  inline G4ParticleGun* GetParticleGun(){return particleGun;}
   protected:
 
   G4ParticleGun*                particleGun;
