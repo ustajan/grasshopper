@@ -1,6 +1,7 @@
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // Author:
 // Zach Hartwig, 2015
+// Modified by:  Areg Danagoulian, 2019
 // MIT, NSE
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ///////////////////////////////////////////////////////////////////////////////
@@ -109,20 +110,19 @@ void physicsList::ConstructPhysics()
   // neutron transport (HP). Note the required use of complementary of
   // HP version for hadron elastic physics
   if(useNeutronHP){
-    RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP());
+    RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(verboseLevel));
     RegisterPhysics( new G4HadronElasticPhysicsHP(verboseLevel) );
   }
   
   // QGSP model with BIC, standard hadron elastic physics, and the
   // extended neutron XS data set for improved non-HP neutron physics
   else{
-    RegisterPhysics( new G4HadronPhysicsQGSP_BIC());
+    RegisterPhysics( new G4HadronPhysicsQGSP_BIC(verboseLevel));
     RegisterPhysics( new G4HadronElasticPhysics(verboseLevel) );
     RegisterPhysics( new G4NeutronCrossSectionXS(verboseLevel));
   }
   // Gamma physics
-  // doesn't add the photonuclear processes
-  //  RegisterPhysics( new GammaNuclearPhysics("gamma"));
+  RegisterPhysics( new GammaNuclearPhysics("gamma"));
 
   
   //proton inelastic
@@ -158,7 +158,7 @@ void physicsList::ConstructPhysics()
   ///////////////////
 
   // Decay physics for all particles
-  RegisterPhysics(new G4DecayPhysics);
+  RegisterPhysics(new G4DecayPhysics(verboseLevel));
   
 
   ////////////////////

@@ -30,6 +30,7 @@ class G4Step;
 #include "G4ClassificationOfNewTrack.hh"
 #include "G4TrackStatus.hh"
 #include "G4Types.hh"
+#include "G4ParticleGun.hh"
 
 
 #include <iostream>
@@ -50,7 +51,6 @@ class G4Step;
 #include "TMath.h"
 #include "TString.h"
 #include "TRandom.h"
-#include "G4ParticleGun.hh"
 #endif
 
 #include <time.h>
