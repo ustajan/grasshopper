@@ -47,7 +47,7 @@
 #include "DetectorConstruction.hh"
 //#include "PhysicsList.hh"
 #include "DADEphysicsList.hh"
-#include "DMXPhysicsList.hh"
+//#include "DMXPhysicsList.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "EventAction.hh"
 #include "RunAction.hh"
