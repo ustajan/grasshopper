@@ -364,7 +364,8 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
       if(textoutput){
 	if(briefoutput){
 	  data_file << std::setprecision(5);
-	  data_file << "\t" << Edep
+	  data_file << E_beam
+		    << "\t" << Edep
 		    << "\t" << EventID
 		    << "\t" << -1
 		    << "\t" << CreatorProcessName.c_str()
@@ -373,7 +374,8 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 	}
 	else{
 	  data_file << std::setprecision(5);
-	  data_file << -1
+	  data_file << E_beam << "\t"
+		    << -1
 		    << "\t" << Edep
 		    << "\t" << -1
 		    << "\t" << -1
