@@ -305,7 +305,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 	if(briefoutput){
 	  data_file << std::setprecision(5);
 	  data_file << E_beam
-		    << "\t" << E
+		    << "\t" << Edep
 		    << "\t" << EventID
 		    << "\t" << ParticleName.c_str()
 		    << "\t" << CreatorProcessName.c_str()
