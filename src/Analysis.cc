@@ -305,7 +305,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 	if(briefoutput){
 	  data_file << std::setprecision(5);
 	  data_file << E_beam
-		    << "\t" << Edep
+		    << "\t" << E //earlier we changed this to Edep, that is not correct, will give wrong answers for surfacehit tracks
 		    << "\t" << EventID
 		    << "\t" << ParticleName.c_str()
 		    << "\t" << CreatorProcessName.c_str()
@@ -591,6 +591,8 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 			ProcessNamev[trackid-1]= "EventGenerator";
 		TrackIDv[trackid-1]= aStep->GetTrack()->GetTrackID();
 		Edepv[trackid-1] += aStep->GetTotalEnergyDeposit()/(MeV);
+		if(Ev[trackid-1]==-1e+6) //this track was just born
+		  Ev[trackid-1]= aStep->GetPreStepPoint()->GetKineticEnergy()/(MeV);//record the _starting_ energy
 
 	}
 

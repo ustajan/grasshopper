@@ -80,78 +80,78 @@ int main(int argc,char** argv)
 {
 
   bool commandlineseed = false;
-	G4int seed;
+  G4int seed;
 
-	clock_t t0,t1,t2;
-	G4int start_time = time(NULL);
-	t0=clock();
-	G4int UI_flag;
-	// check that the number of input parameters is consistent with expected
-	if(argc==4 || argc==3 || argc==5){  // output configurations information
-		parser.Read(argv[1]);
-		RootOutputFile = argv[2];
-		if(argc==3) 
-		  UI_flag=0;
-		else
-		  UI_flag = atoi(argv[3]); //do we want an interactive interface?
+  clock_t t0,t1,t2;
+  G4int start_time = time(NULL);
+  t0=clock();
+  G4int UI_flag;
+  // check that the number of input parameters is consistent with expected
+  if(argc==4 || argc==3 || argc==5){  // output configurations information
+    parser.Read(argv[1]);
+    RootOutputFile = argv[2];
+    if(argc==3) 
+      UI_flag=0;
+    else
+      UI_flag = atoi(argv[3]); //do we want an interactive interface?
 
     if (argc==5)
-    {
-      seed = atoi(argv[4]);
-      commandlineseed = true;
-    }
-	}
-	else if(argc==1){
-		std::cout<<"\n grasshopper <gdml_configuration_file> <root_output_filename> <User Interface y/n flag> \n\n";
-		parser.Read("default.gdml");
-		UI_flag=0;
-		RootOutputFile = "test.root";
-	}
-	else{
-		std::cout<<"\n grasshopper <gdml_configuration_file> <root_output_filename> <User Interface y/n flag> \n\n";
-		return -1;
-	}
+      {
+	seed = atoi(argv[4]);
+	commandlineseed = true;
+      }
+  }
+  else if(argc==1){
+    std::cout<<"\n grasshopper <gdml_configuration_file> <root_output_filename> <User Interface y/n flag> \n\n";
+    parser.Read("default.gdml");
+    UI_flag=0;
+    RootOutputFile = "test.root";
+  }
+  else{
+    std::cout<<"\n grasshopper <gdml_configuration_file> <root_output_filename> <User Interface y/n flag> \n\n";
+    return -1;
+  }
 
-	G4int run_evnt;
+  G4int run_evnt;
 
   if (!commandlineseed)
-  	seed = parser.GetConstant("RandomGenSeed");
+    seed = parser.GetConstant("RandomGenSeed");
 
 
 
-	run_evnt = parser.GetConstant("EventsToRun");
+  run_evnt = parser.GetConstant("EventsToRun");
 
-	// output configuration information
-	std::cout<<"\nRandomGenSeed: "<<seed;
-	std::cout<<"\nEventsToRun: "<<run_evnt;
+  // output configuration information
+  std::cout<<"\nRandomGenSeed: "<<seed;
+  std::cout<<"\nEventsToRun: "<<run_evnt;
 
-	// choose the Random engine
-	CLHEP::HepRandom::setTheEngine(new CLHEP::RanluxEngine);
-	CLHEP::HepRandom::setTheSeed(seed);
+  // choose the Random engine
+  CLHEP::HepRandom::setTheEngine(new CLHEP::RanluxEngine);
+  CLHEP::HepRandom::setTheSeed(seed);
 
-	// Construct the default run manager
-	G4RunManager* runManager = new G4RunManager;
+  // Construct the default run manager
+  G4RunManager* runManager = new G4RunManager;
 
 
-	// exporting geometry from specified GDML file
-	runManager->SetUserInitialization(new DetectorConstruction(parser.GetWorldVolume()));
+  // exporting geometry from specified GDML file
+  runManager->SetUserInitialization(new DetectorConstruction(parser.GetWorldVolume()));
 
-	runManager->SetUserInitialization(new physicsList(true,false)); //<- DADE's version, not very different from DMX (used to be (false,false))
-	//	runManager->SetUserInitialization(new DMXPhysicsList);
+  runManager->SetUserInitialization(new physicsList(true,false)); //<- DADE's version, not very different from DMX (used to be (false,false))
+  //	runManager->SetUserInitialization(new DMXPhysicsList);
 
-	G4UIsession* session=0;
+  G4UIsession* session=0;
 
-	// G4UIterminal is a (dumb) terminal.
+  // G4UIterminal is a (dumb) terminal.
 
-//#ifdef G4UI_USE_XM
-//	session = new G4UIXm(argc,argv);
-//#else           
-//#ifdef G4UI_USE_TCSH
-//	session = new G4UIterminal(new G4UItcsh);
-//#else
-//	session = new G4UIterminal();
-//#endif
-//#endif
+  //#ifdef G4UI_USE_XM
+  //	session = new G4UIXm(argc,argv);
+  //#else           
+  //#ifdef G4UI_USE_TCSH
+  //	session = new G4UIterminal(new G4UItcsh);
+  //#else
+  //	session = new G4UIterminal();
+  //#endif
+  //#endif
 
 
 
