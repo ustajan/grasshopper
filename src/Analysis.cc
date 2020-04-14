@@ -305,7 +305,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 	if(briefoutput){
 	  data_file << std::setprecision(5);
 	  data_file << E_beam
-		    << "\t" << E //earlier we changed this to Edep, that is not correct, will give wrong answers for surfacehit tracks
+		    << "\t" << E //earlier we changed this to Edep, that is not correct, will give wrong answers for surfacehit tracks.  This however is also a bug -- it slaps the main track's energy (when it enters the volume onto the individual tracks
 		    << "\t" << EventID
 		    << "\t" << ParticleName.c_str()
 		    << "\t" << CreatorProcessName.c_str()
