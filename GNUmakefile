@@ -30,7 +30,7 @@ G4SUBV := $(word 3,$(G4VS))
 #include $(G4WORKDIR)/binmake.gmk
 include $(G4INSTALL)/config/binmake.gmk
 
-CPPFLAGS += -O0 -g # -g -O0
+CPPFLAGS += -O3 #-g #uncomment and set O to zero if you need debugger flags
 CPPFLAGS += -DG4MAJV=$(G4MAJV) -DG4MINV=$(G4MINV) -DG4SUBV=$(G4SUBV)
 
 ########################### ROOT #################################

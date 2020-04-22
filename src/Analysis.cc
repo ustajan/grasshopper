@@ -305,7 +305,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 	if(briefoutput){
 	  data_file << std::setprecision(5);
 	  data_file << E_beam
-		    << "\t" << E
+		    << "\t" << E //earlier we changed this to Edep, that is not correct, will give wrong answers for surfacehit tracks.  This however is also a bug -- it slaps the main track's energy (when it enters the volume onto the individual tracks
 		    << "\t" << EventID
 		    << "\t" << ParticleName.c_str()
 		    << "\t" << CreatorProcessName.c_str()
@@ -364,7 +364,8 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
       if(textoutput){
 	if(briefoutput){
 	  data_file << std::setprecision(5);
-	  data_file << "\t" << Edep
+	  data_file << E_beam
+		    << "\t" << Edep
 		    << "\t" << EventID
 		    << "\t" << -1
 		    << "\t" << CreatorProcessName.c_str()
@@ -373,7 +374,8 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 	}
 	else{
 	  data_file << std::setprecision(5);
-	  data_file << -1
+	  data_file << E_beam << "\t"
+		    << -1
 		    << "\t" << Edep
 		    << "\t" << -1
 		    << "\t" << -1
@@ -589,6 +591,8 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 			ProcessNamev[trackid-1]= "EventGenerator";
 		TrackIDv[trackid-1]= aStep->GetTrack()->GetTrackID();
 		Edepv[trackid-1] += aStep->GetTotalEnergyDeposit()/(MeV);
+		if(Ev[trackid-1]==-1e+6) //this track was just born
+		  Ev[trackid-1]= aStep->GetPreStepPoint()->GetKineticEnergy()/(MeV);//record the _starting_ energy
 
 	}
 
