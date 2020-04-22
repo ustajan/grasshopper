@@ -70,13 +70,13 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   else if(beam_size/CLHEP::mm == -3){ // the user wants an omnidirectional background source
     /*
      During analysis, correct for world volume and number of Monte Carlo particles:
-     phi = background flux per unit area per unit time
-     N = # of MC particles
+     phi = background flux (counts per unit area per unit time)
+     N = # of MC particles (EventsToRun)
      R = WorldRadius
      then,
-     weight per particle = (2*pi*R^2) * phi/N
+     weight per particle = (4*pi*R^2) * phi/N
      for instance,
-     True Integrated Detector Flux = Measured MC count * weight
+     Measured Integrated Detector Flux (n/s) = Detected MC count * weight
      */
     beam_size=0;
     isotropic_beam=false;
