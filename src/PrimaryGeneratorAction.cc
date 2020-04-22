@@ -143,7 +143,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double x_r, y_r, z_r;
 
   if (omnidirectional){
-    r = parser.GetQuantity("WorldRadius") - pow(10, -7); // WORLD RADIUS
+    r = parser.GetQuantity("WorldRadius"); // WORLD RADIUS
     
     ph = 360.*G4UniformRand()*CLHEP::deg;
     G4double u = 2*G4UniformRand()-1;
