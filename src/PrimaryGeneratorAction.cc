@@ -58,11 +58,30 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
 	  fan_beam=true;
 	  isotropic_beam=false;
 	  isotropic_extended=false;
+    omnidirectional=false;
   }
   else if(beam_size/CLHEP::mm == -2){ // the user wants an isotropic source
     beam_size=0;
     isotropic_beam=true;
     fan_beam=false;
+    isotropic_extended=false;
+    omnidirectional=false;
+  }
+  else if(beam_size/CLHEP::mm == -3){ // the user wants an omnidirectional background source
+    /*
+     During analysis, correct for world volume and number of Monte Carlo particles:
+     phi = background flux (counts per unit area per unit time)
+     N = # of MC particles (EventsToRun)
+     R = WorldRadius
+     then,
+     weight per particle = (4*pi*R^2) * phi/N
+     for instance,
+     Measured Integrated Detector Flux (n/s) = Detected MC count * weight
+     */
+    beam_size=0;
+    isotropic_beam=false;
+    fan_beam=false;
+    omnidirectional=true;
     isotropic_extended=false;
   }
   else if(beam_size/CLHEP::mm < 0 ){ // any negative number other than -1, -2 --> the user wants an isotropic, extended source
@@ -120,36 +139,58 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   }
   particleGun->SetParticleEnergy(energy);
 
+  G4double r, ph;
+  G4double x_r, y_r, z_r;
+
+  if (omnidirectional){
+    r = parser.GetQuantity("WorldRadius"); // WORLD RADIUS
+    
+    ph = 360.*G4UniformRand()*CLHEP::deg;
+    G4double u = 2*G4UniformRand()-1;
+    x_r = r*pow((1 - u*u), 0.5)*cos(ph);
+    y_r = r*pow((1 - u*u), 0.5)*sin(ph);
+    z_r = r*u;
+  }
+  else{
+    r = beam_size*acos(G4UniformRand())/pi*2.;
+    ph = 360.*G4UniformRand()*CLHEP::deg;
+
+    x_r = r*cos(ph);
+    y_r = r*sin(ph);
+    z_r = source_width*(G4UniformRand()-0.5);
+  }
+  
+  particleGun->SetParticlePosition(G4ThreeVector(x_r+beam_offset_x,y_r+beam_offset_y,z_r+z0));
+  
   G4double theta;
   G4double phi;
-
-
+  G4ThreeVector vDir;
+  
   if(fan_beam){ //let's do a fan beam
 	  theta = acos(0.5*(G4UniformRand()-0.5))-90.*CLHEP::deg;
 	  phi   = 0.005*(G4UniformRand()-0.5);
   }
   else if(isotropic_beam || isotropic_extended){ //isotropic
-    	  theta = acos(2*G4UniformRand()-1); //truly isotropic
+    theta = acos(2*G4UniformRand()-1); //truly isotropic
     //	  theta = acos(0.05*G4UniformRand()+0.95);
 	  phi   = 2*acos(-1)*G4UniformRand();
+    vDir = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+  }
+  else if (omnidirectional){
+    theta = acos(-pow(1 - G4UniformRand(), 0.5));
+    phi   = 2*acos(-1)*G4UniformRand();
+    vDir = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
+    vDir.rotate(acos(z_r / r), G4ThreeVector(-(y_r+beam_offset_y), x_r+beam_offset_x, 0));
   }
   else{
 	  theta = 0.*CLHEP::deg;
 	  phi = 0.*CLHEP::deg;
+    vDir = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
   }
-   particleGun->SetParticleMomentumDirection(G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta)));
-
-
-   G4double r = beam_size*acos(G4UniformRand())/pi*2.;
-   G4double ph = 360.*G4UniformRand()*CLHEP::deg;
-
-   G4double x_r = r*cos(ph);
-   G4double y_r = r*sin(ph);
-   G4double z_r = source_width*(G4UniformRand()-0.5);
+  
+  particleGun->SetParticleMomentumDirection(vDir);
    
-   particleGun->SetParticlePosition(G4ThreeVector(x_r+beam_offset_x,y_r+beam_offset_y,z_r+z0));
-   
-   particleGun->GeneratePrimaryVertex(anEvent);
+  particleGun->GeneratePrimaryVertex(anEvent);
    
 }
 void PrimaryGeneratorAction::ReadInputSpectrumFile(std::string filename){
