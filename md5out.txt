@@ -1,0 +1,7 @@
+MD5 (test.dat) = 155da1effca7d6147e3878e9314d3c4d
+MD5 (test.dat) = 155da1effca7d6147e3878e9314d3c4d
+MD5 (test.dat) = 155da1effca7d6147e3878e9314d3c4d
+MD5 (test.dat) = 190d014e43e26deba8589c7e6ff3b968
+MD5 (test.dat) = 190d014e43e26deba8589c7e6ff3b968
+MD5 (test.dat) = d4d54755e5b1c0246b2b27e907c9e6f9
+MD5 (test.dat) = d4d54755e5b1c0246b2b27e907c9e6f9

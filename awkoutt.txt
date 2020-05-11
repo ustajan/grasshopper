@@ -1,0 +1,7 @@
+1	0	9831	gamma	eBrem	0.3897
+0.737447
+0.737447
+6.6389
+6.6389
+Average energy, counts:	 0.323413 17
+Average energy, counts:	 0.323413 17

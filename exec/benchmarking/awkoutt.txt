@@ -1,0 +1,25 @@
+0.855873
+Average energy, counts:	 0.855873 1046
+Average energy, counts:	 0.926895 2421
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0 1
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.926895 2421
+Average energy, counts:	 0.929555 2402
+Average energy, counts:	 0.929555 2402
+Average energy, counts:	 0.929555 2402
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.929555 2402
+Average energy, counts:	 0.929555 2402
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
+Average energy, counts:	 0.933891 2367
