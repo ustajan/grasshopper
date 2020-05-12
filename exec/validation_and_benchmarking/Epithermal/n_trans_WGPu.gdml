@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/home/aregjan/git/grasshopper/documentation/gdml.xsd">
+
+	<!-- BEAM PROPERTIES -->
+	<define>
+		<constant name="RandomGenSeed"     value="1"                                         />
+		<quantity name="BeamOffsetX"       value="0"      unit="mm"      type="coordinate"   />
+		<quantity name="BeamOffsetY"       value="0"      unit="mm"      type="coordinate"   />    
+		<quantity name="BeamOffsetZ"       value="0"      unit="mm"      type="coordinate"   /> 
+		<quantity name="BeamSize"          value="5"      unit="mm"      type="coordinate"   />
+		<quantity name="BeamEnergy"        value="-1"     unit="MeV"     type="energy"       /> <!-- a negative number prompts reading input_spectrum.txt -->
+		<constant name="EventsToRun"       value="1E6"                                       />
+		<constant name="ParticleNumber"    value="2112"                                      /> <!-- e-:11, gamma:22, neutron:2112, proton:2212, alpha:1000020040 -->
+	</define>
+
+	<!-- CUTS...apply various cuts to make the computation more efficient -->
+	<define>
+		<constant name="LightProducingParticle" value="0"                                    /> <!-- the particle which produces light in the detector -->
+		<constant name="LowEnergyCutoff"        value="0"                                    /> <!-- The low energy cuttoff for the main track -->
+		<constant name="KeepOnlyMainParticle"   value="0"                                    /> <!-- if 1, the simulation will track only the main particle -->
+		<quantity name="ProductionLowLimit"     value="1" unit="keV"     type="threshold"    /> <!-- for neutron processes anything >1keV causes things to hang -->
+	</define>
+
+	<!-- OUTPUT FILTERS.  What data/entries do you want to keep? -->
+	<define>
+		<constant name="SaveSurfaceHitTrack"         value="1"                               /> <!-- save entries which contain hit information -->
+		<constant name="SaveTrackInfo"               value="1"                               /> <!-- save individual track info (within an event) -->
+		<constant name="SaveEdepositedTotalEntry"    value="1"                               /> <!--save entries which summarize the total deposited energy -->
+	</define>
+
+	<!-- THE OUTPUT -->
+	<define>
+		<constant name="TextOutputOn"           value="1"                                    /> <!-- the value should be either 1 (true) or 0 -->
+		<constant name="BriefOutputOn"          value="0"                                    /> <!-- enable this if you want the shorter version of the text output -->
+		<constant name="VRMLvisualizationOn"    value="1"                                    /> <!-- 1 means that you want a VRML file -->
+		<constant name="EventsToAccumulate"     value="100"                                  /> <!-- number of tracks to accumulate in the visualization -->
+	</define>
+
+	<!-- Global Constants -->
+	<define>
+		<position name="center"  unit="mm"      x="0"     y="0"     z="0" />	
+	</define>
+
+	<!-- Isotopes, Elements, & Materials -->
+	<materials>
+		<!-- Lithium Glass Detector -->
+		<isotope  name="Li6" Z="3" N="6" >	<atom type="A" value="6.015" /> </isotope>
+		<isotope  name="Li7" Z="3" N="7" > <atom type="A" value="7.016" /> </isotope>
+
+		<element  name="Li_glass_el" >
+			<fraction n="0.95" ref="Li6" />
+			<fraction n="0.05" ref="Li7" />
+		</element>
+
+		<material name="Li_glass"     state="solid" >
+			<D        unit="g/cm3"   value="2.50"        />
+			<fraction n="0.0660"     ref="Li_glass_el"   />
+			<fraction n="0.2295"     ref="G4_Si"         />
+			<fraction n="0.0142"     ref="G4_Mg"         />
+			<fraction n="0.1417"     ref="G4_Al"         />
+			<fraction n="0.1227"     ref="G4_Ce"         />
+			<fraction n="0.4259"     ref="G4_O"          />
+		</material>
+	 
+		<!-- Weapons Grade Plutonium -->
+		<isotope  name="Pu238" Z="94" N="238" > <atom type="A" value="238.050" /> </isotope>
+		<isotope  name="Pu239" Z="94" N="239" > <atom type="A" value="239.052" /> </isotope>
+		<isotope  name="Pu240" Z="94" N="240" > <atom type="A" value="240.054" /> </isotope>
+		<isotope  name="Pu241" Z="94" N="241" >	<atom type="A" value="241.057" /> </isotope>
+		<isotope  name="Pu242" Z="94" N="242" >	<atom type="A" value="242.050" /> </isotope>
+
+		<element name="WGPu_el"       state="solid" > 
+			<fraction n="0.00005"    ref="Pu238" />
+			<fraction n="0.933"      ref="Pu239" />
+			<fraction n="0.060"      ref="Pu240" />
+			<fraction n="0.0044"     ref="Pu241" />
+			<fraction n="0.00015"    ref="Pu242" />
+		</element>
+
+		<material name="WGPu"         state="solid" >
+			<D        unit="g/cm3"   value="18.00"  />
+			<fraction n="0.9975"     ref="WGPu_el"  />
+			<fraction n="0.0025"     ref="G4_O"     />
+		</material>
+          
+          <!-- Highly Enriched Uranium -->
+		<isotope name="U234" Z="92" N="234" > <atom value="234.041" /> </isotope>
+		<isotope name="U235" Z="92" N="235" > <atom value="235.044" /> </isotope>
+		<isotope name="U236" Z="92" N="236" > <atom value="236.045" /> </isotope>
+		<isotope name="U238" Z="92" N="238" > <atom value="238.051" /> </isotope>
+
+		<element name="HEU_el" > 
+			<fraction n="0.010"      ref="U234" />
+			<fraction n="0.934"      ref="U235" />
+			<fraction n="0.056"      ref="U238" />
+		</element>
+
+		<material name="HEU">
+			<D        unit="g/cm3"   value="19.050" />
+			<fraction n="1.00"       ref="HEU_el" />
+		</material>
+
+          
+	</materials>
+
+	<!-- Definition of Solid Geometries -->
+	<solids>
+		<!-- World Volume -->
+		<box      name="world_solid"       x="10"    y="10"         z="10"    lunit="m" />  
+
+		<!-- Target -->
+		<tube     name="TargetTube"        rmin="0"  rmax="5.0"     z="0.5"   lunit="cm"     startphi="0"   deltaphi="360"      aunit="deg" />
+
+		<!-- Li Glass Detector -->
+		<tube     name="DetectorGlass"     rmin="0"  rmax="25.0"    z="5.0"   lunit="mm"     startphi="0"   deltaphi="360"      aunit="deg" />
+	</solids>
+	 
+	<!-- LOGICAL ELEMENTS -->
+	<structure>
+		<!-- Target -->
+		<volume                  name="TargetVol" >
+			<materialref        ref="WGPu"          /> <!-- For transmission experiment, set to WGPu or HEU -->
+			<solidref           ref="TargetTube"    />
+		</volume>
+
+		<!-- GS20 Detector -->
+		<volume                  name="LiDetectorVol" >
+			<materialref        ref="Li_glass"      />
+			<solidref           ref="DetectorGlass" />
+		</volume>
+
+		<!-- WOLRD VOLUME -->
+		<volume                  name="world_log" >
+			<materialref        ref="G4_Galactic"                                                />
+			<solidref           ref="world_solid"                                                />
+
+			<!-- Target-->
+			<physvol            name="Target" >
+				<volumeref     ref="TargetVol"                                                  />
+				<position      name="TargetPos"    x="0"     y="0"     z="0.60"       unit="m"  />
+			</physvol>
+
+			<!-- GS20 Detector -->
+			<physvol            name="det_phys">
+				<volumeref     ref="LiDetectorVol"                                              />
+				<position      name="GS20DetPos"   x="0"     y="0"     z="112.25"     unit="cm" />
+			</physvol>
+	 
+		</volume>
+	</structure>
+
+	<setup name="Default" version="1.0" >
+		<world ref="world_log" />
+	</setup>
+</gdml>
