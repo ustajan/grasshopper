@@ -24,8 +24,8 @@
 	<!-- OUTPUT FILTERS.  What data/entries do you want to keep? -->
 	<define>
 		<constant name="SaveSurfaceHitTrack"         value="1"                               /> <!-- save entries which contain hit information -->
-		<constant name="SaveTrackInfo"               value="1"                               /> <!-- save individual track info (within an event) -->
-		<constant name="SaveEdepositedTotalEntry"    value="1"                               /> <!--save entries which summarize the total deposited energy -->
+		<constant name="SaveTrackInfo"               value="0"                               /> <!-- save individual track info (within an event) -->
+		<constant name="SaveEdepositedTotalEntry"    value="0"                               /> <!--save entries which summarize the total deposited energy -->
 	</define>
 
 	<!-- THE OUTPUT -->
