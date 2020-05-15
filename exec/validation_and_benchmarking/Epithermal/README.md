@@ -1,5 +1,5 @@
 # GDML File for Validation of Epithermal Neutron Transmission
-.gdml files for Grasshopper validation
+
 
 The neutron-trans.gdml file simulates the output of one million neutrons in the form of a 5mm pencil beam. The energy spectrum is set by input_spectrum.txt which should consist of two columns, E & (dN/dE), and in the referenced paper (ADD CITATION) consists of integer E values from 1 to 20 with a column of ones for dN/dE (this column is normalized by grasshopper). The geometry setup consists of a 5 mm thick, 10 cm diameter target (either "HEU" or "WGPu" - set via materialref of "TargetVol") and a 6-Li glass detector (for the simulations in the paper, a 1.0cm thick HEU target was used). When the SaveSurfaceHitTrack flag is set to 1, the detector response is not accounted for in the simulation. The world volume uses near vacuum (\textit{i.e.} \verb|G4_Galactic| material), in order to simplify comparison of the output to transmission calculations using $\exp{[-\sigma(E)\rho x N_A/A]}$, where $\sigma(E)$ is the energy dependent total interaction cross section of the neutrons in the target material, and rho is the density of the target.
 
