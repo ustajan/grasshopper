@@ -544,7 +544,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 	}
 
 
-	if(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="det_phys" &&
+	if(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0,8,"det_phys")==0 &&
 			aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="world_log_PV"
 					&& IsSurfaceHit[trackid-1]==false //check that this is truly the first time
 	) //stepping into det for the first time
@@ -581,20 +581,23 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 	}
 
 
-	if(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="det_phys"){ //in the det
+	if(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0,8,"det_phys")==0){ //in the det
 
-		detector_hit[trackid-1]=true; //this track interacted with the detector
-		IDv[trackid-1]= aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
-		ParticleNamev[trackid-1]= aStep->GetTrack()->GetDefinition()->GetParticleName();
-		if(aStep->GetTrack()->GetTrackID()>1)
-			ProcessNamev[trackid-1]= aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
-		else
-			ProcessNamev[trackid-1]= "EventGenerator";
-		TrackIDv[trackid-1]= aStep->GetTrack()->GetTrackID();
-		Edepv[trackid-1] += aStep->GetTotalEnergyDeposit()/(MeV);
-		if(Ev[trackid-1]==-1e+6) //this track was just born
-		  Ev[trackid-1]= aStep->GetPreStepPoint()->GetKineticEnergy()/(MeV);//record the _starting_ energy
+	  detector_hit[trackid-1]=true; //this track interacted with the detector
+	  IDv[trackid-1]= aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
+	  ParticleNamev[trackid-1]= aStep->GetTrack()->GetDefinition()->GetParticleName();
+	  if(aStep->GetTrack()->GetTrackID()>1)
+	    ProcessNamev[trackid-1]= aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+	  else
+	    ProcessNamev[trackid-1]= "EventGenerator";
+	  TrackIDv[trackid-1]= aStep->GetTrack()->GetTrackID();
+	  Edepv[trackid-1] += aStep->GetTotalEnergyDeposit()/(MeV);
+	  if(Ev[trackid-1]==-1e+6){ //this track was just born
+	    Ev[trackid-1]= aStep->GetPreStepPoint()->GetKineticEnergy()/(MeV);//record the _starting_ energy
+	    Timev[trackid-1]= aStep->GetTrack()->GetGlobalTime(); //save the time, but only once!
+	    //	    std::cout << aStep->GetTrack()->GetTrackID() << "\t" << aStep->GetTrack()->GetGlobalTime() << "\t" << trackid << std::endl;
 
+	  }
 	}
 
 }
@@ -623,7 +626,7 @@ bool Analysis::TrackMustDie(const G4Step *aStep){
   else
     creatorprocessname=aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
   std::string volumename=aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName(); //changed this from PostStep to PreStep, that way non-light producing particles can still be recorded at the surface, in SurfaceHit mode
-  if(volumename!="det_phys"){ //outside the detector
+  if(volumename.compare(0,8,"det_phys")!=0){ //outside the detector
     if(particleid!=EventGeneratorParticle && KeepOnlyMainParticle){ //only keep the main track
       return true;
     }
