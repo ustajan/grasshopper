@@ -545,7 +545,8 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 
 
 	if(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0,8,"det_phys")==0 &&
-			aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="world_log_PV"
+			aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0,8,"det_phys")!=0 //modified the code so it checks the detector entrace by comparing the Pre!=detector && Post==detector
+//			aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="world_log_PV"
 					&& IsSurfaceHit[trackid-1]==false //check that this is truly the first time
 	) //stepping into det for the first time
 	{
