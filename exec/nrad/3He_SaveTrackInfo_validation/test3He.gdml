@@ -59,7 +59,7 @@
   <!-- THE OUTPUT -->
   <define>
   	<constant name="TextOutputOn" value="1"/> <!-- the value should be either 1 (true) or 0 -->
-	<constant name="BriefOutputOn" value="1"/> <!-- enable this if you want the shorter version of the text output -->
+	<constant name="BriefOutputOn" value="0"/> <!-- enable this if you want the shorter version of the text output -->
   	<constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
   	<constant name="EventsToAccumulate" value="200"/> <!-- number of tracks to accumulate in the visualization -->
   </define>
@@ -85,7 +85,7 @@
     <quantity name="BeamOffsetX"  type="coordinate" value="0" unit="mm"/>
     <quantity name="BeamOffsetY"  type="coordinate" value="0" unit="mm"/>    
     <quantity name="BeamOffsetZ"  type="coordinate" value="40" unit="mm"/> <!-- all in mm -->    
-    <quantity name="BeamSize" type="coordinate" value="25" unit="mm"/> <!-- -2 means isotropic -->
+    <quantity name="BeamSize" type="coordinate" value="0" unit="mm"/> <!-- -2 means isotropic -->
 
     <quantity name="BeamEnergy" type="energy" value="0.04" unit="eV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
     <constant name="EventsToRun" value="1000"/>
@@ -126,7 +126,7 @@
       <!-- flux planes -->
       <physvol name="det_phys0"> <!-- This should NEVER be changed -->
         <volumeref ref="det_plane_log"/>
-        <position name="det_phys3_pos" unit="mm" x="0" y="0" z="960"/>
+        <position name="det_phys3_pos" unit="mm" x="0" y="0" z="50"/>
       </physvol>
     </volume>
 

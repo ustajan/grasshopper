@@ -596,6 +596,11 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 	    Ev[trackid-1]= aStep->GetPreStepPoint()->GetKineticEnergy()/(MeV);//record the _starting_ energy
 	    Timev[trackid-1]= aStep->GetTrack()->GetGlobalTime(); //save the time, but only once!
 	    //	    std::cout << aStep->GetTrack()->GetTrackID() << "\t" << aStep->GetTrack()->GetGlobalTime() << "\t" << trackid << std::endl;
+		xv[trackid-1]=X.x()/(mm);
+		yv[trackid-1]=X.y()/(mm);
+		zv[trackid-1]=X.z()/(mm);
+		p = aStep->GetPreStepPoint()->GetMomentum();
+		thetav[trackid-1]=asin(sqrt(pow(p.x(),2)+pow(p.y(),2))/p.mag()); //the angle of the particle relative to the Z axis
 
 	  }
 	}
