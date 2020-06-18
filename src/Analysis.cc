@@ -524,7 +524,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 
 
 
-	if(Ev.size()<trackid){ //a new track
+	if(Ev.size()<trackid){ //a new track.  trackid starts from 1.
 		Ev.resize(trackid,-1e+6);
 		Edepv.resize(trackid,0);
 		xv.resize(trackid,-1e+6);
@@ -597,6 +597,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 	    Ev[trackid-1]= aStep->GetPreStepPoint()->GetKineticEnergy()/(MeV);//record the _starting_ energy
 	    Timev[trackid-1]= aStep->GetTrack()->GetGlobalTime(); //save the time, but only once!
 	    //	    std::cout << aStep->GetTrack()->GetTrackID() << "\t" << aStep->GetTrack()->GetGlobalTime() << "\t" << trackid << std::endl;
+	    X= aStep->GetPostStepPoint()->GetPosition(); //take the position from the post step position
 		xv[trackid-1]=X.x()/(mm);
 		yv[trackid-1]=X.y()/(mm);
 		zv[trackid-1]=X.z()/(mm);

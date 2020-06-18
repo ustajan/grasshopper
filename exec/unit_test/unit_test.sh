@@ -32,7 +32,12 @@ awk '{if(NR>1 && $4=="triton") {n+=$2;m++;}} END {print "Average proton energy, 
 echo ""
 echo "***********************"
 echo "RESULTS:"
-tail -6 md5out.txt
-tail -6 awkout.txt
+tail -6 md5out.txt | head -3
+echo "*****"
+tail -3 md5out.txt
+echo "====="
+tail -6 awkout.txt | head -3
+echo "*****"
+tail -3 awkout.txt
 
 # next run gamma
