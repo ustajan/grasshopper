@@ -42,8 +42,16 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   energy = parser.GetQuantity("BeamEnergy");
   if(energy<0){
 	  doing_continuous_spectrum=true;
-    if (energy/CLHEP::MeV == -2) interpolate=0;
-    else interpolate=1;
+    if (energy/CLHEP::MeV == -3) {
+      interpolate=0;
+      inter2ndOrder=0;
+    } else if (energy/CLHEP::MeV == -2) {
+      interpolate=1;
+      inter2ndOrder=1;
+    } else {
+      interpolate=1;
+      inter2ndOrder=0;
+    }
 	  ReadInputSpectrumFile("input_spectrum.txt");
   }
   else doing_continuous_spectrum=false;
@@ -136,9 +144,19 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     for(int i=0;i<N.size();i++) {
       if(N[i]>random) {
         if (interpolate) {
-          float f = (N[i] - random) / (N[i] - N[i-1]);
-          energy = f*e[i] + (1-f)*e[i-1];
+          if (inter2ndOrder && dNde[i] != dNde[i-1]) {
+            // second order interpolation
+            float a = 0.5*(dNde[i] - dNde[i-1]) / (e[i] - e[i-1]);
+            float b = dNde[i-1] - 2*a*e[i-1];
+            float c = N[i-1] - random - dNde[i-1]*e[i-1] + a*e[i-1]*e[i-1];
+            energy = (-b + pow(b*b - 4*a*c, 0.5)) / (2*a);
+          } else {
+            // first order interpolation
+            float f = (random - N[i-1]) / (N[i] - N[i-1]);
+            energy = f*e[i] + (1-f)*e[i-1];
+          }
         } else {
+          // no interpolation
           energy = e[i];
         }
         break;

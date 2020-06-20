@@ -45,7 +45,7 @@ public:
   G4float beam_offset_x,beam_offset_y,beam_size,source_width;
   float energy;
   bool doing_continuous_spectrum;
-  bool interpolate;
+  bool interpolate,inter2ndOrder;
   bool fan_beam,isotropic_beam,isotropic_extended,omnidirectional;
 
   std::vector<float> e,dNde,N; //the input from the file
