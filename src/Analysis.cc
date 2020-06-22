@@ -134,6 +134,7 @@ Analysis::Analysis(G4ParticleGun* particle_gun)
   tree->Branch("CreatorProcessName",&CreatorProcessName);
   tree->Branch("IsEdepositedTotalEntry",&IsSummaryEntry,"IsEdepositedTotalEntry/O");
   tree->Branch("IsSurfaceHitTrack",&IsSurfaceHitTrack,"IsSurfaceHitTrack/O");
+  tree->Branch("channel",&channel,"channel/I");
  
  
 
@@ -153,9 +154,9 @@ Analysis::Analysis(G4ParticleGun* particle_gun)
 
 	  data_file.open(data_file_name.c_str(), std::ofstream::out | std::ofstream::trunc); //open the text file
 	  if(briefoutput)
-	    data_file << "E_beam(MeV)\tE(MeV)\tEventID\tParticleName\tCreatorProcessName\tTime(ns)" << std::endl;	    
+	    data_file << "E_beam(MeV)\tE(MeV)\tEventID\tParticleName\tCreatorProcessName\tTime(ns)\t detector#" << std::endl;	    
 	  else
-	    data_file << "E_beam(MeV)\tE_incident(MeV)\tE_deposited(MeV)\tx_incident\ty_incident\tz_incident\ttheta\tTime\tEventID\tTrackID\tParticleID\tParticleName\tCreatorProcessName\tIsEdepositedTotalEntry\tIsSurfaceHitTrack" << std::endl;
+	    data_file << "E_beam(MeV)\tE_incident(MeV)\tE_deposited(MeV)\tx_incident\ty_incident\tz_incident\ttheta\tTime\tEventID\tTrackID\tParticleID\tParticleName\tCreatorProcessName\tIsEdepositedTotalEntry\tIsSurfaceHitTrack\tdetector#" << std::endl;
   }
 }
 
@@ -293,8 +294,9 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
     ParticleName=ParticleNamev.at(i); //same here
     Time=Timev.at(i);
     IsSurfaceHitTrack=IsSurfaceHit.at(i);
+    channel=detector_hit.at(i);
 
-    if(detector_hit.at(i) &&
+    if(detector_hit.at(i)>=0 &&
        (
 	(IsSurfaceHitTrack && SaveSurfaceHitTrack )
 	|| SaveTrackInfo
@@ -311,6 +313,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 		    << "\t" << ParticleName.c_str()
 		    << "\t" << CreatorProcessName.c_str()
 		    << "\t" << Time
+		    << "\t" << detector_hit.at(i)
 		    <<std::endl;
 	}
 	else{
@@ -330,6 +333,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 		    << "\t" << CreatorProcessName.c_str()
 		    << "\t" << 0
 		    << "\t" << IsSurfaceHitTrack
+		    << "\t" << detector_hit.at(i)
 		    <<std::endl;
 	}
       }
@@ -348,7 +352,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
     Edep=0; //set it to zero
     CreatorProcessName="";
     for(int i=0;i<Ev.size();++i){ //add ALL the deposited energies from ALL the tracks that hit the detector
-      if(detector_hit.at(i) &&  //make sure we are inside the detector
+      if(detector_hit.at(i)>=0 &&  //make sure we are inside the detector
 	 ( IDv.at(i)==LightProducingParticle ||   //this is the designated light producing particle, OR
 	   LightProducingParticle==0 ||           //the light producing particle has been set to 0 (i.e. everything), OR
 	   ( LightProducingParticle==2212 && ProcessNamev.at(i)=="hIoni") ) //this is an hadron ionization track from a proton
@@ -538,7 +542,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 		EventIDv.resize(trackid,-1e+6);
 		ProcIDv.resize(trackid,-1e+6);
 		Timev.resize(trackid,-1e+6);
-		detector_hit.resize(trackid,false);
+		detector_hit.resize(trackid,-1e+6);
 		IsSurfaceHit.resize(trackid,false);
 
 	}
@@ -547,12 +551,19 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 	if(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0,8,"det_phys")==0 &&
 			aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0,8,"det_phys")!=0 //modified the code so it checks the detector entrace by comparing the Pre!=detector && Post==detector
 //			aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="world_log_PV"
-					&& IsSurfaceHit[trackid-1]==false //check that this is truly the first time
+					&& IsSurfaceHit[trackid-1]==false //check that this is truly the first time we enter A detector
 	) //stepping into det for the first time
 	{
 
 
 		IsSurfaceHit[trackid-1]=true;
+		//Find out the detector number from the name, assuming a notation of the sort "det_phys<number>"
+		//here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
+		std::string detector_name=aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+		std::string detector_base_name="det_phys";
+		int detector_number = atoi(detector_name.substr(detector_name.find("det_phys")+detector_base_name.length()).c_str());
+		detector_hit[trackid-1]=detector_number;
+
 
 		Ev[trackid-1]= aStep->GetPreStepPoint()->GetKineticEnergy()/(MeV);
 
@@ -584,13 +595,12 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 
 	if(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0,8,"det_phys")==0){ //in the det
 
-	  detector_hit[trackid-1]=true; //this track interacted with the detector
 	  IDv[trackid-1]= aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
 	  ParticleNamev[trackid-1]= aStep->GetTrack()->GetDefinition()->GetParticleName();
 	  if(aStep->GetTrack()->GetTrackID()>1)
-	    ProcessNamev[trackid-1]= aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+	  	ProcessNamev[trackid-1]= aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
 	  else
-	    ProcessNamev[trackid-1]= "EventGenerator";
+	  	ProcessNamev[trackid-1]= "EventGenerator";
 	  TrackIDv[trackid-1]= aStep->GetTrack()->GetTrackID();
 	  Edepv[trackid-1] += aStep->GetTotalEnergyDeposit()/(MeV);
 	  if(Ev[trackid-1]==-1e+6){ //this track was just born
@@ -598,14 +608,20 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 	    Timev[trackid-1]= aStep->GetTrack()->GetGlobalTime(); //save the time, but only once!
 	    //	    std::cout << aStep->GetTrack()->GetTrackID() << "\t" << aStep->GetTrack()->GetGlobalTime() << "\t" << trackid << std::endl;
 	    X= aStep->GetPostStepPoint()->GetPosition(); //take the position from the post step position
-		xv[trackid-1]=X.x()/(mm);
-		yv[trackid-1]=X.y()/(mm);
-		zv[trackid-1]=X.z()/(mm);
-		p = aStep->GetPreStepPoint()->GetMomentum();
+	    xv[trackid-1]=X.x()/(mm);
+	    yv[trackid-1]=X.y()/(mm);
+	    zv[trackid-1]=X.z()/(mm);
+	    p = aStep->GetPreStepPoint()->GetMomentum();
 		thetav[trackid-1]=asin(sqrt(pow(p.x(),2)+pow(p.y(),2))/p.mag()); //the angle of the particle relative to the Z axis
 
-	  }
+		//here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
+		std::string detector_name=aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+		std::string detector_base_name="det_phys";
+		int detector_number = atoi(detector_name.substr(detector_name.find("det_phys")+detector_base_name.length()).c_str());
+		detector_hit[trackid-1]=detector_number;
+
 	}
+}
 
 }
 

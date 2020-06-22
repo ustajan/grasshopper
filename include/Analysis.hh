@@ -149,9 +149,10 @@ private:
   std::vector<bool> IsSurfaceHit;
   std::string ParticleName,CreatorProcessName;
   std::vector<float> Timev;
-  std::vector<bool> detector_hit;
+  std::vector<int> detector_hit;
   bool IsSummaryEntry,IsSurfaceHitTrack;
   int LightProducingParticle, EventGeneratorParticle;
+  int channel;
   float LowEnergyCutoff;
   bool KeepOnlyMainParticle;
 
