@@ -42,6 +42,16 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   energy = parser.GetQuantity("BeamEnergy");
   if(energy<0){
 	  doing_continuous_spectrum=true;
+    if (energy/CLHEP::MeV == -3) {
+      interpolate=0;
+      inter2ndOrder=0;
+    } else if (energy/CLHEP::MeV == -2) {
+      interpolate=1;
+      inter2ndOrder=1;
+    } else {
+      interpolate=1;
+      inter2ndOrder=0;
+    }
 	  ReadInputSpectrumFile("input_spectrum.txt");
   }
   else doing_continuous_spectrum=false;
@@ -131,11 +141,27 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   if(doing_continuous_spectrum){//sample from dNde <- this gets called only if energy<0 in input.  Otherwise this gets skipped
     double random=G4UniformRand()*N[N.size()-1];
     //determine which value of energy this corresponds to.
-    for(int i=0;i<N.size();i++)
-      if(N[i]>random && i>0) {
-	energy=e[i-1]  + (random-N[i-1])*(e[i]-e[i-1])/(N[i]-N[i-1]);
-	break;
+    for(int i=0;i<N.size();i++) {
+      if(N[i]>random) {
+        if (interpolate) {
+          if (inter2ndOrder && dNde[i] != dNde[i-1]) {
+            // second order interpolation
+            float a = 0.5*(dNde[i] - dNde[i-1]) / (e[i] - e[i-1]);
+            float b = dNde[i-1] - 2*a*e[i-1];
+            float c = N[i-1] - random - dNde[i-1]*e[i-1] + a*e[i-1]*e[i-1];
+            energy = (-b + pow(b*b - 4*a*c, 0.5)) / (2*a);
+          } else {
+            // first order interpolation
+            float f = (random - N[i-1]) / (N[i] - N[i-1]);
+            energy = f*e[i] + (1-f)*e[i-1];
+          }
+        } else {
+          // no interpolation
+          energy = e[i];
+        }
+        break;
       }
+    }
   }
   particleGun->SetParticleEnergy(energy);
 
@@ -201,16 +227,24 @@ void PrimaryGeneratorAction::ReadInputSpectrumFile(std::string filename){
   std::ifstream f(filename);
   if(f.is_open()) { //check that the file is open
     std::cout<<"oooooooooooooo Reading input file for beam energies oooooooooooo"<<std::endl;
-    N.push_back(0);
     while(!f.eof()) {
       float a,b;
       f>>a>>b;
       e.push_back(a);
       dNde.push_back(b);
-      if(dNde.size()>1) N.push_back(N.at(N.size()-1)+dNde.at(dNde.size()-1)*(e.at(e.size()-1)-e.at(e.size()-2)));
     }
-  }
-  else {
+    if (interpolate) N.push_back(0);
+    else N.push_back(dNde.at(0));
+    for(int i=1;i<e.size();i++) {
+      if (interpolate) {
+        float dx = e.at(i) - e.at(i-1);
+        float yAvg = 0.5*(dNde.at(i) + dNde.at(i-1));
+        N.push_back(N.at(i-1) + dx*yAvg);
+      } else {
+        N.push_back(N.at(i-1) + dNde.at(i));
+      }
+    }
+  } else {
     std::cout<<"Input file expected, however open failed, exiting."<<std::endl;
     exit(8);
   }
