@@ -73,28 +73,14 @@ The code will generate three files:
 
 The root output structure (which is identical to the ascii output) can be somewhat complex. The output of the simulation can be
 thought of as a table -- where every line is an entry corresponding to a **particular set of information**
-within an event. To visualize the structure of the root output, below is the (reduced) set of entries in the ascii output from a simulation of a 0.5MeV photon hitting a 2" NaI detector:
+within an event. Below is a set of entries in the ASCII output from a simulation of a 40meV neutron beam undergoing capture inside two 3He ionization chamber (numbered 5 and 37):
 
+![alt text](https://github.com/ustajan/grasshopper/blob/master/documentation/ascii_long.png?raw=true)
 
-  E\_incident(MeV)   E\_deposited(MeV) ...    z_incident   EventID    TrackID   ParticleID   ParticleName  CreatorProcessName   IsEdepositedTotalEntry    IsSurfaceHitTrack
-  
-  0.15937          0.033281        28.87   0       1       22      gamma   EventGenerator          0       1
+By enabling the BriefOutput flag in the gdml, it's is possible to get the shorter version of the above:
 
--1e+06   0.15888         -1e+06          0       2       11      e-      compt   0       0
+![alt text](https://github.com/ustajan/grasshopper/blob/master/documentation/ascii_short.png?raw=true)
 
--1e+06   0.22764         -1e+06          0       3       11      e-      compt   0       0
-
--1e+06   0.12621         -1e+06          0       4       11      e-      phot    0       0
-
--1       0.546   -1      0       -1      -1      -1      EventGenerator/compt/compt/phot/        1       0
-
-0.30516          0.037719        31.902          1       1       22      gamma   EventGenerator          0       1
-
--1e+06   0.23628         -1e+06          1       2       11      e-      compt   0       0
-
--1e+06   0.272   -1e+06          1       3       11      e-      phot    0       0
-
--1       0.546   -1      1       -1      -1      -1      EventGenerator/compt/phot/      1       0
 
 There are three type of entries:
  * IsSurfaceHitTrack.  These entries are registered when a track enters the detector volume.  To filter out these events, simply search for all entries where IsSurfaceHitTrack==1
@@ -102,12 +88,14 @@ There are three type of entries:
  * IsEdepositedTotalEntry.  At the end of an event all the relevant tracks' deposited energies is summed into E\_deposited variable, and a dedicated entry is made in the tree with this information.  By filtering IsEdepositedTotalEntry==1, all the deposition energy entries can be selected.  This would be useful for studying the detector response function.  These entries have the additional feature of including a concatenation of all the processes which contributed to the deposited energy.  For example, for EventID=0 the energy deposition was achieved via the main track (EventGenerator), a compton scatter and a photoelectric effect (see the last line above).
 
 The variables in the tree/table are as following:
+ * E\_beam -- the energy of the particle produced by the event generator
  * E\_incident    -- only for IsSurfaceHitTrack==1 entries this is the energy of the particle at the detector entrance.  Good way to study the flux of the particles along a surface.
  * E\_deposited   -- the deposited energy in the detector
- * x\_incident    -- for IsSurfaceHitTrack==1 the hit position on the detector
+ * x\_incident    -- for IsSurfaceHitTrack==1 or SaveTrackInfo==1 the hit position on the detector, in mm
  * y\_incident    --  same
  * z\_incident    --  same
- * theta          --  same
+ * theta          --  same (radians)
+ * Time           --  the (flight) time from the inception of the event
  * EventID        -- this is the # of the event in the simulation history
  * TrackID        -- for a particular event, many tracks may be produced.  They will all have the same EventID and different TrackIDs
  * ParticleID     -- for a particular track, this is the ParticleID, based on LLNL Particle Data Group definitions.
@@ -115,6 +103,7 @@ The variables in the tree/table are as following:
  * CreatorProcessName         -- the name of the process which created this track
  * IsEdepositedTotalEntry     -- the flag for total deposited energy entries
  * IsSurfaceHitTrack          -- the flag for surface hit entries
+ * detector#       -- the number of the detector.  The code assumes that all detector volumes are named **det_phys#**, where **#** is the detector number.  The code trunkates the **det_phys** and thus extracts the detector number.
 
 The CreatorProcessName for IsEdepositedTotalEntry==1 entries contains a concatenation of all the processes which contributed to the deposited energy.  This is a good way to study the various effecst which, for example, contribute to the photopeak and the Compton continuum in a gamma detector.
 
