@@ -1,0 +1,23 @@
+{
+  "astar_request": {
+    "title": "example request",
+    "Attributes": {
+        "ID": "R001",
+        "AtomicNumber": 26,
+        "CoherentScattering": 1,
+        "IncoherentScattering": 1,
+        "PhotoAbsorption": 1,
+        "PPinNuclearField": 1,
+        "PPinElectricField": 1,
+        "TotalAttenuationCS": 1,
+        "TotalAttenuationIS": 1,
+        "Other": {
+          "description": "Config file for API use",
+          "SeeAlso": [
+            "GML",
+            "XML"
+          ]
+      }
+    }
+  }
+}

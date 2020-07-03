@@ -1,0 +1,16 @@
+E(MeV)	EventID	ParticleName	CreatorProcessName	Time(ns)
+2.0428	436	proton	EventGenerator	31.817
+2.3503	18008	proton	EventGenerator	31.396
+2.8305	19928	proton	EventGenerator	30.753
+2.1654	23849	proton	EventGenerator	31.609
+2.3116	30103	proton	EventGenerator	31.403
+2.4748	33563	proton	EventGenerator	31.369
+1.4688	34768	proton	EventGenerator	32.745
+1.6887	38247	proton	EventGenerator	32.428
+1.8096	38388	proton	EventGenerator	32.236
+2.2115	41015	proton	EventGenerator	31.707
+1.5706	42706	proton	EventGenerator	32.522
+2.0793	48689	proton	EventGenerator	31.887
+2.383	49180	proton	EventGenerator	31.469
+2.6731	49355	proton	EventGenerator	31.058
+2.1476	50414	proton	EventGenerator	31.777
