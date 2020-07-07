@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<!-- Jacob Miske -->
+
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+   <materials>
+    <element Z="7" name="Nitrogen">
+      <atom unit="g/mole" value="14.01"/>
+    </element>
+    <element Z="8" name="Oxygen">
+      <atom unit="g/mole" value="16"/>
+    </element>
+
+    <material name="Air" state="gas">
+      <D unit="g/cm3" value="0.00129"/>
+      <fraction n="0.7" ref="Nitrogen"/>
+      <fraction n="0.3" ref="Oxygen"/>
+    </material>
+    <material name="Vacuum" state="gas">
+      <D unit="g/cm3" value="0.000000129"/> <!-- 10,000th of an atm in pressure -->
+      <fraction n="0.7" ref="Nitrogen"/>
+      <fraction n="0.3" ref="Oxygen"/>
+    </material>
+  </materials>
+
+
+  <!-- THE OUTPUT -->
+  <define>
+  	<constant name="TextOutputOn" value="1"/> <!-- the value should be either 1 (true) or 0 -->
+	<constant name="BriefOutputOn" value="1"/> <!-- enable this if you want the shorter version of the text output -->
+  	<constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
+  	<constant name="EventsToAccumulate" value="100"/> <!-- number of tracks to accumulate in the visualization -->
+  </define>
+
+  <!-- CUTS...apply various cuts to make the computation more efficient -->
+  <define>
+    <constant name="LightProducingParticle" value="0"/> <!-- the particle which is actually producing light in the detector.  0 means ALL.  It will also kill all particles other than LightProducingParticle in the detector.  If in doubt set to 0. -->
+    <constant name="LowEnergyCutoff" value="0."/><!-- The low energy cuttoff, MeV, for the main track. If in doubt set it to 0 -->
+    <constant name="KeepOnlyMainParticle" value="0"/> <!-- if 1, the simulation will track only the main particle, as defined by ParticleNumber in the beam definition, OUTSIDE the detector volume.  For example, you'll need to set this to 0 to simulate bremmstrahlung, but to 1 for any transmission simulation. If in doubt, set to 0.-->
+    <quantity name="ProductionLowLimit" type="threshold" value="100" unit="keV" /> <!-- for neutron processes anything >1keV causes things to hang...set this to a high value for any other process to optimize computational time.  There are still some intricacies with this.  With high enough energy, rather than generating secondaries, all the energy loss will get tagged to the EnergyDeposited for the main particle.  So, the energy scoring (as determined by LighProducingParticle above) needs to be adjusted accordingly. -->
+  </define>
+
+<!-- OUTPUT FILTERS.  What data/entries do you want to keep? -->
+  <define>
+    <constant name="SaveSurfaceHitTrack" value="1"/> <!-- save entries which contain hit information, e.g. if you want to simulate the flux of particles -->
+    <constant name="SaveTrackInfo" value="1"/> <!-- save individual track info (within an event).  This is useful for studying the physics of the various interactions -->
+    <constant name="SaveEdepositedTotalEntry" value="1"/> <!--save entries which summarize the total deposited energy, e.g. in detector response simulations -->
+  </define>
+
+  <!-- THE BEAM -->
+  <define>
+    <constant name="RandomGenSeed" value="1"/>
+    <quantity name="BeamOffsetX"  type="coordinate" value="0" unit="mm"/>
+    <quantity name="BeamOffsetY"  type="coordinate" value="0" unit="mm"/>
+    <quantity name="BeamOffsetZ"  type="coordinate" value="-10" unit="mm"/> <!-- all in mm -->
+    <quantity name="BeamSize" type="coordinate" value="1" unit="mm"/> <!-- isotropic -->
+
+    <quantity name="BeamEnergy" type="energy" value="10" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
+    <constant name="EventsToRun" value="1000"/>
+    <constant name="ParticleNumber" value="2112"/>
+    <!-- e- is 11, gamma is 22, neutron is 2112, proton is 2212, alpha is 1000020040 -->
+
+  </define>
+
+
+  <!-- definition of solid geometries -->
+  <solids>
+    <!-- world volume -->
+    <box lunit="mm" name="world_solid" x="300" y="300" z="300"/>
+    <!-- the horizontal absorber plate
+    <box lunit="mm" name="plate_solid" unit="mm" x="20" y="20" z="0.1"/>
+    -->
+    <!-- the horizontal detection plane -->
+    <tube name = "det_plane_solid" rmin="0" rmax="5" z="1" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/>
+    <tube name = "plate_solid" rmin="0" rmax="5" z="1" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/>
+  </solids>
+
+
+  <!-- PUTTING IT ALL TOGETHER -->
+  <structure>
+    <!-- the horizontal plate -->
+    <volume name="plate_log">
+      <materialref ref="G4_Al"/>
+      <solidref ref="plate_solid"/>
+    </volume>
+    <!-- the horizontal detection plane -->
+    <volume name="det_plane_log">
+      <materialref ref="G4_Pb"/> <!-- one of Air, G4_Cu, G4_WATER, or G4_Pb -->
+      <solidref ref="det_plane_solid"/>
+    </volume>
+
+    <!-- top level world volume with all geometry elements -->
+    <volume name="world_log">
+      <materialref ref="Vacuum"/>
+      <solidref ref="world_solid"/>  <!-- This should NEVER be changed -->
+
+      <physvol name="plate_phys">
+        <volumeref ref="plate_log"/>
+	    <position name="plate_phys_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+
+      <!-- flux planes -->
+      <physvol name="det_phys"> <!-- This should NEVER be changed -->
+        <volumeref ref="det_plane_log"/>
+        <position name="det_phys3_pos" unit="mm" x="0" y="0" z="10"/>
+      </physvol>
+    </volume>
+
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="world_log"/>
+  </setup>
+</gdml>
