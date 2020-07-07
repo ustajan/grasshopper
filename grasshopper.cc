@@ -73,7 +73,7 @@ G4GDMLParser parser;
 #endif
 
 
-#include "AnalysisManager.hh"
+//#include "AnalysisManager.hh"
 #include "Analysis.hh"
 
 int main(int argc,char** argv)
@@ -191,7 +191,7 @@ int main(int argc,char** argv)
   //Now do a cleanup, print CPU/time diagnostics, and exit
 
   if (analysis == AnalysisManager::GetAnalysisManager())
-    delete analysis;
+  	delete analysis;
 
   // job termination
 	
