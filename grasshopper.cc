@@ -108,9 +108,9 @@ int main(int argc,char** argv)
   std::string rootoutputfile = (std::string)RootOutputFile;
   if(rootoutputfile.find(".root")<rootoutputfile.length()){
 	  gOutName=(std::string)rootoutputfile.substr(0, rootoutputfile.find(".root"));
-	  gOutName+=".dat";
+	  
   }
-	else gOutName=(std::string)RootOutputFile+".dat";
+	else gOutName=(std::string)RootOutputFile;
   
   if (!commandlineseed)
     seed = parser.GetConstant("RandomGenSeed");
