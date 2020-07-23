@@ -8,8 +8,8 @@ extern G4String gOutName;
 
 MySession::MySession() : G4UIsession()
 {
-        logFile.open(gOutName);
-        errFile.open("Error.log");
+        logFile.open(gOutName+".log");
+        errFile.open(gOutName+"_error.log");
 }
 
 MySession::~MySession()
