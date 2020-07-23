@@ -52,6 +52,8 @@
 #include "RunAction.hh"
 #include "SteppingAction.hh"
 #include "StackingAction.hh"
+#include "MySession.hh"
+#include "G4UIsession.hh"
 
 #include "Randomize.hh"
 
@@ -76,12 +78,14 @@ G4GDMLParser parser;
 //#include "AnalysisManager.hh"
 #include "Analysis.hh"
 
+G4String gOutName;
+
 int main(int argc,char** argv)
 {
 
   bool commandlineseed = false;
   G4int seed;
-
+  gOutName = "MyLogFile.out";
   clock_t t0,t1,t2;
   G4int start_time = time(NULL);
   t0=clock();
@@ -119,6 +123,10 @@ int main(int argc,char** argv)
 
   // Construct the default run manager
   G4RunManager* runManager = new G4RunManager;
+	
+   G4UImanager* UIS = G4UImanager::GetUIpointer();
+   MySession* LoggedSession = new MySession;
+   UIS->SetCoutDestination(LoggedSession);
 
 
   // exporting geometry from specified GDML file
@@ -201,6 +209,7 @@ int main(int argc,char** argv)
 	
 
   delete runManager;
+  delete LoggedSession;
 
   G4int stop_time = time(NULL);
   t2=clock();
