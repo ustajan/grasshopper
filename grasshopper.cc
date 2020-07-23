@@ -85,7 +85,7 @@ int main(int argc,char** argv)
 
   bool commandlineseed = false;
   G4int seed;
-  gOutName = "MyLogFile.out";
+  
   clock_t t0,t1,t2;
   G4int start_time = time(NULL);
   t0=clock();
@@ -105,7 +105,13 @@ int main(int argc,char** argv)
   }
 
   G4int run_evnt;
-
+  std::string rootoutputfile = (std::string)RootOutputFile;
+  if(rootoutputfile.find(".root")<rootoutputfile.length()){
+	  gOutName=(std::string)rootoutputfile.substr(0, rootoutputfile.find(".root"));
+	  gOutName+=".dat";
+  }
+	else gOutName=(std::string)RootOutputFile+".dat";
+  
   if (!commandlineseed)
     seed = parser.GetConstant("RandomGenSeed");
 
