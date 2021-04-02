@@ -75,7 +75,7 @@
     <quantity name="BeamOffsetZ"  type="coordinate" value="0" unit="mm"/> <!-- all in mm -->    
     <quantity name="BeamSize" type="coordinate" value="5" unit="mm"/> <!-- -1 means a fan beam, -2 means an isotropic emission.  All zero or positive values determine the beam radius. -->
 
-    <quantity name="BeamEnergy" type="energy" value="1" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
+    <quantity name="BeamEnergy" type="energy" value="2" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
     <constant name="EventsToRun" value="10000"/>
     <constant name="ParticleNumber" value="11"/> 
     <!-- e- is 11, gamma is 22, neutron is 2112, proton is 2212, alpha is 1000020040 -->
@@ -87,7 +87,7 @@
   <solids>
     <!-- world volume -->
     <box lunit="mm" name="world_solid" x="300" y="300" z="300"/>    
-    <tube name="plate_solid" rmin="0" rmax="14.99" z="0.25" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/> <!-- this is the absorber plate -->
+    <tube name="plate_solid" rmin="0" rmax="14.99" z="0.1" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/> <!-- this is the absorber plate -->
     <!-- the horizontal detection plane -->
     <tube name = "det_plane_solid" rmin="0" rmax="12.7" z="1" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/> <!-- this is the detector volume -->
   </solids>

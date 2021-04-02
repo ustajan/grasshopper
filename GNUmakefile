@@ -31,7 +31,10 @@ G4SUBV := $(word 3,$(G4VS))
 include $(G4INSTALL)/config/binmake.gmk
 
 CPPFLAGS += -O3 #-g #uncomment and set O to zero if you need debugger flags
-CPPFLAGS += -DG4MAJV=$(G4MAJV) -DG4MINV=$(G4MINV) -DG4SUBV=$(G4SUBV)
+CPPFLAGS += -DG4MAJV=$(G4MAJV) -DG4MINV=$(G4MINV) -DG4SUBV=$(G4SUBV) #add -v for verbose mode
+#CPPFLAGS += -L/Users/aregjan/geant4/geant4.10.05-install/lib/ #<-- this should not be needed!!  the binmake.gmk isn't setting the env variables correctly
+CPPFLAGS += -L${G4LIB}/../ #<-- this should not be needed!!  the binmake.gmk isn't setting the env variables correctly
+
 
 ########################### ROOT #################################
 ifdef ROOTSYS
