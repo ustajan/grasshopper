@@ -140,7 +140,7 @@ private:
   G4double theta;
   G4float Time;
   G4int ID;
-  long unsigned int TrackID;
+  G4int TrackID;
   G4int EventID;
   G4int ProcID;
   std::vector<double> Ev,Edepv,xv,yv,zv,thetav;
