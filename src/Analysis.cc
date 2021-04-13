@@ -528,7 +528,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 
 
 
-	if(Ev.size()<trackid){ //a new track.  trackid starts from 1.
+	if((long unsigned int)Ev.size() < (long unsigned int)trackid){ //a new track.  trackid starts from 1.
 		Ev.resize(trackid,-1e+6);
 		Edepv.resize(trackid,0);
 		xv.resize(trackid,-1e+6);
