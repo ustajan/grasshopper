@@ -278,7 +278,7 @@ void Analysis::BeginOfEventAction(const G4Event *anEvent)
 void Analysis::EndOfEventAction(const G4Event *anEvent)
 {
   
-  for(int i=0;i<Ev.size();++i){ //looping over all the tracks in the detector
+  for(unsigned int i=0;i<Ev.size();++i){ //looping over all the tracks in the detector
     if(IsSurfaceHit.at(i))
       E=Ev.at(i);	//fill the incident energy variable ONLY for incident hit entries
     Edep=Edepv.at(i);
@@ -351,7 +351,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
     IsSurfaceHitTrack=false;
     Edep=0; //set it to zero
     CreatorProcessName="";
-    for(int i=0;i<Ev.size();++i){ //add ALL the deposited energies from ALL the tracks that hit the detector
+    for(unsigned int i=0;i<Ev.size();++i){ //add ALL the deposited energies from ALL the tracks that hit the detector
       if(detector_hit.at(i)>=0 &&  //make sure we are inside the detector
 	 ( IDv.at(i)==LightProducingParticle ||   //this is the designated light producing particle, OR
 	   LightProducingParticle==0 ||           //the light producing particle has been set to 0 (i.e. everything), OR
