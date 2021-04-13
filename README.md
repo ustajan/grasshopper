@@ -43,7 +43,7 @@ To build with GNUmake
 
 To build with CMake
 ==
-`> mkdir RunGrasshopper`
+`> mkdir RunGrasshopper && cd RunGrasshopper`
 
 `> cmake ../grasshopper && make -jN`
 
