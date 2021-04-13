@@ -35,11 +35,17 @@ If all the regular geant4 installations and configurations are ready, then the u
 
 `> git clone https://github.com/ustajan/grasshopper.git`
 
-To build
+To build with GNUmake
 ==
 `> cd grasshopper`
 
 `> make`
+
+To build with CMake
+==
+`> mkdir RunGrasshopper`
+
+`> cmake ../grasshopper && make -jN`
 
 To run
 ==
