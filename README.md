@@ -19,6 +19,7 @@ To install
 The user is required to have the following
 
 	* xerces.  This will allow the GDML parser capability.
+	* For CMake Builds the User MUST Have CMake version 3.17 or higher.
 	* Built and installed geant4 libraries.  Also, in the cmake stage, the following flag needs to be passed:
 	`-DGEANT4_USE_GDML=ON`.  In some cases you also have to also add the location for Xerces with flags such as 	
         `-DXERCESC_INCLUDE_DIR=/usr/local/include/ -DXERCESC_LIBRARY=/usr/local/lib/libxerces-c.so`.  See the geant4 instructions on how 	to add Xerces for more detail on the paths.
