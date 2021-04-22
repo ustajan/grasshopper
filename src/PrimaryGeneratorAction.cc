@@ -141,7 +141,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   if(doing_continuous_spectrum){//sample from dNde <- this gets called only if energy<0 in input.  Otherwise this gets skipped
     double random=G4UniformRand()*N[N.size()-1];
     //determine which value of energy this corresponds to.
-    for(int i=0;i<N.size();i++) {
+    for(unsigned int i=0;i<N.size();i++) {
       if(N[i]>random) {
         if (interpolate) {
           if (inter2ndOrder && dNde[i] != dNde[i-1]) {
@@ -235,7 +235,7 @@ void PrimaryGeneratorAction::ReadInputSpectrumFile(std::string filename){
     }
     if (interpolate) N.push_back(0);
     else N.push_back(dNde.at(0));
-    for(int i=1;i<e.size();i++) {
+    for(unsigned int i=1;i<e.size();i++) {
       if (interpolate) {
         float dx = e.at(i) - e.at(i-1);
         float yAvg = 0.5*(dNde.at(i) + dNde.at(i-1));
