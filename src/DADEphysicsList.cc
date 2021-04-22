@@ -49,6 +49,9 @@
 
 #include "G4PhotoNuclearProcess.hh"
 #include "G4CascadeInterface.hh"
+#include "G4GDMLParser.hh"
+
+extern G4GDMLParser parser;
 
 
 physicsList::physicsList(G4bool neutronHP,
@@ -195,8 +198,26 @@ void physicsList::ConstructPhysics()
 
 void physicsList::SetCuts()
 {
+
+  if (verboseLevel >1)
+    G4cout << "DMXPhysicsList::SetCuts:";
+  
+  if (verboseLevel>0){
+    G4cout << "DMXPhysicsList::SetCuts:";
+    G4cout << "CutLength : " 
+     << G4BestUnit(defaultCutValue,"Length") << G4endl;
+  }
+
+  //special for low energy physics
+  G4double lowlimit=parser.GetQuantity("ProductionLowLimit"); //default at 250eV, typically running at 250keV
+  std::cout << "ProductionLowLimit:\t" << lowlimit/MeV << " MeV" << std::endl;
+  G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowlimit,100.*GeV); //by default it's always on
+
   SetCutValue(cutForGamma, "gamma");
   SetCutValue(cutForElectron, "e-");
   SetCutValue(cutForPositron, "e+");
   SetCutValue(cutForProton, "proton");
+
+  if (verboseLevel>0) DumpCutValuesTable();
+
 }

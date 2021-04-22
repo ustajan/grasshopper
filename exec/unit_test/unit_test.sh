@@ -8,7 +8,8 @@
 # b) output analysis results, as well as the results for the PREVIOUS oututs.  Again, assuming only minor procedural changes the outputs should not change.
 
 # reset DY_LYBRARY_PATH
-.  ~/root-build/bin/thisroot.sh 
+#.  ~/root-build/bin/thisroot.sh 
+. ~/root/root_install/bin/thisroot.sh
 
 # first run the beta simulation
 grasshopper beta_lite.gdml beta_test.root 0
