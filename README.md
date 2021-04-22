@@ -22,13 +22,14 @@ The user is required to have the following
 	* For CMake Builds the User MUST Have CMake version 3.17 or higher.
 	* Built and installed geant4 libraries.  Also, in the cmake stage, the following flag needs to be passed:
 	`-DGEANT4_USE_GDML=ON`.  In some cases you also have to also add the location for Xerces with flags such as 	
-        `-DXERCESC_INCLUDE_DIR=/usr/local/include/ -DXERCESC_LIBRARY=/usr/local/lib/libxerces-c.so`.  See the geant4 instructions on how 	to add Xerces for more detail on the paths.
-	* ROOT -- optional.  Has been tested with version 6.16.  If you do not have ROOT the make process will recognize that and exclude 		it from the build.
+        `-DXERCESC_INCLUDE_DIR=/usr/local/include/ -DXERCESC_LIBRARY=/usr/local/lib/libxerces-c.so`.  See the geant4 instructions on how 	to add Xerces for more detail on the paths.  Here's an example of what a Geant4 cmake command looks like:
+        `cmake -DCMAKE_INSTALL_PREFIX=../geant4.10.05-install -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_GDML=ON ../geant4.10.05`
+	* ROOT -- optional.  Has been tested with version 6.22/07.  If you do not have ROOT the make process will recognize that and exclude 		it from the build.
 	* When building grasshopper, the compiler might not find the GDML header files.  In that case just determine the actual file directories, and add them to the include list by appending `-I/directory_to_headers` to the `CPPFLAGS` env variable.
 
 __Version__:  grasshopper and been built against and tested with Geant4 10.5.  Geant4 10.6 has important modifications that require changes in the code.
 
-__Important note__:  these days geant4 primarily works via the cmake framework.  However grasshopper uses the older Makefile framework.  It is important that you source the appropriate shell script in geant4 directories to enable all the env. variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
+__Important note__:  these days geant4 primarily works via the cmake framework.  However grasshopper can also use the older Makefile framework.  It is important that you source the appropriate shell script in geant4 directories to enable all the env. variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
 
 `. /usr/local/geant4/geant4.10.05-install/share/Geant4-10.5.0/geant4make/geant4make.sh`
 
@@ -46,7 +47,7 @@ To build with CMake
 ==
 `> mkdir RunGrasshopper && cd RunGrasshopper`
 
-`> cmake ../grasshopper && make -jN`
+`> cmake ../../grasshopper && make -jN`
 
 To run
 ==
@@ -142,8 +143,8 @@ Below is a prioritized list of future tasks.
 	* OUTPUT
 	  + Implement "simple" ascii text output, along with ROOT  -- DONE
 	  + Make the code be able to reliably switch between ROOT (when ROOT is available) and ASCII output -- DONE
-	* Write the python front end to the gdml? <-- need a UROP
-	* Check the physics, by comparing to data and validated geant4 simulations
+	* Write the python/javascript front end to the gdml? <<===== need a UROP
+	* Check the physics, by comparing to data and validated geant4 simulations -- DONE
 	  + Did some basic comparisons of gamma transmission to exp(-mu*x)
 	* automatic wrl generation (even in batch mode), limited to 300 tracks -- DONE
 	* Implement the keeper list, which should allow to dramatically speed up the simulations -- DONE
@@ -151,9 +152,9 @@ Below is a prioritized list of future tasks.
 	  + Replace the char arrays in TTree with actual strings -- DONE
 
 
-Requirements for the python front end
+Requirements for the  front end
 ==
-The python front end will read in a simple ASCII text file with "human readable" descriptions, parse it,
+The  front end will read in a simple ASCII text file with "human readable" descriptions, parse it,
 populate a gdml file based on some template, and run the geant4 simulation.  The ASCII input file needs
 to have the following fields and sections
 
