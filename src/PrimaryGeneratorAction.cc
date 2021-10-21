@@ -195,6 +195,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   if(fan_beam){ //let's do a fan beam
 	  theta = acos(0.5*(G4UniformRand()-0.5))-90.*CLHEP::deg;
 	  phi   = 0.005*(G4UniformRand()-0.5);
+    vDir = G4ThreeVector(sin(theta)*cos(phi),sin(theta)*sin(phi),cos(theta));
   }
   else if(isotropic_beam || isotropic_extended){ //isotropic
     theta = acos(2*G4UniformRand()-1); //truly isotropic
@@ -227,9 +228,8 @@ void PrimaryGeneratorAction::ReadInputSpectrumFile(std::string filename){
   std::ifstream f(filename);
   if(f.is_open()) { //check that the file is open
     std::cout<<"oooooooooooooo Reading input file for beam energies oooooooooooo"<<std::endl;
-    while(!f.eof()) {
-      float a,b;
-      f>>a>>b;
+    float a,b;
+    while(f >> a >> b) {
       e.push_back(a);
       dNde.push_back(b);
     }
