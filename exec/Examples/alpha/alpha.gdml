@@ -2,7 +2,7 @@
 
 <!-- Areg Danagoulian -->
 
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/home/aregjan/git/grasshopper/documentation/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schema/gdml.xsd">
 
 
 

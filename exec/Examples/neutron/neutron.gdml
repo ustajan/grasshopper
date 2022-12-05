@@ -2,7 +2,7 @@
 
 <!-- Areg Danagoulian -->
 
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/home/aregjan/git/grasshopper/documentation/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schema/gdml.xsd">
 
 
 
@@ -41,7 +41,7 @@
     
   <!-- THE OUTPUT -->
   <define>
-  	<constant name="TextOutputOn" value="1"/> <!-- the value should be either 1 (true) or 0 -->
+  	<constant name="TextOutputOn" value="0"/> <!-- the value should be either 1 (true) or 0 -->
 	<constant name="BriefOutputOn" value="1"/> <!-- enable this if you want the shorter version of the text output -->
   	<constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
   	<constant name="EventsToAccumulate" value="50"/> <!-- number of tracks to accumulate in the visualization -->
@@ -57,9 +57,9 @@
 
 <!-- OUTPUT FILTERS.  What data/entries do you want to keep? -->
   <define>
-    <constant name="SaveSurfaceHitTrack" value="1"/> <!-- save entries which contain hit information, e.g. if you want to simulate the flux of particles -->
+    <constant name="SaveSurfaceHitTrack" value="0"/> <!-- save entries which contain hit information, e.g. if you want to simulate the flux of particles -->
     <constant name="SaveTrackInfo" value="1"/> <!-- save individual track info (within an event).  This is useful for studying the physics of the various interactions -->
-    <constant name="SaveEdepositedTotalEntry" value="1"/> <!--save entries which summarize the total deposited energy, e.g. in detector response simulations -->
+    <constant name="SaveEdepositedTotalEntry" value="0"/> <!--save entries which summarize the total deposited energy, e.g. in detector response simulations -->
   </define>
 
   <!-- THE BEAM -->
@@ -83,7 +83,7 @@
     <!-- world volume -->
     <box lunit="mm" name="world_solid" x="500" y="500" z="500"/>    
     <!-- the horizontal absorber plate -->
-    <box lunit="mm" name="plate_solid" unit="mm" x="20" y="20" z="0.1"/>
+    <box lunit="mm" name="plate_solid" unit="mm" x="20" y="20" z="10"/>
     <!-- the horizontal detection plane -->
     <tube name = "det_plane_solid" rmin="0" rmax="200" z="200" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/>
   </solids>

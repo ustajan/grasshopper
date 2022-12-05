@@ -2,7 +2,7 @@
 
 <!-- Areg Danagoulian -->
 
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/home/aregjan/git/grasshopper/documentation/xsd/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../schema/gdml.xsd">
 
 
 
@@ -78,7 +78,7 @@
     <quantity name="BeamSize" type="coordinate" value="-1" unit="mm"/> <!-- -2 means isotropic -->
 
     <quantity name="BeamEnergy" type="energy" value="0.662" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
-    <constant name="EventsToRun" value="100000"/>
+    <constant name="EventsToRun" value="10000000"/>
     <constant name="ParticleNumber" value="22"/> 
     <!-- e- is 11, gamma is 22, neutron is 2112, proton is 2212 -->
  
@@ -90,7 +90,7 @@
     <!-- world volume -->
     <box lunit="m" name="world_solid" x="2" y="2" z="2"/>    
     <!-- the horizontal absorber plate -->
-    <tube name = "plate_solid" rmin="3.5" rmax="50.8" z="200" deltaphi="360" startphi="0" aunit="deg" lunit= "mm"/>
+    <tube name = "plate_solid" rmin="3.5" rmax="101.6" z="200" deltaphi="360" startphi="0" aunit="deg" lunit= "mm"/>
     <!-- the horizontal detection plane -->
     <tube name = "det_plane_solid" rmin="0" rmax="25.4" z="50.8" deltaphi="360" startphi="0" aunit="deg" lunit= "mm"/> <!-- This is the 2" NaI.  Change the geometry for LaBr3 and HPGe.  Don't forget to change the material too beloe! -->
   </solids>
@@ -118,12 +118,12 @@
       	<position name="plate_phys_pos" unit="mm" x="0" y="0" z="-200"/>
       </physvol>
       <!-- flux planes -->
-      <physvol name="det_phys_0"> <!-- This should NEVER be changed -->
+      <physvol name="det_phys0"> <!-- This should NEVER be changed -->
         <volumeref ref="det_plane_log"/>
         <position name="det_phys3_pos" unit="mm" x="0" y="0" z="0"/>
         <rotationref ref="rotateDetector"/>
       </physvol>
-      <physvol name="det_phys_1"> <!-- This should NEVER be changed -->
+      <physvol name="det_phys1"> <!-- This should NEVER be changed -->
         <volumeref ref="det_plane_log"/>
         <position name="det_phys3_pos" unit="mm" x="-200" y="0" z="0"/>
         <rotationref ref="rotateDetector"/>
