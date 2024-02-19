@@ -119,6 +119,16 @@ int main(int argc,char** argv)
 
   run_evnt = parser.GetConstant("EventsToRun");
 
+
+  //Welcome message, along with reference and copyright
+  std::cout << "\n  ==========================================\n"
+               "  Welcome to grasshopper!\n"
+               "  Copyright   : (c) 2015-2024 Areg Danagoulian\n"
+               "  Reference   :  A. Danagoulian, J. N. Miske and E. A. Klein, Grasshopper, a Geant4 Front End: Validation and Benchmarking, 2021 IEEE Nuclear Science Symposium and Medical Imaging Conference (NSS/MIC), Piscataway, NJ, USA, 2021, pp. 1-7, \n"
+               "  doi         :  10.1109/NSS/MIC44867.2021.9875720 \n"
+               "  GitHub      :  https://github.com/ustajan/grasshopper  \n"
+               "  ==========================================\n";
+
   // output configuration information
   std::cout<<"\nRandomGenSeed: "<<seed;
   std::cout<<"\nEventsToRun: "<<run_evnt;
