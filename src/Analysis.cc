@@ -123,18 +123,18 @@ Analysis::Analysis(G4ParticleGun* particle_gun)
   tree->Branch("z_incident",&z,"z_incident/D");
   tree->Branch("theta",&theta,"theta/D");
   tree->Branch("Time",&Time,"Time/F");
-  tree->Branch("EventID",&EventID,"EventID/I");
-  tree->Branch("TrackID",&TrackID,"TrackID/I");
-  tree->Branch("ParticleID",&ID,"ParticleID/I");
+  tree->Branch("EventID",&EventID,"EventID/l");
+  tree->Branch("TrackID",&TrackID,"TrackID/l");
+  tree->Branch("ParticleID",&ID,"ParticleID/l");
 //  char *tmp=(char*)ParticleName_placeholder.c_str(); //same as below -- set the pointer to the placeholder for particle name
 //  tree->Branch("ParticleName",tmp,"ParticleName/C");
   tree->Branch("ParticleName",&ParticleName);
-  tree->Branch("CreatorProcessID",&ProcID,"CreatorProcessID/I"); //obsolete
+  tree->Branch("CreatorProcessID",&ProcID,"CreatorProcessID/l"); //obsolete
 //  char *tmp2=(char*)CreatorProcessName.c_str(); //a tmp pointer at the creatorprocessname, which will be updated at the end of every track
   tree->Branch("CreatorProcessName",&CreatorProcessName);
   tree->Branch("IsEdepositedTotalEntry",&IsSummaryEntry,"IsEdepositedTotalEntry/O");
   tree->Branch("IsSurfaceHitTrack",&IsSurfaceHitTrack,"IsSurfaceHitTrack/O");
-  tree->Branch("channel",&channel,"channel/I");
+  tree->Branch("channel",&channel,"channel/l");
  
  
 

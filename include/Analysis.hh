@@ -131,7 +131,7 @@ private:
   std::ofstream data_file;
   bool textoutput,briefoutput;
 
-  G4int npart;
+  unsigned long npart;
   G4ParticleGun* particle_gun_local;
   G4double E,Edep,E_beam;
   G4double x;
@@ -139,20 +139,20 @@ private:
   G4double z;
   G4double theta;
   G4float Time;
-  G4int ID;
-  G4int TrackID;
-  G4int EventID;
-  G4int ProcID;
+  unsigned long ID;
+  unsigned long TrackID;
+  unsigned long EventID;
+  unsigned long ProcID;
   std::vector<double> Ev,Edepv,xv,yv,zv,thetav;
-  std::vector<int> IDv,TrackIDv,EventIDv,ProcIDv;
+  std::vector<unsigned long> IDv,TrackIDv,EventIDv,ProcIDv;
   std::vector<std::string> ParticleNamev,ProcessNamev;
   std::vector<bool> IsSurfaceHit;
   std::string ParticleName,CreatorProcessName;
   std::vector<float> Timev;
-  std::vector<int> detector_hit;
+  std::vector<unsigned long> detector_hit;
   bool IsSummaryEntry,IsSurfaceHitTrack;
-  int LightProducingParticle, EventGeneratorParticle;
-  int channel;
+  unsigned long LightProducingParticle, EventGeneratorParticle;
+  unsigned long channel;
   float LowEnergyCutoff;
   bool KeepOnlyMainParticle;
 
