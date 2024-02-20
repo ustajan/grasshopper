@@ -408,7 +408,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 #endif
 
   if(anEvent->GetEventID() % 100 == 0)
-    std::cout << "\r\tEvent, and tracks:\t" << anEvent->GetEventID() << "\t" << Ev.size() << std::flush;
+    std::cout << "\r\tEvent, and tracks:\t" << anEvent->GetEventID() << "\t\t" << Ev.size() << std::flush;
 
 
   OnceAWhileDoIt();
