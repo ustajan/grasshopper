@@ -46,7 +46,7 @@
 
 #include "DetectorConstruction.hh"
 //#include "PhysicsList.hh"
-#include "DADEphysicsList.hh"
+#include "PhysicsList.hh"
 #include "PrimaryGeneratorAction.hh"
 #include "EventAction.hh"
 #include "RunAction.hh"
@@ -148,7 +148,7 @@ int main(int argc,char** argv)
   // exporting geometry from specified GDML file
   runManager->SetUserInitialization(new DetectorConstruction(parser.GetWorldVolume()));
 
-  runManager->SetUserInitialization(new physicsList(true,false)); //<- DADE's version, not very different from DMX (used to be (false,false))
+  runManager->SetUserInitialization(new physicsList(true,false)); //used to be DADE's version (true,false)
 
 
 

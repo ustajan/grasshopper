@@ -1,142 +1,223 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
-//
-/// \file PhysicsList.cc
-/// \brief Implementation of the PhysicsList class
-//
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// Author:
+// Zach Hartwig, 2015
+// Modified by:  Areg Danagoulian, 2019
+// MIT, NSE
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+///////////////////////////////////////////////////////////////////////////////
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+#include "G4SystemOfUnits.hh"
+#include "G4PhysicalConstants.hh"
+
+#include "G4DecayPhysics.hh"
+
+#include "G4EmStandardPhysics.hh"
+#include "G4EmExtraPhysics.hh"
+#include "G4EmProcessOptions.hh"
+
+#include "G4HadronPhysicsQGSP_BIC_HP.hh"
+#include "G4HadronPhysicsQGSP_BIC.hh"
+#include "G4HadronElasticPhysics.hh"
+#include "G4HadronElasticPhysicsHP.hh"
+#include "G4NeutronCrossSectionXS.hh"
+#include "G4NeutronTrackingCut.hh"
+#include "G4StoppingPhysics.hh"
+#include "G4ProtonInelasticProcess.hh"
+#include "GammaNuclearPhysics.hh"
+
+#include "G4OpticalPhysics.hh"
+
+#include "G4LossTableManager.hh"
+#include "G4ProcessTable.hh"
+#include "G4ProcessManager.hh"
+#include "G4ProcessVector.hh"
+
+#include "G4ParticleTypes.hh"
+#include "G4ParticleTable.hh"
+#include "G4Gamma.hh"
+#include "G4Electron.hh"
+#include "G4Positron.hh"
+
+#include "G4StepLimiter.hh"
 
 #include "PhysicsList.hh"
 
-#include "G4SystemOfUnits.hh"
-#include "G4UnitsTable.hh"
+#include "G4ParticleDefinition.hh"
 
-#include "G4HadronElasticPhysicsHP.hh"
-#include "G4HadronElasticPhysicsXS.hh"
+// Processes
 
-#include "G4HadronPhysicsFTFP_BERT_HP.hh"
-#include "G4HadronPhysicsQGSP_BIC_HP.hh"
-#include "G4HadronPhysicsQGSP_BIC_AllHP.hh"
-#include "G4HadronInelasticQBBC.hh"
-#include "G4HadronPhysicsINCLXX.hh"
+#include "G4PhotoNuclearProcess.hh"
+#include "G4CascadeInterface.hh"
+#include "G4GDMLParser.hh"
 
-#include "G4IonElasticPhysics.hh"
-#include "G4IonPhysicsXS.hh"
-#include "G4IonQMDPhysics.hh"
-#include "G4IonPhysicsPHP.hh"
-#include "G4IonINCLXXPhysics.hh"
+extern G4GDMLParser parser;
 
-#include "GammaNuclearPhysics.hh"
 
-// particles
-
-#include "G4BosonConstructor.hh"
-#include "G4LeptonConstructor.hh"
-#include "G4MesonConstructor.hh"
-#include "G4BosonConstructor.hh"
-#include "G4BaryonConstructor.hh"
-#include "G4IonConstructor.hh"
-#include "G4ShortLivedConstructor.hh"
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-PhysicsList::PhysicsList()
-:G4VModularPhysicsList()
+physicsList::physicsList(G4bool neutronHP,
+			 G4bool scintillation) 
+  : G4VModularPhysicsList()
 {
-  G4int verb = 0;  
-  SetVerboseLevel(verb);
-  
-  //add new units for cross sections
-  // 
-  new G4UnitDefinition( "mm2/g",  "mm2/g", "Surface/Mass", mm2/g);
-  new G4UnitDefinition( "um2/mg", "um2/mg","Surface/Mass", um*um/mg);  
-  
-  // Hadron Elastic scattering
-  //
-  RegisterPhysics( new G4HadronElasticPhysicsHP(verb));
-  ///RegisterPhysics( new G4HadronElasticPhysicsXS(verb));  
+  defaultCutValue = 0.7*mm;
+  cutForGamma = defaultCutValue;
+  cutForElectron = defaultCutValue;
+  cutForPositron = defaultCutValue;
+  cutForProton = defaultCutValue;
 
-  // Hadron Inelastic physics
-  //
-  ////RegisterPhysics( new G4HadronPhysicsFTFP_BERT_HP(verb));
-  RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(verb));
-  ////RegisterPhysics( new G4HadronPhysicsQGSP_BIC_AllHP(verb));
-  ////RegisterPhysics( new G4HadronInelasticQBBC(verb));
-  ////RegisterPhysics( new G4HadronPhysicsINCLXX(verb));
-  
-  // Ion Elastic scattering
-  //
-  RegisterPhysics( new G4IonElasticPhysics(verb));
-  
-  // Ion Inelastic physics
-  //
-  RegisterPhysics( new G4IonPhysicsXS(verb));
-  ////RegisterPhysics( new G4IonPhysicsPHP(verb));
-  ////RegisterPhysics( new G4IonQMDPhysics(verb));
-  ////RegisterPhysics( new G4IonINCLXXPhysics(verb));
+  useNeutronHP = neutronHP;
+  useScintillation = scintillation;
+  verboseLevel = 0;
 
+  ConstructPhysics();
+}
+
+
+physicsList::~physicsList()
+{ delete decayPhysics; }
+
+
+void physicsList::ConstructParticle()
+{
+  // G4DecayPhysics::ConstructParticle method builds ALL particles.
+  // Unintuitive but convenient method for particle construction.
+  decayPhysics = new G4DecayPhysics("decay");
+  decayPhysics->ConstructParticle();
+}
+
+
+void physicsList::ConstructPhysics()
+{
+  /////////////////////
+  // Transportation  //
+  /////////////////////
+
+  AddTransportation();
+  
+
+  //////////////////////////////
+  // Electronmagnetic physics //
+  //////////////////////////////
+  
+  // Standard EM
+  RegisterPhysics(new G4EmStandardPhysics(verboseLevel));
+
+  // Synchrotron and gamma-nuclear physics
+  RegisterPhysics(new G4EmExtraPhysics(verboseLevel));
+
+
+  //////////////////////
+  // Hadronic Physics //
+  //////////////////////
+
+  // QGSP model with the Binary Ion Cascase (BIC) with high precision
+  // neutron transport (HP). Note the required use of complementary of
+  // HP version for hadron elastic physics
+  if(useNeutronHP){
+    RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(verboseLevel));
+    RegisterPhysics( new G4HadronElasticPhysicsHP(verboseLevel) );
+  }
+  
+  // QGSP model with BIC, standard hadron elastic physics, and the
+  // extended neutron XS data set for improved non-HP neutron physics
+  else{
+    RegisterPhysics( new G4HadronPhysicsQGSP_BIC(verboseLevel));
+    RegisterPhysics( new G4HadronElasticPhysics(verboseLevel) );
+    RegisterPhysics( new G4NeutronCrossSectionXS(verboseLevel));
+  }
   // Gamma physics
-  //
   RegisterPhysics( new GammaNuclearPhysics("gamma"));
 
+  
+  //proton inelastic
+  //  RegisterPhysics( new G4ProtonInelasticProcess()); //breaks (antiquated)
+  // Ion stopping-in-matter physics
+  RegisterPhysics( new G4StoppingPhysics(verboseLevel) );
+//  RegisterPhysics( new G4HadronPhysicsQGSP_BIC_AllHP(verb)); //breaks
+
+  // Neutron tracking cuts for optimized simulation
+  G4NeutronTrackingCut *theNeutronTrackingCut = new G4NeutronTrackingCut(verboseLevel);
+  theNeutronTrackingCut->SetTimeLimit(10*microsecond);
+  theNeutronTrackingCut->SetKineticEnergyLimit(0.01*eV);
+  //RegisterPhysics( theNeutronTrackingCut );
+
+
+  /////////////////////
+  // Optical Physics //
+  /////////////////////
+  
+  // Optical (scintillation/cerenkov/photon transport) physics.
+  if(useScintillation){
+    opticalPhysics = new G4OpticalPhysics();
+    opticalPhysics->SetScintillationByParticleType(false);
+    opticalPhysics->SetMaxNumPhotonsPerStep(500);
+    opticalPhysics->SetMaxBetaChangePerStep(10.0);
+    opticalPhysics->SetTrackSecondariesFirst(kCerenkov,true);
+    opticalPhysics->SetTrackSecondariesFirst(kScintillation,true);
+    RegisterPhysics(opticalPhysics);
+  }
+  
+  ///////////////////
+  // Decay Physics //
+  ///////////////////
+
+  // Decay physics for all particles
+  RegisterPhysics(new G4DecayPhysics(verboseLevel));
+  
+
+  ////////////////////
+  // Custom Physics //
+  ////////////////////
+  
+  // Particle specific processes
+
+  /*
+  auto theParticleIterator=GetParticleIterator();  
+  
+  theParticleIterator->reset();
+  while( (*theParticleIterator)() ) {
+    G4ParticleDefinition *particle = theParticleIterator->value();
+    G4ProcessManager *particleProcessMgr = particle->GetProcessManager();
+    G4String particleName = particle->GetParticleName();
+    G4ProcessManager* pManager = particle->GetProcessManager();//G4Gamma::Gamma()->GetProcessManager();
+    //
+    G4PhotoNuclearProcess* process = new G4PhotoNuclearProcess();
+    //
+    G4CascadeInterface* bertini = new G4CascadeInterface();
+    bertini->SetMaxEnergy(100*keV);
+    //    process->RegisterMe(bertini); //screw bertini
+    //
+    pManager->AddDiscreteProcess(process);
+  }
+ 
+  
+
+  }
+  */
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-PhysicsList::~PhysicsList()
-{ }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void PhysicsList::ConstructParticle()
+void physicsList::SetCuts()
 {
-  G4BosonConstructor  pBosonConstructor;
-  pBosonConstructor.ConstructParticle();
 
-  G4LeptonConstructor pLeptonConstructor;
-  pLeptonConstructor.ConstructParticle();
+  if (verboseLevel >1)
+    G4cout << "DMXPhysicsList::SetCuts:";
+  
+  if (verboseLevel>0){
+    G4cout << "DMXPhysicsList::SetCuts:";
+    G4cout << "CutLength : " 
+     << G4BestUnit(defaultCutValue,"Length") << G4endl;
+  }
 
-  G4MesonConstructor pMesonConstructor;
-  pMesonConstructor.ConstructParticle();
+  //special for low energy physics
+  G4double lowlimit=parser.GetQuantity("ProductionLowLimit"); //default at 250eV, typically running at 250keV
+  std::cout << "ProductionLowLimit:\t" << lowlimit/MeV << " MeV" << std::endl;
+  G4ProductionCutsTable::GetProductionCutsTable()->SetEnergyRange(lowlimit,100.*GeV); //by default it's always on
 
-  G4BaryonConstructor pBaryonConstructor;
-  pBaryonConstructor.ConstructParticle();
+  SetCutValue(cutForGamma, "gamma");
+  SetCutValue(cutForElectron, "e-");
+  SetCutValue(cutForPositron, "e+");
+  SetCutValue(cutForProton, "proton");
 
-  G4IonConstructor pIonConstructor;
-  pIonConstructor.ConstructParticle();
+  if (verboseLevel>0) DumpCutValuesTable();
 
-  G4ShortLivedConstructor pShortLivedConstructor;
-  pShortLivedConstructor.ConstructParticle();  
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void PhysicsList::SetCuts()
-{
-   SetCutValue(0.*mm, "proton");
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
