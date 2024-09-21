@@ -603,6 +603,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 	  	ProcessNamev[trackid-1]= "EventGenerator";
 	  TrackIDv[trackid-1]= aStep->GetTrack()->GetTrackID();
 	  Edepv[trackid-1] += aStep->GetTotalEnergyDeposit()/(MeV);
+	  
 	  if(Ev[trackid-1]==-1e+6){ //this track was just born
 	    Ev[trackid-1]= aStep->GetPreStepPoint()->GetKineticEnergy()/(MeV);//record the _starting_ energy
 	    Timev[trackid-1]= aStep->GetTrack()->GetGlobalTime(); //save the time, but only once!
@@ -620,8 +621,8 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 		int detector_number = atoi(detector_name.substr(detector_name.find("det_phys")+detector_base_name.length()).c_str());
 		detector_hit[trackid-1]=detector_number;
 
+		}
 	}
-}
 
 }
 

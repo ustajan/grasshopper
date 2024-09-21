@@ -41,7 +41,7 @@
     
   <!-- THE OUTPUT -->
   <define>
-  	<constant name="TextOutputOn" value="1"/> <!-- the value should be either 1 (true) or 0 -->
+  	<constant name="TextOutputOn" value="0"/> <!-- the value should be either 1 (true) or 0 -->
 	<constant name="BriefOutputOn" value="1"/> <!-- enable this if you want the shorter version of the text output -->
   	<constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
   	<constant name="EventsToAccumulate" value="30"/> <!-- number of tracks to accumulate in the visualization -->
@@ -67,10 +67,10 @@
     <constant name="RandomGenSeed" value="1"/>
     <quantity name="BeamOffsetX"  type="coordinate" value="0" unit="mm"/>
     <quantity name="BeamOffsetY"  type="coordinate" value="0" unit="mm"/>    
-    <quantity name="BeamOffsetZ"  type="coordinate" value="-0.9" unit="m"/> <!-- all in mm -->    
-    <quantity name="BeamSize" type="coordinate" value="5" unit="mm"/>
+    <quantity name="BeamOffsetZ"  type="coordinate" value="0" unit="m"/> <!-- all in mm -->    
+    <quantity name="BeamSize" type="coordinate" value="-1" unit="mm"/>
 
-    <quantity name="BeamEnergy" type="energy" value="1" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
+    <quantity name="BeamEnergy" type="energy" value="14" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
     <constant name="EventsToRun" value="10000"/>
     <constant name="ParticleNumber" value="2112"/> 
     <!-- e- is 11, gamma is 22, neutron is 2112, proton is 2212, alpha is 1000020040 -->
@@ -81,11 +81,11 @@
   <!-- definition of solid geometries -->
   <solids>
     <!-- world volume -->
-    <box lunit="m" name="world_solid" x="2" y="2" z="2"/>    
+    <box lunit="m" name="world_solid" x="6" y="6" z="6"/>    
     <!-- the horizontal absorber plate -->
-    <box lunit="cm" name="plate_solid" unit="mm" x="80" y="80" z="80"/>
+    <box lunit="mm" name="plate_solid" unit="mm" x="200" y="200" z="200"/>
     <!-- the horizontal detection plane -->
-    <tube name = "det_plane_solid" rmin="0" rmax="200" z="200" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/>
+    <tube name = "det_plane_solid" rmin="0" rmax="800" z="2" deltaphi="360" startphi="0" aunit="deg" lunit= "mm"/>
   </solids>
 
 
@@ -93,7 +93,7 @@
   <structure>
     <!-- the horizontal plate --> 
     <volume name="plate_log">
-      <materialref ref="G4_WATER"/>
+      <materialref ref="G4_PLASTIC_SC_VINYLTOLUENE"/>
       <solidref ref="plate_solid"/>
     </volume>
     <!-- the horizontal detection plane -->
@@ -116,7 +116,7 @@
       <!-- flux planes -->
       <physvol name="det_phys"> <!-- This should NEVER be changed -->
         <volumeref ref="det_plane_log"/>
-        <position name="det_phys3_pos" unit="m" x="0" y="0" z="1"/>
+        <position name="det_phys3_pos" unit="m" x="0" y="0" z="2.5"/>
       </physvol>
     </volume>
 

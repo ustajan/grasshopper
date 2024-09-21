@@ -45,9 +45,13 @@ To build with GNUmake
 
 To build with CMake
 ==
+
+
 `> mkdir RunGrasshopper && cd RunGrasshopper`
 
 `> cmake ../../grasshopper && make -jN`
+
+Note: cmake build has been tested using WSL/ubuntu under windows only.  On Mac OS X it's known to break.  See Issues.
 
 To run
 ==

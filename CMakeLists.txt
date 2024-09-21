@@ -77,7 +77,7 @@ endif()
 #
   
 set(VIS_SCRIPTS
-  vis.mac
+#  vis.mac
   )
   
 
