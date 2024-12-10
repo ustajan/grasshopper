@@ -69,12 +69,12 @@ G4String RootOutputFile;
 
 G4GDMLParser parser;
 
-#define G4VIS_USE
+//#define G4VIS_USE
 
-#ifdef G4VIS_USE
+//#ifdef G4VIS_USE
 #include "VisManager.hh"
 #include "G4TrajectoryDrawByParticleID.hh"
-#endif
+//#endif
 
 
 //#include "AnalysisManager.hh"
