@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-# Thi is a script that runs three simulations and analyzes their outputs as part of a unit test.
+# This is a script that runs three simulations and analyzes their outputs as part of a unit test.
 # We recommend that the users, after every modification of grasshopper, run this script and compare the outputs for before and after the modification.
 # Assuming just procedural (non-physics) modifications the outputs should stay exactly the same.
 # After running all the simulations the script prints the following:
@@ -8,8 +8,10 @@
 # b) output analysis results, as well as the results for the PREVIOUS oututs.  Again, assuming only minor procedural changes the outputs should not change.
 
 # reset DY_LYBRARY_PATH
-#.  ~/root-build/bin/thisroot.sh 
-. ~/root/root_install/bin/thisroot.sh
+#. ~/root/root_install/bin/thisroot.sh #root shouldn't be necessary
+
+echo "-------------" >> awkout.txt
+echo `date` >> awkout.txt
 
 # first run the beta simulation
 grasshopper beta_lite.gdml beta_test.root 0
@@ -33,12 +35,14 @@ awk '{if(NR>1 && $4=="triton") {n+=$2;m++;}} END {print "Average proton energy, 
 echo ""
 echo "***********************"
 echo "RESULTS:"
+echo "OLD -->"
 tail -6 md5out.txt | head -3
-echo "*****"
+echo "NEW -->"
 tail -3 md5out.txt
 echo "====="
-tail -6 awkout.txt | head -3
-echo "*****"
+echo "OLD -->"
+tail -8 awkout.txt | head -3
+echo "NEW -->"
 tail -3 awkout.txt
 
 # next run gamma

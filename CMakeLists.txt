@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 project(grasshopper)
 # Allow User Build Options Here...
 option(WITH_GEANT4_UIVIS "Build with Geant4 UI and Vis drivers" ON) # Can switch to OFF if not building with vis drivers --> NOT recommended 
-option(WITH_ROOT "Build with ROOT" ON) # Can switch off if ROOT Output not desired 
+option(WITH_ROOT "Build with ROOT" OFF) # Can switch off if ROOT Output not desired 
 # Add various compile definitions 
 if(WITH_ROOT)
   add_compile_definitions(G4ANALYSIS_USE_ROOT)
