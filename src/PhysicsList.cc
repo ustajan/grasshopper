@@ -14,7 +14,7 @@
 
 #include "G4EmStandardPhysics.hh"
 #include "G4EmExtraPhysics.hh"
-#include "G4EmProcessOptions.hh"
+//#include "G4EmProcessOptions.hh" //obsolete
 
 #include "G4HadronPhysicsQGSP_BIC_HP.hh"
 #include "G4HadronPhysicsQGSP_BIC.hh"
@@ -23,7 +23,7 @@
 #include "G4NeutronCrossSectionXS.hh"
 #include "G4NeutronTrackingCut.hh"
 #include "G4StoppingPhysics.hh"
-#include "G4ProtonInelasticProcess.hh"
+//#include "G4ProtonInelasticProcess.hh"
 #include "GammaNuclearPhysics.hh"
 
 #include "G4OpticalPhysics.hh"
@@ -47,7 +47,7 @@
 
 // Processes
 
-#include "G4PhotoNuclearProcess.hh"
+//#include "G4PhotoNuclearProcess.hh" //deprecated
 #include "G4CascadeInterface.hh"
 #include "G4GDMLParser.hh"
 
@@ -148,11 +148,13 @@ void physicsList::ConstructPhysics()
   // Optical (scintillation/cerenkov/photon transport) physics.
   if(useScintillation){
     opticalPhysics = new G4OpticalPhysics();
+    /*
     opticalPhysics->SetScintillationByParticleType(false);
     opticalPhysics->SetMaxNumPhotonsPerStep(500);
     opticalPhysics->SetMaxBetaChangePerStep(10.0);
     opticalPhysics->SetTrackSecondariesFirst(kCerenkov,true);
     opticalPhysics->SetTrackSecondariesFirst(kScintillation,true);
+    */
     RegisterPhysics(opticalPhysics);
   }
   
@@ -204,8 +206,7 @@ void physicsList::SetCuts()
   
   if (verboseLevel>0){
     G4cout << "DMXPhysicsList::SetCuts:";
-    G4cout << "CutLength : " 
-     << G4BestUnit(defaultCutValue,"Length") << G4endl;
+//    G4cout << "CutLength : "      << G4BestUnit(defaultCutValue,"Length") << G4endl;
   }
 
   //special for low energy physics

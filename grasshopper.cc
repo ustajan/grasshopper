@@ -26,6 +26,7 @@
 
 
 #include "G4RunManager.hh"
+#include "G4RunManagerFactory.hh"
 #include "G4UImanager.hh"
 #include "G4UIterminal.hh"
 #include "G4UItcsh.hh"
@@ -140,11 +141,12 @@ int main(int argc,char** argv)
   CLHEP::HepRandom::setTheSeed(seed);
 
   // Construct the default run manager
-  G4RunManager* runManager = new G4RunManager;
-	
-   G4UImanager* UIS = G4UImanager::GetUIpointer();
-   MySession* LoggedSession = new MySession;
-   UIS->SetCoutDestination(LoggedSession);
+  G4RunManager* runManager = new G4RunManager; //goes crazy when being deleted
+//  auto runManager =
+//    G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+  G4UImanager* UIS = G4UImanager::GetUIpointer();
+  MySession* LoggedSession = new MySession;
+  UIS->SetCoutDestination(LoggedSession);
 
 
   // exporting geometry from specified GDML file
@@ -177,9 +179,10 @@ int main(int argc,char** argv)
 
   // set mandatory user action class
   PrimaryGeneratorAction *primary_action=new PrimaryGeneratorAction();
-  runManager->SetUserAction(primary_action);
 
-  // start filling ntuple
+  runManager->SetUserAction(primary_action); 
+
+  // initialize the analysis
   Analysis *analysis = new Analysis(primary_action->GetParticleGun());
 
 
@@ -197,6 +200,7 @@ int main(int argc,char** argv)
   G4int beam_on_start_time = time(NULL);
   t1=clock();
 
+
   //get the UImanager going, run a few events, produce a VRML file, and then delete everything.
   if(parser.GetConstant("VRMLvisualizationOn")){
     G4UImanager* UI = G4UImanager::GetUIpointer();
@@ -211,34 +215,39 @@ int main(int argc,char** argv)
     UI->ApplyCommand("/vis/disable");
     UI->ApplyCommand("exit");
   }
+
   runManager->BeamOn(run_evnt); //now do the big run
 
   //DONE
   //Now do a cleanup, print CPU/time diagnostics, and exit
 
-  if (analysis == AnalysisManager::GetAnalysisManager())
+  if (analysis == AnalysisManager::GetAnalysisManager()){
+    std::cout << "\nDeleting the analysis object.\n";
   	delete analysis;
+  }
 
   // job termination
 	
-#ifdef G4VIS_USE
-  delete visManager;
-#endif
-	
 
-  delete runManager;
-  delete LoggedSession;
+#ifdef G4VIS_USE
+//  delete visManager; //deleting it causes a huge "non-critical" error
+  std::cout << "Deleting the visManager object.\n";
+#endif
+
+
+//  delete runManager; //deleting it causes a huge "non-critical" error
+//  delete LoggedSession;
 
   G4int stop_time = time(NULL);
   t2=clock();
 
   std::cout << " The initialization took:\t" << beam_on_start_time - start_time <<"s"<< std::endl;
-  std::cout<<" The MC took:\t\t" << stop_time - beam_on_start_time <<"s"<< std::endl;
+  std::cout << " The MC took:\t\t" << stop_time - beam_on_start_time <<"s"<< std::endl;
 
   std::cout << " The initialization took:\t" 	<< (float)(t1-t0)/CLOCKS_PER_SEC <<" CPU seconds"<< std::endl;
-  std::cout <<" The MC took:\t\t" 			<< (float)(t2-t1)/CLOCKS_PER_SEC <<" CPU seconds"<< std::endl;
+  std::cout << " The MC took:\t\t" 			<< (float)(t2-t1)/CLOCKS_PER_SEC <<" CPU seconds"<< std::endl;
 
-  G4cout << " Run completed!"<< G4endl;
+  std::cout << " Run completed!"<< std::endl;
 
   return 0;
 }

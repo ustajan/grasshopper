@@ -53,9 +53,9 @@
     
   <!-- THE OUTPUT -->
   <define>
-  	<constant name="TextOutputOn" value="1"/> <!-- the value should be either 1 (true) or 0 -->
+  	<constant name="TextOutputOn" value="0"/> <!-- the value should be either 1 (true) or 0 -->
 	<constant name="BriefOutputOn" value="1"/> <!-- enable this if you want the shorter version of the text output -->
-  	<constant name="VRMLvisualizationOn" value="0"/> <!-- 1 means that you want a VRML file -->
+  	<constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
   	<constant name="EventsToAccumulate" value="200"/> <!-- number of tracks to accumulate in the visualization -->
   </define>
   

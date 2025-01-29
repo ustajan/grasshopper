@@ -37,7 +37,7 @@
 
 // Processes
 
-#include "G4PhotoNuclearProcess.hh"
+//#include "G4PhotoNuclearProcess.hh" //deprecated
 #include "G4CascadeInterface.hh"
 
 #include "G4SystemOfUnits.hh"
@@ -59,13 +59,13 @@ void GammaNuclearPhysics::ConstructProcess()
 {
    G4ProcessManager* pManager = G4Gamma::Gamma()->GetProcessManager();
    //
-   G4PhotoNuclearProcess* process = new G4PhotoNuclearProcess();
+//   G4PhotoNuclearProcess* process = new G4PhotoNuclearProcess(); //removed in v11
    //
    G4CascadeInterface* bertini = new G4CascadeInterface();
    bertini->SetMaxEnergy(10*GeV);
-   process->RegisterMe(bertini);
+//   process->RegisterMe(bertini); //removed in v11
    //
-   pManager->AddDiscreteProcess(process);
+//   pManager->AddDiscreteProcess(process); //removed in v11
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

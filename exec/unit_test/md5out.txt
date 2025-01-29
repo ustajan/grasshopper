@@ -30,7 +30,6 @@ gamma MD5 (gamma_test.dat) = 584efcd59a7e54bf339156423ea6346a
 proton MD5 (3He.dat) = 87bb97bdf308109cf5fdbccc625b2190
 beta MD5 (beta_test.dat) = 1c0635a5bf11e6f7a96cdf1433dcd431
 gamma MD5 (gamma_test.dat) = 584efcd59a7e54bf339156423ea6346a
-proton MD5 (3He.dat) = 87bb97bdf308109cf5fdbccc625b2190
-beta MD5 (beta_test.dat) = e04462ce0aa10234ddb76a0521e947ab
-gamma MD5 (gamma_test.dat) = 6b56a8d1a35af6684b1e732c9b535848
-proton MD5 (3He.dat) = f53518a08dd330db65d354d828801dc2
+proton MD5 (3He.dat) = 87bb97bdf308109cf5fdbccc625b2190beta MD5 (beta_test.dat) = 1abfea61429c5aa2702782ecf123c7e7
+gamma MD5 (gamma_test.dat) = f22a854d35bd0c3584693585e94701c6
+proton MD5 (3He.dat) = da893c66995f47517cb0f8c4531c5e2a

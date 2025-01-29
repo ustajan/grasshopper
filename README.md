@@ -16,22 +16,20 @@ For copyright and licensing see files COPYRIGHT and LICENSE.
 
 To install
 ==
-The user is required to have the following
 
-	* xerces.  This will allow the GDML parser capability.
-	* For CMake Builds the User MUST Have CMake version 3.17 or higher.
-	* Built and installed geant4 libraries.  Also, in the cmake stage, the following flag needs to be passed:
-	`-DGEANT4_USE_GDML=ON`.  In some cases you also have to also add the location for Xerces with flags such as 	
-        `-DXERCESC_INCLUDE_DIR=/usr/local/include/ -DXERCESC_LIBRARY=/usr/local/lib/libxerces-c.so`.  See the geant4 instructions on how 	to add Xerces for more detail on the paths.  Here's an example of what a Geant4 cmake command looks like:
-        `cmake -DCMAKE_INSTALL_PREFIX=../geant4.10.05-install -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_GDML=ON ../geant4.10.05`
-	* ROOT -- optional.  Has been tested with version 6.22/07.  If you do not have ROOT the make process will recognize that and exclude 		it from the build.
-	* When building grasshopper, the compiler might not find the GDML header files.  In that case just determine the actual file directories, and add them to the include list by appending `-I/directory_to_headers` to the `CPPFLAGS` env variable.
+The user is required/advised to have the following
+	
+* xerces.  This will allow the GDML parser capability.
+* Built and installed geant4 libraries.  
+	* In the cmake stage, the following flag needs to be passed: `-DGEANT4_USE_GDML=ON`.  
+	* Here's an example of what a Geant4 cmake command looks like: `cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DCMAKE_INSTALL_PREFIX=../geant4-v11.2.2-install ../geant4-v11.2.2 `
+* ROOT -- optional.  Has been tested with version 6.32/04.  If you do not have ROOT the make process will recognize that and exclude it from the build.
 
-__Version__:  grasshopper and been built against and tested with Geant4 10.6.
+__Version__:  grasshopper and been built against and tested with **Geant4 version 11.2.2**.
 
 __Important note__:  these days geant4 primarily works via the cmake framework.  However grasshopper can also use the older Makefile framework.  It is important that you source the appropriate shell script in geant4 directories to enable all the env. variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
 
-`. /usr/local/geant4/geant4.10.05-install/share/Geant4-10.5.0/geant4make/geant4make.sh`
+`. ~/geant4/geant4-v11.2.2-install/share/Geant4/geant4make/geant4make.sh `
 
 If all the regular geant4 installations and configurations are ready, then the user can get the code by
 
@@ -128,70 +126,13 @@ for a particular type of detector the SaveEdepositedTotalEntry needs to be set. 
 
 General status
 ==
-In its current form, the code has been tested with <12MeV photons, neutrons, gammas, and electrons.  Very
-general checks indicate that most processes are being simulated correctly.
+In its current form, the code has been tested with <12MeV photons, neutrons, gammas, and electrons.  Very general checks indicate that most processes are being simulated correctly.
 
-
-A few known problems:
-==
- * When running with neutrons >16MeV the code will hang.
- * The code is optimized to run in two configurations
-   *  SurfaceHit analysis - providing energy/position/momentum information on the flux of particles through a "detector" surface.  It will generate multiple entries for multiple tracks crossing a surface for a single MC event.  However, if one of the tracks then backscatters and crosses the surface again it will be ignored.
-   *  EnergyDeposited analysis - providing deposited energy for every event.  Here the code is less sharp - if multiple tracks enter the detector, it will combine their deposited energies.  As long as you specify which particle type's energy deposition is of interest (e.g. electrons for photons, or protons for neutrons) this is sufficiently accurate as most detectors will not be able to time-resolve the multiple hits from tracks that originate from a single track.  This, however can fail for a) very fast detectors or b) when you have a process which produces a low energy electron and a photon.  If you have to deal with complex processes like (b) then grasshopper is probably not the best thing to use (least you want to modify the code or see if various cuts on particle type allow you to isolate individual responses).
- * More importantly, the above circumstance results in some (mostly minor) issues where the user tries to determine the energy deposition for a whole range of energies of incident particle.  If the incident particle creaters an electromagnetic or hadronic shower, then an E_incident vs. E_deposited comparison may yield strange results, as E_deposited>E_incident in some cases - this is due to the fact that E_deposited may have captured deposited energy from multiple tracks, while E_incident is the energy of an individual track. 
 
 To do
 ==
 Below is a prioritized list of future tasks.
 
-	* OUTPUT
-	  + Implement "simple" ascii text output, along with ROOT  -- DONE
-	  + Make the code be able to reliably switch between ROOT (when ROOT is available) and ASCII output -- DONE
-	* Write the python/javascript front end to the gdml? <<===== need a UROP
-	* Check the physics, by comparing to data and validated geant4 simulations -- DONE
-	  + Did some basic comparisons of gamma transmission to exp(-mu*x)
-	* automatic wrl generation (even in batch mode), limited to 300 tracks -- DONE
-	* Implement the keeper list, which should allow to dramatically speed up the simulations -- DONE
-	* Clean up the code:
-	  + Replace the char arrays in TTree with actual strings -- DONE
-
-
-Requirements for the  front end
-==
-The  front end will read in a simple ASCII text file with "human readable" descriptions, parse it,
-populate a gdml file based on some template, and run the geant4 simulation.  The ASCII input file needs
-to have the following fields and sections
-
-	* Particle Event Generator parameters
-	  + Particle type definition.  Ideally, this should include ions.  A list should be provided in a separate .md document
-	  + Particle energy
-	  + Directionality.  For simplicity, limit it to:  parallel;  isotropic.
-	  + Beam source x,y,z
-	  + Beam width
-	* Geometries
-	  + Number of geometries -- N (default:1).  No daughter geometries.
-		If people want to do that, they can modify the gdml directly.
-	  + Materials: *only* limited to NIST materials, provided by a (long) list.
-		If people want custom materials, they can modify the gdml directly.
-	  + Geometry1:
-		- Sensitive?  If yes, its energy deposition will be measured and added to the output.
-		  An additional branch needs to be added, which will list the detector name.
-		- volume -- shape
-		- logical -- add material.
-		- physical placement in the world.  If this is a sensitive volume, then the name needs to
-		  end with _number.  This number will go into the tree branch.
-	  + Geometry2, etc...
-	* Keeper list and cuts
-	  + This list should contain the following:  particle type; energy threshold E_th; volume volname
-	  + Now, for every particle type, only tracks with E>E_th *inside* volname will be tracked
-	  + Everything else will be killed
-	  + Example of how this will look:
-	  	- neutron:  0.1 MeV,  everywhere
-	  	- gamma  :  0.1 MeV,  everywhere
-	  	- e-     :  0.1 MeV,  detector_volume
-	  	- proton :  1.0 MeV,  detector_volume
-	  + The code will generate a vector, and for every step will loop over the vector, checking if these
-	    conditions are met.  If not, it will kill the track.
-		
-
+* Write the python/javascript front end to the gdml? <<===== need a UROP
+* General code improvements
 
