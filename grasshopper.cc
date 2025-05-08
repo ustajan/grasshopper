@@ -70,7 +70,7 @@ G4String RootOutputFile;
 
 G4GDMLParser parser;
 
-#define G4VIS_USE
+//#define G4VIS_USE //in principle this should be passed by the compiler, during cmake
 
 #ifdef G4VIS_USE
 #include "VisManager.hh"
@@ -98,8 +98,8 @@ int main(int argc,char** argv)
     RootOutputFile = argv[2];
     if (argc==4)
       {
-	seed = atoi(argv[3]);
-	commandlineseed = true;
+	     seed = atoi(argv[3]);
+	     commandlineseed = true;
       }
   }
   else{
@@ -152,7 +152,9 @@ int main(int argc,char** argv)
   // exporting geometry from specified GDML file
   runManager->SetUserInitialization(new DetectorConstruction(parser.GetWorldVolume()));
 
-  runManager->SetUserInitialization(new physicsList(true,false)); //used to be DADE's version (true,false)
+  bool useNeutronHP = false; //NeutronHP currently causes seg faults
+  bool useScintillation = false;
+  runManager->SetUserInitialization(new physicsList(useNeutronHP,useScintillation)); //used to be DADE's version (true,false)
 
 
 
@@ -160,6 +162,8 @@ int main(int argc,char** argv)
 
   
 #ifdef G4VIS_USE
+  std::cout << std::endl << " == Setting up visualization. ==" << std::endl;
+
   // visualization manager
   G4VisManager* visManager = new VisManager;
   visManager->Initialize();
@@ -191,10 +195,8 @@ int main(int argc,char** argv)
   runManager->SetUserAction(new SteppingAction);
   runManager->SetUserAction(new StackingAction);
 
-
   // Initialize G4 kernel
   runManager->Initialize();
-
 
   // run timer
   G4int beam_on_start_time = time(NULL);
@@ -212,9 +214,12 @@ int main(int argc,char** argv)
     UI->ApplyCommand("/vis/scene/endOfEventAction accumulate");
     std::string command="/run/beamOn "+std::to_string((int)parser.GetConstant("EventsToAccumulate"));
     UI->ApplyCommand(command.c_str());
+    UI->ApplyCommand("/vis/close");
     UI->ApplyCommand("/vis/disable");
     UI->ApplyCommand("exit");
+    std::cout << std::endl << " == Produced a visualization wrl file. ==" << std::endl;
   }
+
 
   runManager->BeamOn(run_evnt); //now do the big run
 

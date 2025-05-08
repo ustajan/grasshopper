@@ -46,7 +46,7 @@
 #include <time.h>
 #include <vector>
 
-static const G4double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
+//static const G4double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
 
 #if defined (G4ANALYSIS_USE_ROOT)
 
@@ -61,6 +61,8 @@ static const G4double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 *
 #include "TBranch.h"
 #include "TMath.h"
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
+
+
 
 #include <iostream>
 #include <fstream>
@@ -81,6 +83,7 @@ Analysis::Analysis(G4ParticleGun* particle_gun)
 
   counter=1;
   particle_gun_local=particle_gun;
+
   LightProducingParticle=parser.GetConstant("LightProducingParticle");
   EventGeneratorParticle=parser.GetConstant("ParticleNumber");
   LowEnergyCutoff		=parser.GetConstant("LowEnergyCutoff");
@@ -123,13 +126,13 @@ Analysis::Analysis(G4ParticleGun* particle_gun)
   tree->Branch("z_incident",&z,"z_incident/D");
   tree->Branch("theta",&theta,"theta/D");
   tree->Branch("Time",&Time,"Time/F");
-  tree->Branch("EventID",&EventID,"EventID/l");
-  tree->Branch("TrackID",&TrackID,"TrackID/l");
-  tree->Branch("ParticleID",&ID,"ParticleID/l");
+  tree->Branch("EventID",&EventID,"EventID/L");
+  tree->Branch("TrackID",&TrackID,"TrackID/L");
+  tree->Branch("ParticleID",&ID,"ParticleID/L");
 //  char *tmp=(char*)ParticleName_placeholder.c_str(); //same as below -- set the pointer to the placeholder for particle name
 //  tree->Branch("ParticleName",tmp,"ParticleName/C");
   tree->Branch("ParticleName",&ParticleName);
-  tree->Branch("CreatorProcessID",&ProcID,"CreatorProcessID/l"); //obsolete
+  tree->Branch("CreatorProcessID",&ProcID,"CreatorProcessID/L"); //obsolete
 //  char *tmp2=(char*)CreatorProcessName.c_str(); //a tmp pointer at the creatorprocessname, which will be updated at the end of every track
   tree->Branch("CreatorProcessName",&CreatorProcessName);
   tree->Branch("IsEdepositedTotalEntry",&IsSummaryEntry,"IsEdepositedTotalEntry/O");
@@ -277,9 +280,9 @@ void Analysis::BeginOfEventAction(const G4Event *anEvent)
 
 void Analysis::EndOfEventAction(const G4Event *anEvent)
 {
-  
+
   for(unsigned int i=0;i<Ev.size();++i){ //looping over all the tracks in the detector
-    if(IsSurfaceHit.at(i))
+  	if(IsSurfaceHit.at(i))
       E=Ev.at(i);	//fill the incident energy variable ONLY for incident hit entries
     Edep=Edepv.at(i);
     x=xv.at(i);
@@ -296,122 +299,114 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
     IsSurfaceHitTrack=IsSurfaceHit.at(i);
     channel=detector_hit.at(i);
 
-    if(detector_hit.at(i)>=0 &&
-       (
-	(IsSurfaceHitTrack && SaveSurfaceHitTrack )
-	|| SaveTrackInfo
-	)
-       ){//filter out the empty stuff
-
-      if(textoutput){
-	if(briefoutput){
-	  if(SaveTrackInfo) E=Edep; //if this is tracking mode then we actually want to keep the deposited energy, not the incident energy
-	  data_file << std::setprecision(5);
-	  data_file << E_beam
-		    << "\t" << E //earlier we changed this to Edep, that is not correct, will give wrong answers for surfacehit tracks.  This however is also a bug -- it slaps the main track's energy (when it enters the volume onto the individual tracks
-		    << "\t" << EventID
-		    << "\t" << ParticleName.c_str()
-		    << "\t" << CreatorProcessName.c_str()
-		    << "\t" << Time
-		    << "\t" << detector_hit.at(i)
-		    <<std::endl;
-	}
-	else{
-	  data_file << std::setprecision(5);
-	  data_file << E_beam
-		    << "\t" << E
-		    << "\t" << Edep
-		    << "\t" << x
-		    << "\t" << y
-		    << "\t" << z
-		    << "\t" << theta
-		    << "\t" << Time
-		    << "\t" << EventID
-		    << "\t" << TrackID
-		    << "\t" << ID
-		    << "\t" << ParticleName.c_str()
-		    << "\t" << CreatorProcessName.c_str()
-		    << "\t" << 0
-		    << "\t" << IsSurfaceHitTrack
-		    << "\t" << detector_hit.at(i)
-		    <<std::endl;
-	}
-      }
+    if(detector_hit.at(i)>=0 && ((IsSurfaceHitTrack && SaveSurfaceHitTrack ) || SaveTrackInfo)) {//filter out the empty stuff
+    	if(textoutput){
+    		if(briefoutput){
+      		if(SaveTrackInfo) E=Edep; //if this is tracking mode then we actually want to keep the deposited energy, not the incident energy
+      		data_file << std::setprecision(5);
+      		data_file << E_beam
+								    << "\t" << E //earlier we changed this to Edep, that is not correct, will give wrong answers for surfacehit tracks.  This however is also a bug -- it slaps the main track's energy (when it enters the volume onto the individual tracks
+								    << "\t" << EventID
+								    << "\t" << ParticleName.c_str()
+								    << "\t" << CreatorProcessName.c_str()
+								    << "\t" << Time
+								    << "\t" << detector_hit.at(i)
+								    <<std::endl;
+				}
+		  	else{
+			  	data_file << std::setprecision(5);
+			  	data_file << E_beam
+			  	<< "\t" << E
+			  	<< "\t" << Edep
+			  	<< "\t" << x
+			  	<< "\t" << y
+			  	<< "\t" << z
+			  	<< "\t" << theta
+			  	<< "\t" << Time
+			  	<< "\t" << EventID
+			  	<< "\t" << TrackID
+			  	<< "\t" << ID
+			  	<< "\t" << ParticleName.c_str()
+			  	<< "\t" << CreatorProcessName.c_str()
+			  	<< "\t" << 0
+			  	<< "\t" << IsSurfaceHitTrack
+			  	<< "\t" << detector_hit.at(i)
+			  	<<std::endl;
+		  	}
+			}	
 #if defined (G4ANALYSIS_USE_ROOT)
-      else
-	tree->Fill();
+			else
+				tree->Fill();
 #endif
-
-
-    }
-  }
+		}
+	}
   //Now, fill the summary entry
-  if(SaveEdepositedTotalEntry){
-    IsSummaryEntry=true;
-    IsSurfaceHitTrack=false;
-    Edep=0; //set it to zero
-    CreatorProcessName="";
-    for(unsigned int i=0;i<Ev.size();++i){ //add ALL the deposited energies from ALL the tracks that hit the detector
-      if(detector_hit.at(i)>=0 &&  //make sure we are inside the detector
-	 ( IDv.at(i)==LightProducingParticle ||   //this is the designated light producing particle, OR
-	   LightProducingParticle==0 ||           //the light producing particle has been set to 0 (i.e. everything), OR
-	   ( LightProducingParticle==2212 && ProcessNamev.at(i)=="hIoni") ) //this is an hadron ionization track from a proton
-	 ){
-	Edep+=Edepv.at(i);
-	CreatorProcessName+=ProcessNamev.at(i)+"/";
-      }
-    }
-#if defined (G4ANALYSIS_USE_ROOT)
-    if (gSystem) gSystem->ProcessEvents();
-#endif /* defined (G4ANALYSIS_USE_ROOT) */
-    if(Edep>0){
+	if(SaveEdepositedTotalEntry){
+		IsSummaryEntry=true;
+		IsSurfaceHitTrack=false;
+	    Edep=0; //set it to zero
+	    CreatorProcessName="";
+	    for(unsigned int i=0;i<Ev.size();++i){ //add ALL the deposited energies from ALL the tracks that hit the detector
+	      if(detector_hit.at(i)>=0 &&  //make sure we are inside the detector
+		 ( IDv.at(i)==LightProducingParticle ||   //this is the designated light producing particle, OR
+		   LightProducingParticle==0 ||           //the light producing particle has been set to 0 (i.e. everything), OR
+		   ( LightProducingParticle==2212 && ProcessNamev.at(i)=="hIoni") ) //this is an hadron ionization track from a proton
+		 ){
+	      	Edep+=Edepv.at(i);
+	      CreatorProcessName+=ProcessNamev.at(i)+"/";
+	    }
+	  }
+	#if defined (G4ANALYSIS_USE_ROOT)
+	  if (gSystem) gSystem->ProcessEvents();
+	#endif /* defined (G4ANALYSIS_USE_ROOT) */
+	  if(Edep>0){
 
-      if(textoutput){
-	if(briefoutput){
-	  data_file << std::setprecision(5);
-	  data_file << E_beam
-		    << "\t" << Edep
-		    << "\t" << EventID
-		    << "\t" << -1
-		    << "\t" << CreatorProcessName.c_str()
-		    << std::endl;
+	  	if(textoutput){
+	  		if(briefoutput){
+	  			data_file << std::setprecision(5);
+	  			data_file << E_beam
+	  			<< "\t" << Edep
+	  			<< "\t" << EventID
+	  			<< "\t" << -1
+	  			<< "\t" << CreatorProcessName.c_str()
+	  			<< std::endl;
 
+	  		}
+	  		else{
+	  			data_file << std::setprecision(5);
+	  			data_file << E_beam << "\t"
+	  			<< -1
+	  			<< "\t" << Edep
+	  			<< "\t" << -1
+	  			<< "\t" << -1
+	  			<< "\t" << -1
+	  			<< "\t" << -1
+	  			<< "\t" << Time
+	  			<< "\t" << EventID
+	  			<< "\t" << -1
+	  			<< "\t" << -1
+	  			<< "\t" << -1
+	  			<< "\t" << CreatorProcessName.c_str()
+	  			<< "\t" << 1
+	  			<< "\t" << 0
+	  			<< std::endl;
+	  		}
+	  	}
+	#if defined (G4ANALYSIS_USE_ROOT)
+	  	else
+	  		tree->Fill();
+	#endif
+	  }
 	}
-	else{
-	  data_file << std::setprecision(5);
-	  data_file << E_beam << "\t"
-		    << -1
-		    << "\t" << Edep
-		    << "\t" << -1
-		    << "\t" << -1
-		    << "\t" << -1
-		    << "\t" << -1
-		    << "\t" << Time
-		    << "\t" << EventID
-		    << "\t" << -1
-		    << "\t" << -1
-		    << "\t" << -1
-		    << "\t" << CreatorProcessName.c_str()
-		    << "\t" << 1
-		    << "\t" << 0
-		    << std::endl;
-	}
-      }
 #if defined (G4ANALYSIS_USE_ROOT)
-      else
-	tree->Fill();
-#endif
-    }
-  }
-#if defined (G4ANALYSIS_USE_ROOT)
-  if (tree->GetEntries()%500000 == 1) tree->AutoSave("SaveSelf");
+	if (tree->GetEntries()%500000 == 1) tree->AutoSave("SaveSelf");
 #endif
 
-  if(anEvent->GetEventID() % 100 == 0)
-    std::cout << "\r\tEvent, and tracks:\t" << anEvent->GetEventID() << "\t\t" << Ev.size() << std::flush;
+if(anEvent->GetEventID() % 100 == 0)
+	std::cout << "\r\tEvent, and tracks:\t" << anEvent->GetEventID() << "\t\t" << Ev.size() << std::flush;
 
 
-  OnceAWhileDoIt();
+OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -509,10 +504,17 @@ void Analysis::PostUserTrackingAction(const G4Track *aTrack,
 void Analysis::UserSteppingAction(const G4Step *aStep)
 {
 
+	if(aStep==NULL){
+		std::cout << "Null aStep pointer in Analysis::UserSteppingAction, exiting \n";
+		exit(8);
+	}
+//	else{std::cout << "got here\n";}
 
 	if(aStep->GetPostStepPoint()==NULL) {
+		aStep->GetTrack()->SetTrackStatus(fStopAndKill); //shouln't be necessary, but is nevertheless a good practice
 		return;} //skip this if we are at the end of the world
 	else if(aStep->GetPostStepPoint()->GetPhysicalVolume()==NULL){
+		aStep->GetTrack()->SetTrackStatus(fStopAndKill);
 		return;
 	}
 
@@ -633,7 +635,7 @@ void Analysis::OnceAWhileDoIt(const G4bool DoItNow)
   time_t Now = time(0); // get the current time (measured in seconds)
   if ( (!DoItNow) && (LastDoItTime > (Now - 10)) ) return; // every 10 seconds
   LastDoItTime = Now;
-  
+
 #if defined (G4ANALYSIS_USE_ROOT)
   if (gSystem) gSystem->ProcessEvents();
   

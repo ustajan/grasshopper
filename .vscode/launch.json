@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug grasshopper",
+            "type": "lldb",
+            "request": "launch",
+            "program": "/Users/aregjan/geant4_workdir/bin/Darwin-clang/grasshopper",
+            "args": ["exec/unit_test/test3He.gdml", "/tmp/output.root"],
+            "cwd": "${workspaceFolder}"/*,//,
+//            "stopAtEntry": false
+            "environment": [],
+            "externalConsole": false,
+
+            "MIMode": "lldb",                       // Required for cppdbg + LLDB
+            "miDebuggerPath": "/usr/bin/lldb",     // Adjust if using a custom LLDB
+
+            "setupCommands": [
+            {
+                "description": "Enable pretty-printing",
+                "text": "-enable-pretty-printing",
+                "ignoreFailures": true
+            },
+            {
+                "description": "Force breakpoints in headers",
+                "text": "set breakpoint pending on"
+            }
+            ],
+
+            "sourceLanguages": ["cpp"],
+
+//            "preLaunchTask": "build",              // Optional: if you use tasks.json to build
+
+            "logging": {
+            "engineLogging": true,
+            "trace": true,
+            "traceResponse": true
+            } */
+        }
+    ]
+}
+

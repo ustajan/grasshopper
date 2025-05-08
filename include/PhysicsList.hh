@@ -27,7 +27,7 @@ private:
   G4double cutForPositron;
   G4double cutForProton;
 
-  G4VPhysicsConstructor*  particleList;
+//  G4VPhysicsConstructor*  particleList; //not used
 
   G4bool useNeutronHP, useScintillation;
 

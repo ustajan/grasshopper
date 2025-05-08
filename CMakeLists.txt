@@ -23,6 +23,7 @@ endif()
 # Here you require a Geant4 minimum version... example set to 10.5 
 if(WITH_GEANT4_UIVIS)
   find_package(Geant4 10.5 REQUIRED ui_all vis_all)
+  add_compile_definitions(G4VIS_USE)
   message(STATUS "Built Geant4 with UI and Vis Drivers")
 else()
   find_package(Geant4 10.5 REQUIRED)

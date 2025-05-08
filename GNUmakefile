@@ -13,12 +13,13 @@ G4TARGET := $(name)
 G4EXLIB := true
 
 ifndef G4INSTALL
-  G4INSTALL = ../../../../../../../..
+  $(error "G4INSTALL is not set. Please set the G4INSTALL environment variable to the Geant4 installation directory.")
 endif
 
 
 .PHONY: all
 all: lib bin
+
 
 # Deal with Geant4 version parsing.  Inelegant, but should work
 G4V := $(shell geant4-config --version)
@@ -30,11 +31,15 @@ G4SUBV := $(word 3,$(G4VS))
 #include $(G4WORKDIR)/binmake.gmk
 include $(G4INSTALL)/config/binmake.gmk
 
-CPPFLAGS += -O3 #-g #uncomment and set O to zero if you need debugger flags
+CPPFLAGS += -O4 #uncomment and set O to zero if you need debugger flags
 CPPFLAGS += -DG4MAJV=$(G4MAJV) -DG4MINV=$(G4MINV) -DG4SUBV=$(G4SUBV) #add -v for verbose mode
 #CPPFLAGS += -L/Users/aregjan/geant4/geant4.10.05-install/lib/ #<-- this should not be needed!!  the binmake.gmk isn't setting the env variables correctly
-CPPFLAGS += -L${G4LIB}/../ #<-- this should not be needed!!  the binmake.gmk isn't setting the env variables correctly
 
+
+LDFLAGS += -L${G4LIB}/../ #<-- this should not be needed!!  the binmake.gmk isn't setting the env variables correctly
+# Filter out deprecated flags
+# LDFLAGS := $(filter-out -single_module -bind_at_load -L/Users/aregjan/jax-metal/lib/, $(LDFLAGS))
+$(info    LDFLAGS = $(LDFLAGS))
 
 ########################### ROOT #################################
 ifdef ROOTSYS

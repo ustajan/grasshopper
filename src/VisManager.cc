@@ -9,7 +9,6 @@
 #ifdef G4VIS_USE
 
 #include "VisManager.hh"
-
 // Supported drivers...
 
 #ifdef G4VIS_USE_DAWN

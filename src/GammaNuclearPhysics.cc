@@ -57,7 +57,7 @@ GammaNuclearPhysics::~GammaNuclearPhysics()
 
 void GammaNuclearPhysics::ConstructProcess()
 {
-   G4ProcessManager* pManager = G4Gamma::Gamma()->GetProcessManager();
+//   G4ProcessManager* pManager = G4Gamma::Gamma()->GetProcessManager(); //unused
    //
 //   G4PhotoNuclearProcess* process = new G4PhotoNuclearProcess(); //removed in v11
    //

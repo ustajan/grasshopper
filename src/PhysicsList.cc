@@ -18,7 +18,12 @@
 
 #include "G4HadronPhysicsQGSP_BIC_HP.hh"
 #include "G4HadronPhysicsQGSP_BIC.hh"
+
+#include "G4HadronPhysicsINCLXX.hh"
+
+
 #include "G4HadronElasticPhysics.hh"
+#include "G4HadronInelasticProcess.hh"
 #include "G4HadronElasticPhysicsHP.hh"
 #include "G4NeutronCrossSectionXS.hh"
 #include "G4NeutronTrackingCut.hh"
@@ -113,14 +118,20 @@ void physicsList::ConstructPhysics()
   // neutron transport (HP). Note the required use of complementary of
   // HP version for hadron elastic physics
   if(useNeutronHP){
-    RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(verboseLevel));
+//    RegisterPhysics( new G4HadronPhysicsINCLXX(verboseLevel)); //better for spallation.   This and the lower line conflict
+    RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(verboseLevel)); //this is more accurate for low energy interractions
     RegisterPhysics( new G4HadronElasticPhysicsHP(verboseLevel) );
+    std::cout << "Using G4HadronPhysicsQGSP_BIC_HP and G4HadronElasticPhysicsHP with neutron HP physics -- WARNING, segfaults with neutrons."  << std::endl;
+    //Important note:  The HP version of the neutron cross section causes seg faults
+    // , see more here: https://geant4-forum.web.cern.ch/t/seg-faults-due-to-g4particlehpelasticdata/14074/9.  This is a bug in Geant4
+    // and should be fixed in the future.  For now, we use the nonHP version. 
   }
   
   // QGSP model with BIC, standard hadron elastic physics, and the
   // extended neutron XS data set for improved non-HP neutron physics
   else{
-    RegisterPhysics( new G4HadronPhysicsQGSP_BIC(verboseLevel));
+//    RegisterPhysics( new G4HadronPhysicsINCLXX(verboseLevel)); //better for spallation. This and the lower line conflict
+    RegisterPhysics( new G4HadronPhysicsQGSP_BIC(verboseLevel)); //this is more accurate for low energy interractions
     RegisterPhysics( new G4HadronElasticPhysics(verboseLevel) );
     RegisterPhysics( new G4NeutronCrossSectionXS(verboseLevel));
   }

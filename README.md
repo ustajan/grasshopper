@@ -44,12 +44,17 @@ To build with GNUmake
 To build with CMake
 ==
 
+`> cd grasshopper`
 
 `> mkdir RunGrasshopper && cd RunGrasshopper`
 
-`> cmake ../../grasshopper && make -jN`
+`> cmake .. && make -jN`
 
-Note: cmake build has been tested using WSL/ubuntu under windows only.  On Mac OS X it's known to break.  See Issues.
+where N is the number of your cores.  This will generate a binary, `grasshopper`, which you can then run something like the following:
+
+`> ./grasshopper ../exec/Examples/beta/beta_lite.gdml test.root`
+
+Note: cmake build doesn't include visualization.  See Issues.
 
 To run
 ==

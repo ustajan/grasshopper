@@ -46,7 +46,7 @@
     
   <!-- THE OUTPUT -->
   <define>
-  	<constant name="TextOutputOn" value="1"/> <!-- the value should be either 1 (true) or 0 -->
+  	<constant name="TextOutputOn" value="0"/> <!-- the value should be either 1 (true) or 0 -->
 	<constant name="BriefOutputOn" value="1"/> <!-- enable this if you want the shorter version of the text output -->
   	<constant name="VRMLvisualizationOn" value="1"/> <!-- 1 means that you want a VRML file -->
   	<constant name="EventsToAccumulate" value="200"/> <!-- number of tracks to accumulate in the visualization -->
@@ -57,7 +57,7 @@
     <constant name="LightProducingParticle" value="0"/> <!-- the particle which is actually producing light in the detector.  0 means ALL.  It will also kill all particles other than LightProducingParticle in the detector.  If in doubt set to 0. -->
     <constant name="LowEnergyCutoff" value="0."/><!-- The low energy cuttoff, MeV, for the main track. If in doubt set it to 0 -->
     <constant name="KeepOnlyMainParticle" value="1"/> <!-- if 1, the simulation will track only the main particle, as defined by ParticleNumber in the beam definition, OUTSIDE the detector volume.  For example, you'll need to set this to 0 to simulate bremmstrahlung, but to 1 for any transmission simulation. If in doubt, set to 0.-->
-    <quantity name="ProductionLowLimit" type="threshold" value="100" unit="keV" /> <!-- for neutron processes anything >1keV causes things to hang...set this to a high value for any other process to optimize computational time.  There are still some intricacies with this.  With high enough energy, rather than generating secondaries, all the energy loss will get tagged to the EnergyDeposited for the main particle.  So, the energy scoring (as determined by LighProducingParticle above) needs to be adjusted accordingly. -->
+    <quantity name="ProductionLowLimit" type="threshold" value="1" unit="keV" /> <!-- for neutron processes anything >1keV causes things to hang...set this to a high value for any other process to optimize computational time.  There are still some intricacies with this.  With high enough energy, rather than generating secondaries, all the energy loss will get tagged to the EnergyDeposited for the main particle.  So, the energy scoring (as determined by LighProducingParticle above) needs to be adjusted accordingly. -->
   </define>
 
 <!-- OUTPUT FILTERS.  What data/entries do you want to keep? -->
@@ -72,7 +72,7 @@
     <constant name="RandomGenSeed" value="1"/>
     <quantity name="BeamOffsetX"  type="coordinate" value="0" unit="mm"/>
     <quantity name="BeamOffsetY"  type="coordinate" value="0" unit="mm"/>    
-    <quantity name="BeamOffsetZ"  type="coordinate" value="40" unit="mm"/> <!-- all in mm -->    
+    <quantity name="BeamOffsetZ"  type="coordinate" value="0" unit="mm"/> <!-- all in mm -->    
     <quantity name="BeamSize" type="coordinate" value="25" unit="mm"/> <!-- -2 means isotropic -->
 
     <quantity name="BeamEnergy" type="energy" value="0.662" unit="MeV"/> <!-- this is in MeV --> <!-- a negative number prompts reading input_spectrum.txt -->
@@ -90,7 +90,7 @@
     <!-- the horizontal absorber plate -->
     <box lunit="mm" name="plate_solid" unit="mm" x="100" y="100" z="5"/>
     <!-- the horizontal detection plane -->
-    <tube name = "det_plane_solid" rmin="0" rmax="25.4" z="50.8" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/> <!-- This is the 2" NaI.  Change the geometry for LaBr3 and HPGe.  Don't forget to change the material too beloe! -->
+    <tube name = "det_plane_solid" rmin="0" rmax="25.4" z="50.8" deltaphi="360" startphi="0" aunit="deg" lunit= "mm"/> <!-- This is the 2" NaI.  Change the geometry for LaBr3 and HPGe.  Don't forget to change the material too beloe! -->
   </solids>
 
 
