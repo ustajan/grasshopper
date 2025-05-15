@@ -39,7 +39,7 @@ CPPFLAGS += -DG4MAJV=$(G4MAJV) -DG4MINV=$(G4MINV) -DG4SUBV=$(G4SUBV) #add -v for
 LDFLAGS += -L${G4LIB}/../ #<-- this should not be needed!!  the binmake.gmk isn't setting the env variables correctly
 # Filter out deprecated flags
 # LDFLAGS := $(filter-out -single_module -bind_at_load -L/Users/aregjan/jax-metal/lib/, $(LDFLAGS))
-$(info    LDFLAGS = $(LDFLAGS))
+# $(info    LDFLAGS = $(LDFLAGS)) #will print the LDFLAGS variable to the console
 
 ########################### ROOT #################################
 ifdef ROOTSYS

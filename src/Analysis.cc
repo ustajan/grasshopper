@@ -46,7 +46,6 @@
 #include <time.h>
 #include <vector>
 
-//static const G4double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
 
 #if defined (G4ANALYSIS_USE_ROOT)
 
@@ -425,6 +424,8 @@ void Analysis::ClassifyNewTrack(
   
   if (particleName == "opticalphoton")
     {
+		const G4double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
+
       Double_t aWaveLength = 0.0; // will be in [nanometer]
       aWaveLength = (LambdaE / aTrack->GetTotalEnergy()) / nanometer; // in [nanometer]
       // aWaveLength = (LambdaE / aTrack->GetKineticEnergy()) / nanometer; // in [nanometer]

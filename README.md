@@ -17,39 +17,39 @@ For copyright and licensing see files COPYRIGHT and LICENSE.
 To install
 ==
 
-The user is required/advised to have the following
+The user is required/advised to have the following:
 	
 * xerces.  This will allow the GDML parser capability.
 * Built and installed geant4 libraries.  
 	* In the cmake stage, the following flag needs to be passed: `-DGEANT4_USE_GDML=ON`.  
 	* Here's an example of what a Geant4 cmake command looks like: `cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DCMAKE_INSTALL_PREFIX=../geant4-v11.2.2-install ../geant4-v11.2.2 `
-* ROOT -- optional.  Has been tested with version 6.32/04.  If you do not have ROOT the make process will recognize that and exclude it from the build.
+* ROOT -- optional.  Has been tested with version 6.32.12.  If you do not have ROOT the make process will recognize that and exclude it from the build.
 
-__Version__:  grasshopper and been built against and tested with **Geant4 version 11.2.2**.
+__Version__:  grasshopper and been built against and tested with **Geant4 version 11.3.2**.
 
 __Important note__:  these days geant4 primarily works via the cmake framework.  However grasshopper can also use the older Makefile framework.  It is important that you source the appropriate shell script in geant4 directories to enable all the env. variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
 
-`. ~/geant4/geant4-v11.2.2-install/share/Geant4/geant4make/geant4make.sh `
+`. ~/geant4/geant4-v11.3.2-install/share/Geant4/geant4make/geant4make.sh `
 
 If all the regular geant4 installations and configurations are ready, then the user can get the code by
 
-`> git clone https://github.com/ustajan/grasshopper.git`
+`git clone https://github.com/ustajan/grasshopper.git`
 
 To build with GNUmake
 ==
-`> cd grasshopper`
-
-`> make`
+```
+cd grasshopper
+make -jN
+```
+where N is the number of your cores.
 
 To build with CMake
 ==
-
-`> cd grasshopper`
-
-`> mkdir RunGrasshopper && cd RunGrasshopper`
-
-`> cmake .. && make -jN`
-
+```
+cd grasshopper
+mkdir RunGrasshopper && cd RunGrasshopper
+cmake .. && make -jN
+```
 where N is the number of your cores.  This will generate a binary, `grasshopper`, which you can then run something like the following:
 
 `> ./grasshopper ../exec/Examples/beta/beta_lite.gdml test.root`
