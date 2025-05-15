@@ -152,7 +152,7 @@ int main(int argc,char** argv)
   // exporting geometry from specified GDML file
   runManager->SetUserInitialization(new DetectorConstruction(parser.GetWorldVolume()));
 
-  bool useNeutronHP = false; //NeutronHP currently causes seg faults
+  bool useNeutronHP = true;
   bool useScintillation = false;
   runManager->SetUserInitialization(new physicsList(useNeutronHP,useScintillation)); //used to be DADE's version (true,false)
 
