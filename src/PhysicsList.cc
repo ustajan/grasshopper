@@ -59,9 +59,7 @@
 extern G4GDMLParser parser;
 
 
-physicsList::physicsList(G4bool neutronHP,
-			 G4bool scintillation) 
-  : G4VModularPhysicsList()
+physicsList::physicsList() : G4VModularPhysicsList()
 {
   defaultCutValue = 0.7*mm;
   cutForGamma = defaultCutValue;
@@ -69,8 +67,6 @@ physicsList::physicsList(G4bool neutronHP,
   cutForPositron = defaultCutValue;
   cutForProton = defaultCutValue;
 
-  useNeutronHP = neutronHP;
-  useScintillation = scintillation;
   verboseLevel = 0;
 
   ConstructPhysics();
@@ -113,6 +109,8 @@ void physicsList::ConstructPhysics()
   //////////////////////
   // Hadronic Physics //
   //////////////////////
+  bool useNeutronHP = true;
+  bool useScintillation = false;
 
   // QGSP model with the Binary Ion Cascase (BIC) with high precision
   // neutron transport (HP). Note the required use of complementary of
@@ -121,10 +119,6 @@ void physicsList::ConstructPhysics()
 //    RegisterPhysics( new G4HadronPhysicsINCLXX(verboseLevel)); //better for spallation.   This and the lower line conflict
     RegisterPhysics( new G4HadronPhysicsQGSP_BIC_HP(verboseLevel)); //this is more accurate for low energy interractions
     RegisterPhysics( new G4HadronElasticPhysicsHP(verboseLevel) );
-    std::cout << "Using G4HadronPhysicsQGSP_BIC_HP and G4HadronElasticPhysicsHP with neutron HP physics -- WARNING, segfaults with neutrons."  << std::endl;
-    //Important note:  The HP version of the neutron cross section causes seg faults
-    // , see more here: https://geant4-forum.web.cern.ch/t/seg-faults-due-to-g4particlehpelasticdata/14074/9.  This is a bug in Geant4
-    // and should be fixed in the future.  For now, we use the nonHP version. 
   }
   
   // QGSP model with BIC, standard hadron elastic physics, and the

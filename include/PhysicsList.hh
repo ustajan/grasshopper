@@ -10,7 +10,7 @@ class physicsList: public G4VModularPhysicsList
 {
 public:
 
-  physicsList(G4bool, G4bool);
+  physicsList();
   ~physicsList();
 
   void ConstructParticle();
@@ -29,7 +29,6 @@ private:
 
 //  G4VPhysicsConstructor*  particleList; //not used
 
-  G4bool useNeutronHP, useScintillation;
 
   G4VPhysicsConstructor *decayPhysics;
   std::vector<G4VPhysicsConstructor *> EMPhysicsList;

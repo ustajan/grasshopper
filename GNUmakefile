@@ -31,7 +31,7 @@ G4SUBV := $(word 3,$(G4VS))
 #include $(G4WORKDIR)/binmake.gmk
 include $(G4INSTALL)/config/binmake.gmk
 
-CPPFLAGS += -O4 #uncomment and set O to zero if you need debugger flags
+CPPFLAGS += -O3 #uncomment and set O to zero if you need debugger flags
 CPPFLAGS += -DG4MAJV=$(G4MAJV) -DG4MINV=$(G4MINV) -DG4SUBV=$(G4SUBV) #add -v for verbose mode
 #CPPFLAGS += -L/Users/aregjan/geant4/geant4.10.05-install/lib/ #<-- this should not be needed!!  the binmake.gmk isn't setting the env variables correctly
 
@@ -45,7 +45,7 @@ LDFLAGS += -L${G4LIB}/../ #<-- this should not be needed!!  the binmake.gmk isn'
 ifdef ROOTSYS
 ifndef G4UI_USE_ROOT
 CPPFLAGS += -DG4ANALYSIS_USE_ROOT $(shell $(ROOTSYS)/bin/root-config --cflags)
-ROOTLIBS = $(shell $(ROOTSYS)/bin/root-config --nonew --glibs) -lMinuit -lHtml
+ROOTLIBS = $(shell $(ROOTSYS)/bin/root-config --nonew --glibs) -lMinuit # -lHtml
 ROOTLIBS := $(filter-out -lNew,$(ROOTLIBS))
 ROOTLIBS := $(filter-out -lpthread,$(ROOTLIBS))
 LDLIBS += $(ROOTLIBS)

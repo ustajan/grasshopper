@@ -42,3 +42,6 @@ proton MD5 (3He.dat) = 6f42e997ed31ae73260c0558d46f679c
 beta MD5 (beta_test.dat) = 1abfea61429c5aa2702782ecf123c7e7
 gamma MD5 (gamma_test.dat) = f22a854d35bd0c3584693585e94701c6
 proton MD5 (3He.dat) = 6f42e997ed31ae73260c0558d46f679c
+beta MD5 (beta_test.dat) = 1abfea61429c5aa2702782ecf123c7e7
+gamma MD5 (gamma_test.dat) = f22a854d35bd0c3584693585e94701c6
+proton MD5 (3He.dat) = 04b539cb0c645d35dae89ee7c91970f2
