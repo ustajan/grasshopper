@@ -109,7 +109,10 @@ public:
   // G4UserSteppingAction
   void UserSteppingAction(const G4Step*);
   
-  
+  void CreateNewEntry(long unsigned int trackid);
+  bool IsThisANewTrack(long unsigned int trackid);
+  bool EnteringDetector(const G4Step *aStep);
+  bool IsInDetector(const G4Step *aStep);
 
 private:
   void ResetEverything();
@@ -131,7 +134,7 @@ private:
   std::ofstream data_file;
   bool textoutput,briefoutput;
 
-  unsigned long npart;
+  unsigned long entry;
   G4ParticleGun* particle_gun_local;
   G4double E,Edep,E_beam;
   G4double x;
@@ -146,7 +149,7 @@ private:
   std::vector<double> Ev,Edepv,xv,yv,zv,thetav;
   std::vector<long long> IDv,TrackIDv,EventIDv,ProcIDv;
   std::vector<std::string> ParticleNamev,ProcessNamev;
-  std::vector<bool> IsSurfaceHit;
+  std::vector<bool> IsSurfaceHit,IsNewTrack;
   std::string ParticleName,CreatorProcessName;
   std::vector<float> Timev;
   std::vector<long long> detector_hit;

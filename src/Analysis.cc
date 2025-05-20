@@ -519,43 +519,21 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 		return;
 	}
 
-	int trackid =  aStep->GetTrack()->GetTrackID();
+	long unsigned int trackid =  aStep->GetTrack()->GetTrackID();
 
 	if(TrackMustDie(aStep)){ //apply the cuts here
 		aStep->GetTrack()->SetTrackStatus(fStopAndKill);
-//		if(aStep->GetTrack()->GetDefinition()->GetParticleName()=="gamma")
-//			std::cout << "killing a photon: " << EventID << "\t" << trackid << "\t" << aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName() << "\t" << aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName() <<std::endl;
-
 		return;
 	}
 
 
 
-	if((long unsigned int)Ev.size() < (long unsigned int)trackid){ //a new track.  trackid starts from 1.
-		Ev.resize(trackid,-1e+6);
-		Edepv.resize(trackid,0);
-		xv.resize(trackid,-1e+6);
-		yv.resize(trackid,-1e+6);
-		zv.resize(trackid,-1e+6);
-		thetav.resize(trackid,-1e+6);
-		IDv.resize(trackid,-1e+6);
-		ParticleNamev.resize(trackid,"");
-		ProcessNamev.resize(trackid,"");
-		TrackIDv.resize(trackid,-1e+6);
-		EventIDv.resize(trackid,-1e+6);
-		ProcIDv.resize(trackid,-1e+6);
-		Timev.resize(trackid,-1e+6);
-		detector_hit.resize(trackid,-1e+6);
-		IsSurfaceHit.resize(trackid,false);
-
+	if((long unsigned int)Ev.size() < trackid){ //a new track.  trackid starts from 1.
+		CreateNewEntry(trackid); //create a new entry in the vector
 	}
 
 
-	if(aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0,8,"det_phys")==0 &&
-			aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0,8,"det_phys")!=0 //modified the code so it checks the detector entrace by comparing the Pre!=detector && Post==detector
-//			aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="world_log_PV"
-					&& IsSurfaceHit[trackid-1]==false //check that this is truly the first time we enter A detector
-	) //stepping into det for the first time
+	if(EnteringDetector(aStep)) //stepping into det for the first time
 	{
 
 
@@ -591,13 +569,14 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 		else
 			ProcessNamev[trackid-1]= "EventGenerator";
 
-		npart++;
+		entry++;
 
 	}
 
 
-	if(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0,8,"det_phys")==0){ //in the det
+	if (IsInDetector(aStep)) //in the det
 
+	{
 	  IDv[trackid-1]= aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
 	  ParticleNamev[trackid-1]= aStep->GetTrack()->GetDefinition()->GetParticleName();
 	  if(aStep->GetTrack()->GetTrackID()>1)
@@ -678,8 +657,8 @@ bool Analysis::TrackMustDie(const G4Step *aStep){
 }
 void Analysis::ResetEverything()
 {
-
-	  npart=0;
+  //reset all the class variables
+	  entry=0;
 	  E=-1;
 	  x=-1e5;
 	  y=-1e5;
@@ -708,5 +687,50 @@ void Analysis::ResetEverything()
 	  Timev.clear();
 	  detector_hit.clear();
 	  IsSurfaceHit.clear();
+	  IsNewTrack.clear();
 
+}
+void Analysis::CreateNewEntry(long unsigned int trackid)
+{
+	Ev.resize(trackid, -1e+6);
+	Edepv.resize(trackid, 0);
+	xv.resize(trackid, -1e+6);
+	yv.resize(trackid, -1e+6);
+	zv.resize(trackid, -1e+6);
+	thetav.resize(trackid, -1e+6);
+	IDv.resize(trackid, -1e+6);
+	ParticleNamev.resize(trackid, "");
+	ProcessNamev.resize(trackid, "");
+	TrackIDv.resize(trackid, -1e+6);
+	EventIDv.resize(trackid, -1e+6);
+	ProcIDv.resize(trackid, -1e+6);
+	Timev.resize(trackid, -1e+6);
+	detector_hit.resize(trackid, -1e+6);
+	IsSurfaceHit.resize(trackid, false);
+	IsNewTrack.resize(trackid, false);
+}
+bool Analysis::IsThisANewTrack(long unsigned int trackid)
+{
+  if(trackid>0 && trackid<=Ev.size()){
+	if(Ev.at(trackid-1)==-1e+6){
+	  Ev.at(trackid-1)=0;
+	  return true;
+	}
+  }
+  return false;
+}
+bool Analysis::EnteringDetector(const G4Step *aStep) //check if we are entering the detector for the first time
+{
+  long unsigned int trackid =  aStep->GetTrack()->GetTrackID();
+
+  if (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") == 0 &&
+      aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") != 0 && // modified the code so it checks the detector entrance by comparing the Pre!=detector && Post==detector
+      IsSurfaceHit[trackid - 1] == false) // check that this is truly the first time we enter A detector
+  {
+    return true;
+  }
+  return false;
+}
+bool Analysis::IsInDetector(const G4Step *aStep) { //check if we are in the detector
+  return aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") == 0;
 }
