@@ -46,8 +46,7 @@
 #include <time.h>
 #include <vector>
 
-
-#if defined (G4ANALYSIS_USE_ROOT)
+#if defined(G4ANALYSIS_USE_ROOT)
 
 #include "TROOT.h"
 #include "TApplication.h"
@@ -61,214 +60,209 @@
 #include "TMath.h"
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
 
-
-
 #include <iostream>
 #include <fstream>
 
 extern G4String RootOutputFile;
 extern G4GDMLParser parser;
 
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
-Analysis::Analysis(G4ParticleGun* particle_gun)
+Analysis::Analysis(G4ParticleGun *particle_gun)
 {
-  LastDoItTime = (time_t)0;
+	LastDoItTime = (time_t)0;
 
-  file_even = 100000;
+	file_even = 100000;
 
-  nextinline=1;
+	nextinline = 1;
 
-  counter=1;
-  particle_gun_local=particle_gun;
+	counter = 1;
+	particle_gun_local = particle_gun;
 
-  LightProducingParticle=parser.GetConstant("LightProducingParticle");
-  EventGeneratorParticle=parser.GetConstant("ParticleNumber");
-  LowEnergyCutoff		=parser.GetConstant("LowEnergyCutoff");
-  if(parser.GetConstant("KeepOnlyMainParticle")==0)
-    KeepOnlyMainParticle=false;
-  else
-    KeepOnlyMainParticle=true;
+	LightProducingParticle = parser.GetConstant("LightProducingParticle");
+	EventGeneratorParticle = parser.GetConstant("ParticleNumber");
+	LowEnergyCutoff = parser.GetConstant("LowEnergyCutoff");
+	if (parser.GetConstant("KeepOnlyMainParticle") == 0)
+		KeepOnlyMainParticle = false;
+	else
+		KeepOnlyMainParticle = true;
 
-  SaveSurfaceHitTrack=false;
-  SaveTrackInfo=false;
-  SaveEdepositedTotalEntry=false;
-  if(parser.GetConstant("SaveSurfaceHitTrack")==1) SaveSurfaceHitTrack=true;
-  if(parser.GetConstant("SaveTrackInfo")==1) SaveTrackInfo=true;
-  if(parser.GetConstant("SaveEdepositedTotalEntry")==1) SaveEdepositedTotalEntry=true;
+	SaveSurfaceHitTrack = false;
+	SaveTrackInfo = false;
+	SaveEdepositedTotalEntry = false;
+	if (parser.GetConstant("SaveSurfaceHitTrack") == 1)
+		SaveSurfaceHitTrack = true;
+	if (parser.GetConstant("SaveTrackInfo") == 1)
+		SaveTrackInfo = true;
+	if (parser.GetConstant("SaveEdepositedTotalEntry") == 1)
+		SaveEdepositedTotalEntry = true;
 
-  // file for the text output
-  
-#if defined (G4ANALYSIS_USE_ROOT)
+	// file for the text output
 
-  if (gSystem) gSystem->ProcessEvents();
+#if defined(G4ANALYSIS_USE_ROOT)
 
-  // open the output data file
+	if (gSystem)
+		gSystem->ProcessEvents();
 
-  TString outfile_name = RootOutputFile;
+	// open the output data file
 
-  f = new TFile(outfile_name.Data(),"RECREATE");
+	TString outfile_name = RootOutputFile;
 
-  // create a "tree" for the data to be stored into
+	f = new TFile(outfile_name.Data(), "RECREATE");
 
-  tree = new TTree("tree","main tree");
+	// create a "tree" for the data to be stored into
 
-  // defines "branches" of the tree
+	tree = new TTree("tree", "main tree");
 
-  //  tree->Branch("npart",&npart,"npart/I");
-  tree->Branch("E_beam",&E_beam,"E_beam/D");
-  tree->Branch("E_incident",&E,"E_incident/D");
-  tree->Branch("E_deposited",&Edep,"E_deposited/D");
-  tree->Branch("x_incident",&x,"x_incident/D");
-  tree->Branch("y_incident",&y,"y_incident/D");
-  tree->Branch("z_incident",&z,"z_incident/D");
-  tree->Branch("theta",&theta,"theta/D");
-  tree->Branch("Time",&Time,"Time/F");
-  tree->Branch("EventID",&EventID,"EventID/L");
-  tree->Branch("TrackID",&TrackID,"TrackID/L");
-  tree->Branch("ParticleID",&ID,"ParticleID/L");
-//  char *tmp=(char*)ParticleName_placeholder.c_str(); //same as below -- set the pointer to the placeholder for particle name
-//  tree->Branch("ParticleName",tmp,"ParticleName/C");
-  tree->Branch("ParticleName",&ParticleName);
-  tree->Branch("CreatorProcessID",&ProcID,"CreatorProcessID/L"); //obsolete
-//  char *tmp2=(char*)CreatorProcessName.c_str(); //a tmp pointer at the creatorprocessname, which will be updated at the end of every track
-  tree->Branch("CreatorProcessName",&CreatorProcessName);
-  tree->Branch("IsEdepositedTotalEntry",&IsSummaryEntry,"IsEdepositedTotalEntry/O");
-  tree->Branch("IsSurfaceHitTrack",&IsSurfaceHitTrack,"IsSurfaceHitTrack/O");
-  tree->Branch("channel",&channel,"channel/l");
- 
- 
+	// defines "branches" of the tree
+
+	//  tree->Branch("npart",&npart,"npart/I");
+	tree->Branch("E_beam", &E_beam, "E_beam/D");
+	tree->Branch("E_incident", &E, "E_incident/D");
+	tree->Branch("E_deposited", &Edep, "E_deposited/D");
+	tree->Branch("x_incident", &x, "x_incident/D");
+	tree->Branch("y_incident", &y, "y_incident/D");
+	tree->Branch("z_incident", &z, "z_incident/D");
+	tree->Branch("theta", &theta, "theta/D");
+	tree->Branch("Time", &Time, "Time/F");
+	tree->Branch("EventID", &EventID, "EventID/L");
+	tree->Branch("TrackID", &TrackID, "TrackID/L");
+	tree->Branch("ParticleID", &ID, "ParticleID/L");
+	//  char *tmp=(char*)ParticleName_placeholder.c_str(); //same as below -- set the pointer to the placeholder for particle name
+	//  tree->Branch("ParticleName",tmp,"ParticleName/C");
+	tree->Branch("ParticleName", &ParticleName);
+	tree->Branch("CreatorProcessID", &ProcID, "CreatorProcessID/L"); // obsolete
+	//  char *tmp2=(char*)CreatorProcessName.c_str(); //a tmp pointer at the creatorprocessname, which will be updated at the end of every track
+	tree->Branch("CreatorProcessName", &CreatorProcessName);
+	tree->Branch("IsEdepositedTotalEntry", &IsSummaryEntry, "IsEdepositedTotalEntry/O");
+	tree->Branch("IsSurfaceHitTrack", &IsSurfaceHitTrack, "IsSurfaceHitTrack/O");
+	tree->Branch("channel", &channel, "channel/l");
 
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  textoutput=parser.GetConstant("TextOutputOn");
-  briefoutput=parser.GetConstant("BriefOutputOn");
-  
-  if(textoutput){
-	  std::string data_file_name;
-	  std::string rootoutputfile=(std::string)RootOutputFile;
-	  if(rootoutputfile.find(".root")<rootoutputfile.length()){
-		  data_file_name=(std::string)rootoutputfile.substr(0,rootoutputfile.find(".root"));
-		  data_file_name+=".dat";
-	  }
-	  else
-		  data_file_name=(std::string)RootOutputFile+".dat";
+	textoutput = parser.GetConstant("TextOutputOn");
+	briefoutput = parser.GetConstant("BriefOutputOn");
 
-	  data_file.open(data_file_name.c_str(), std::ofstream::out | std::ofstream::trunc); //open the text file
-	  if(briefoutput)
-	    data_file << "E_beam(MeV)\tE(MeV)\tEventID\tParticleName\tCreatorProcessName\tTime(ns)\t detector#" << std::endl;	    
-	  else
-	    data_file << "E_beam(MeV)\tE_incident(MeV)\tE_deposited(MeV)\tx_incident\ty_incident\tz_incident\ttheta\tTime\tEventID\tTrackID\tParticleID\tParticleName\tCreatorProcessName\tIsEdepositedTotalEntry\tIsSurfaceHitTrack\tdetector#" << std::endl;
-  }
+	if (textoutput)
+	{
+		std::string data_file_name;
+		std::string rootoutputfile = (std::string)RootOutputFile;
+		if (rootoutputfile.find(".root") < rootoutputfile.length())
+		{
+			data_file_name = (std::string)rootoutputfile.substr(0, rootoutputfile.find(".root"));
+			data_file_name += ".dat";
+		}
+		else
+			data_file_name = (std::string)RootOutputFile + ".dat";
+
+		data_file.open(data_file_name.c_str(), std::ofstream::out | std::ofstream::trunc); // open the text file
+		if (briefoutput)
+			data_file << "E_beam(MeV)\tE(MeV)\tEventID\tParticleName\tCreatorProcessName\tTime(ns)\t detector#" << std::endl;
+		else
+			data_file << "E_beam(MeV)\tE_incident(MeV)\tE_deposited(MeV)\tx_incident\ty_incident\tz_incident\ttheta\tTime\tEventID\tTrackID\tParticleID\tParticleName\tCreatorProcessName\tIsEdepositedTotalEntry\tIsSurfaceHitTrack\tdetector#" << std::endl;
+	}
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 Analysis::~Analysis()
 {
-  //OnceAWhileDoIt();
-  
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  f->Write();
-  f->Close();
-#endif /* defined (G4ANALYSIS_USE_ROOT) */
-  if(textoutput)
-	  data_file.close();
-  
+	// OnceAWhileDoIt();
 
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
+	f->Write();
+	f->Close();
+#endif /* defined (G4ANALYSIS_USE_ROOT) */
+	if (textoutput)
+		data_file.close();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::Construct(const G4VPhysicalVolume *theWorldWolume)
 {
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  
-  
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  
-  OnceAWhileDoIt();
+
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::ConstructParticle()
 {
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  
-  
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  
-  OnceAWhileDoIt();
+
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::ConstructProcess()
 {
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  
-  
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  
-  OnceAWhileDoIt();
+
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::SetCuts()
 {
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  
-  
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  
-  OnceAWhileDoIt();
+
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::GeneratePrimaries(const G4Event *anEvent)
 {
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  
-  
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  
-  OnceAWhileDoIt();
+
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::BeginOfEventAction(const G4Event *anEvent)
 {
-  E_beam=particle_gun_local->GetParticleEnergy(); // We get the energy of the particle at the onset of the event
+	E_beam = particle_gun_local->GetParticleEnergy(); // We get the energy of the particle at the onset of the event
 
 	EventID = anEvent->GetEventID();
-	ResetEverything(); //reset all the class variables
+	ResetEverything(); // reset all the class variables
 
-#if defined (G4ANALYSIS_USE_ROOT)
+#if defined(G4ANALYSIS_USE_ROOT)
 
-	if (gSystem) gSystem->ProcessEvents();
-
+	if (gSystem)
+		gSystem->ProcessEvents();
 
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
 
@@ -280,224 +274,234 @@ void Analysis::BeginOfEventAction(const G4Event *anEvent)
 void Analysis::EndOfEventAction(const G4Event *anEvent)
 {
 
-  for(unsigned int i=0;i<Ev.size();++i){ //looping over all the tracks in the detector
-  	if(IsSurfaceHit.at(i))
-      E=Ev.at(i);	//fill the incident energy variable ONLY for incident hit entries
-    Edep=Edepv.at(i);
-    x=xv.at(i);
-    y=yv.at(i);
-    z=zv.at(i);
-    theta=thetav.at(i);
-    ID=IDv.at(i);
-    TrackID=TrackIDv.at(i);
-    //    EventID=EventIDv.at(i); //defined in the beginning
-    ProcID=ProcIDv.at(i);
-    CreatorProcessName=ProcessNamev.at(i); //copy over the name to the placeholder
-    ParticleName=ParticleNamev.at(i); //same here
-    Time=Timev.at(i);
-    IsSurfaceHitTrack=IsSurfaceHit.at(i);
-    channel=detector_hit.at(i);
+	for (unsigned int i = 0; i < Ev.size(); ++i)
+	{ // looping over all the tracks in the detector
+		if (IsSurfaceHit.at(i))
+			E = Ev.at(i); // fill the incident energy variable ONLY for incident hit entries
+		Edep = Edepv.at(i);
+		x = xv.at(i);
+		y = yv.at(i);
+		z = zv.at(i);
+		theta = thetav.at(i);
+		ID = IDv.at(i);
+		TrackID = TrackIDv.at(i);
+		//    EventID=EventIDv.at(i); //defined in the beginning
+		ProcID = ProcIDv.at(i);
+		CreatorProcessName = ProcessNamev.at(i); // copy over the name to the placeholder
+		ParticleName = ParticleNamev.at(i);		 // same here
+		Time = Timev.at(i);
+		IsSurfaceHitTrack = IsSurfaceHit.at(i);
+		channel = detector_hit.at(i);
 
-    if(detector_hit.at(i)>=0 && ((IsSurfaceHitTrack && SaveSurfaceHitTrack ) || SaveTrackInfo)) {//filter out the empty stuff
-    	if(textoutput){
-    		if(briefoutput){
-      		if(SaveTrackInfo) E=Edep; //if this is tracking mode then we actually want to keep the deposited energy, not the incident energy
-      		data_file << std::setprecision(5);
-      		data_file << E_beam
-								    << "\t" << E //earlier we changed this to Edep, that is not correct, will give wrong answers for surfacehit tracks.  This however is also a bug -- it slaps the main track's energy (when it enters the volume onto the individual tracks
-								    << "\t" << EventID
-								    << "\t" << ParticleName.c_str()
-								    << "\t" << CreatorProcessName.c_str()
-								    << "\t" << Time
-								    << "\t" << detector_hit.at(i)
-								    <<std::endl;
+		if (detector_hit.at(i) >= 0 && ((IsSurfaceHitTrack && SaveSurfaceHitTrack) || SaveTrackInfo))
+		{ // filter out the empty stuff
+			if (textoutput)
+			{
+				if (briefoutput)
+				{
+					if (SaveTrackInfo)
+						E = Edep; // if this is tracking mode then we actually want to keep the deposited energy, not the incident energy
+					data_file << std::setprecision(5);
+					data_file << E_beam
+							  << "\t" << E // earlier we changed this to Edep, that is not correct, will give wrong answers for surfacehit tracks.  This however is also a bug -- it slaps the main track's energy (when it enters the volume onto the individual tracks
+							  << "\t" << EventID
+							  << "\t" << ParticleName.c_str()
+							  << "\t" << CreatorProcessName.c_str()
+							  << "\t" << Time
+							  << "\t" << detector_hit.at(i)
+							  << std::endl;
 				}
-		  	else{
-			  	data_file << std::setprecision(5);
-			  	data_file << E_beam
-			  	<< "\t" << E
-			  	<< "\t" << Edep
-			  	<< "\t" << x
-			  	<< "\t" << y
-			  	<< "\t" << z
-			  	<< "\t" << theta
-			  	<< "\t" << Time
-			  	<< "\t" << EventID
-			  	<< "\t" << TrackID
-			  	<< "\t" << ID
-			  	<< "\t" << ParticleName.c_str()
-			  	<< "\t" << CreatorProcessName.c_str()
-			  	<< "\t" << 0
-			  	<< "\t" << IsSurfaceHitTrack
-			  	<< "\t" << detector_hit.at(i)
-			  	<<std::endl;
-		  	}
-			}	
-#if defined (G4ANALYSIS_USE_ROOT)
+				else
+				{
+					data_file << std::setprecision(5);
+					data_file << E_beam
+							  << "\t" << E
+							  << "\t" << Edep
+							  << "\t" << x
+							  << "\t" << y
+							  << "\t" << z
+							  << "\t" << theta
+							  << "\t" << Time
+							  << "\t" << EventID
+							  << "\t" << TrackID
+							  << "\t" << ID
+							  << "\t" << ParticleName.c_str()
+							  << "\t" << CreatorProcessName.c_str()
+							  << "\t" << 0
+							  << "\t" << IsSurfaceHitTrack
+							  << "\t" << detector_hit.at(i)
+							  << std::endl;
+				}
+			}
+#if defined(G4ANALYSIS_USE_ROOT)
 			else
 				tree->Fill();
 #endif
 		}
 	}
-  //Now, fill the summary entry
-	if(SaveEdepositedTotalEntry){
-		IsSummaryEntry=true;
-		IsSurfaceHitTrack=false;
-	    Edep=0; //set it to zero
-	    CreatorProcessName="";
-	    for(unsigned int i=0;i<Ev.size();++i){ //add ALL the deposited energies from ALL the tracks that hit the detector
-	      if(detector_hit.at(i)>=0 &&  //make sure we are inside the detector
-		 ( IDv.at(i)==LightProducingParticle ||   //this is the designated light producing particle, OR
-		   LightProducingParticle==0 ||           //the light producing particle has been set to 0 (i.e. everything), OR
-		   ( LightProducingParticle==2212 && ProcessNamev.at(i)=="hIoni") ) //this is an hadron ionization track from a proton
-		 ){
-	      	Edep+=Edepv.at(i);
-	      CreatorProcessName+=ProcessNamev.at(i)+"/";
-	    }
-	  }
-	#if defined (G4ANALYSIS_USE_ROOT)
-	  if (gSystem) gSystem->ProcessEvents();
-	#endif /* defined (G4ANALYSIS_USE_ROOT) */
-	  if(Edep>0){
+	// Now, fill the summary entry
+	if (SaveEdepositedTotalEntry)
+	{
+		IsSummaryEntry = true;
+		IsSurfaceHitTrack = false;
+		Edep = 0; // set it to zero
+		CreatorProcessName = "";
+		for (unsigned int i = 0; i < Ev.size(); ++i)
+		{																			// add ALL the deposited energies from ALL the tracks that hit the detector
+			if (detector_hit.at(i) >= 0 &&											// make sure we are inside the detector
+				(IDv.at(i) == LightProducingParticle ||								// this is the designated light producing particle, OR
+				 LightProducingParticle == 0 ||										// the light producing particle has been set to 0 (i.e. everything), OR
+				 (LightProducingParticle == 2212 && ProcessNamev.at(i) == "hIoni")) // this is an hadron ionization track from a proton
+			)
+			{
+				Edep += Edepv.at(i);
+				CreatorProcessName += ProcessNamev.at(i) + "/";
+			}
+		}
+#if defined(G4ANALYSIS_USE_ROOT)
+		if (gSystem)
+			gSystem->ProcessEvents();
+#endif /* defined (G4ANALYSIS_USE_ROOT) */
+		if (Edep > 0)
+		{
 
-	  	if(textoutput){
-	  		if(briefoutput){
-	  			data_file << std::setprecision(5);
-	  			data_file << E_beam
-	  			<< "\t" << Edep
-	  			<< "\t" << EventID
-	  			<< "\t" << -1
-	  			<< "\t" << CreatorProcessName.c_str()
-	  			<< std::endl;
-
-	  		}
-	  		else{
-	  			data_file << std::setprecision(5);
-	  			data_file << E_beam << "\t"
-	  			<< -1
-	  			<< "\t" << Edep
-	  			<< "\t" << -1
-	  			<< "\t" << -1
-	  			<< "\t" << -1
-	  			<< "\t" << -1
-	  			<< "\t" << Time
-	  			<< "\t" << EventID
-	  			<< "\t" << -1
-	  			<< "\t" << -1
-	  			<< "\t" << -1
-	  			<< "\t" << CreatorProcessName.c_str()
-	  			<< "\t" << 1
-	  			<< "\t" << 0
-	  			<< std::endl;
-	  		}
-	  	}
-	#if defined (G4ANALYSIS_USE_ROOT)
-	  	else
-	  		tree->Fill();
-	#endif
-	  }
+			if (textoutput)
+			{
+				if (briefoutput)
+				{
+					data_file << std::setprecision(5);
+					data_file << E_beam
+							  << "\t" << Edep
+							  << "\t" << EventID
+							  << "\t" << -1
+							  << "\t" << CreatorProcessName.c_str()
+							  << std::endl;
+				}
+				else
+				{
+					data_file << std::setprecision(5);
+					data_file << E_beam << "\t"
+							  << -1
+							  << "\t" << Edep
+							  << "\t" << -1
+							  << "\t" << -1
+							  << "\t" << -1
+							  << "\t" << -1
+							  << "\t" << Time
+							  << "\t" << EventID
+							  << "\t" << -1
+							  << "\t" << -1
+							  << "\t" << -1
+							  << "\t" << CreatorProcessName.c_str()
+							  << "\t" << 1
+							  << "\t" << 0
+							  << std::endl;
+				}
+			}
+#if defined(G4ANALYSIS_USE_ROOT)
+			else
+				tree->Fill();
+#endif
+		}
 	}
-#if defined (G4ANALYSIS_USE_ROOT)
-	if (tree->GetEntries()%500000 == 1) tree->AutoSave("SaveSelf");
+#if defined(G4ANALYSIS_USE_ROOT)
+	if (tree->GetEntries() % 500000 == 1)
+		tree->AutoSave("SaveSelf");
 #endif
 
-if(anEvent->GetEventID() % 100 == 0)
-	std::cout << "\r\tEvent, and tracks:\t" << anEvent->GetEventID() << "\t\t" << Ev.size() << std::flush;
+	if (anEvent->GetEventID() % 100 == 0)
+		std::cout << "\r\tEvent, and tracks:\t" << anEvent->GetEventID() << "\t\t" << Ev.size() << std::flush;
 
-
-OnceAWhileDoIt();
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::ClassifyNewTrack(
-			     const G4Track *aTrack,
-			     G4ClassificationOfNewTrack *classification_ptr)
+	const G4Track *aTrack,
+	G4ClassificationOfNewTrack *classification_ptr)
 {
-  // G4ClassificationOfNewTrack &classification = (*classification_ptr);
-  
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  G4String particleName = aTrack->GetDefinition()->GetParticleName();
-  
-  if (particleName == "opticalphoton")
-    {
+	// G4ClassificationOfNewTrack &classification = (*classification_ptr);
+
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
+	G4String particleName = aTrack->GetDefinition()->GetParticleName();
+
+	if (particleName == "opticalphoton")
+	{
 		const G4double LambdaE = 2.0 * 3.14159265358979323846 * 1.973269602e-16 * m * GeV;
 
-      Double_t aWaveLength = 0.0; // will be in [nanometer]
-      aWaveLength = (LambdaE / aTrack->GetTotalEnergy()) / nanometer; // in [nanometer]
-      // aWaveLength = (LambdaE / aTrack->GetKineticEnergy()) / nanometer; // in [nanometer]
-      //      if (hOPWaveLength) hOPWaveLength->Fill(aWaveLength, aTrack->GetWeight()); // Wavelength of the produced optical photon
-    }
-  
+		Double_t aWaveLength = 0.0;										// will be in [nanometer]
+		aWaveLength = (LambdaE / aTrack->GetTotalEnergy()) / nanometer; // in [nanometer]
+																		// aWaveLength = (LambdaE / aTrack->GetKineticEnergy()) / nanometer; // in [nanometer]
+																		//      if (hOPWaveLength) hOPWaveLength->Fill(aWaveLength, aTrack->GetWeight()); // Wavelength of the produced optical photon
+	}
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  
-  OnceAWhileDoIt();
+
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::NewStage()
 {
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  
-  
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  
-  OnceAWhileDoIt();
+
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::PrepareNewEvent()
 {
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  
-  
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  
-  OnceAWhileDoIt();
+
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::PreUserTrackingAction(const G4Track *aTrack)
 {
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  
-  
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  
-  OnceAWhileDoIt();
+
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::PostUserTrackingAction(const G4Track *aTrack,
-						G4TrackStatus *status_ptr)
+									  G4TrackStatus *status_ptr)
 {
-  // G4TrackStatus &status = (*status_ptr);
-  
-#if defined (G4ANALYSIS_USE_ROOT)
-  
-  if (gSystem) gSystem->ProcessEvents();
-  
-  
-  
+	// G4TrackStatus &status = (*status_ptr);
+
+#if defined(G4ANALYSIS_USE_ROOT)
+
+	if (gSystem)
+		gSystem->ProcessEvents();
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
-  
-  OnceAWhileDoIt();
+
+	OnceAWhileDoIt();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -505,190 +509,201 @@ void Analysis::PostUserTrackingAction(const G4Track *aTrack,
 void Analysis::UserSteppingAction(const G4Step *aStep)
 {
 
-	if(aStep==NULL){
+	if (aStep == NULL)
+	{
 		std::cout << "Null aStep pointer in Analysis::UserSteppingAction, exiting \n";
 		exit(8);
 	}
-//	else{std::cout << "got here\n";}
+	//	else{std::cout << "got here\n";}
 
-	if(aStep->GetPostStepPoint()==NULL) {
-		aStep->GetTrack()->SetTrackStatus(fStopAndKill); //shouln't be necessary, but is nevertheless a good practice
-		return;} //skip this if we are at the end of the world
-	else if(aStep->GetPostStepPoint()->GetPhysicalVolume()==NULL){
+	long unsigned int trackid = aStep->GetTrack()->GetTrackID();
+
+	if (TrackMustDie(aStep))
+	{ // apply the cuts here
 		aStep->GetTrack()->SetTrackStatus(fStopAndKill);
 		return;
 	}
 
-	long unsigned int trackid =  aStep->GetTrack()->GetTrackID();
-
-	if(TrackMustDie(aStep)){ //apply the cuts here
-		aStep->GetTrack()->SetTrackStatus(fStopAndKill);
-		return;
+	if ((long unsigned int)Ev.size() < trackid)
+	{							 // a new track.  trackid starts from 1.
+		CreateNewEntry(trackid); // create a new entry in the vector
 	}
 
-
-
-	if((long unsigned int)Ev.size() < trackid){ //a new track.  trackid starts from 1.
-		CreateNewEntry(trackid); //create a new entry in the vector
-	}
-
-
-	if(EnteringDetector(aStep)) //stepping into det for the first time
+	if (EnteringDetector(aStep)) // stepping into det for the first time
 	{
 
+		IsSurfaceHit[trackid - 1] = true;
+		// Find out the detector number from the name, assuming a notation of the sort "det_phys<number>"
+		// here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
+		std::string detector_name = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+		std::string detector_base_name = "det_phys";
+		int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
+		detector_hit[trackid - 1] = detector_number;
 
-		IsSurfaceHit[trackid-1]=true;
-		//Find out the detector number from the name, assuming a notation of the sort "det_phys<number>"
-		//here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
-		std::string detector_name=aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName();
-		std::string detector_base_name="det_phys";
-		int detector_number = atoi(detector_name.substr(detector_name.find("det_phys")+detector_base_name.length()).c_str());
-		detector_hit[trackid-1]=detector_number;
+		Ev[trackid - 1] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV);
 
-
-		Ev[trackid-1]= aStep->GetPreStepPoint()->GetKineticEnergy()/(MeV);
-
-		X= aStep->GetPostStepPoint()->GetPosition(); //take the position from the post step position
-		xv[trackid-1]=X.x()/(mm);
-		yv[trackid-1]=X.y()/(mm);
-		zv[trackid-1]=X.z()/(mm);
-		Timev[trackid-1]= aStep->GetTrack()->GetGlobalTime();
+		X = aStep->GetPostStepPoint()->GetPosition(); // take the position from the post step position
+		xv[trackid - 1] = X.x() / (mm);
+		yv[trackid - 1] = X.y() / (mm);
+		zv[trackid - 1] = X.z() / (mm);
+		Timev[trackid - 1] = aStep->GetTrack()->GetGlobalTime()/ns;
 		p = aStep->GetPreStepPoint()->GetMomentum();
-		thetav[trackid-1]=asin(sqrt(pow(p.x(),2)+pow(p.y(),2))/p.mag()); //the angle of the particle relative to the Z axis
-		if(aStep->GetTrack()->GetDefinition()->GetParticleName()=="gamma"){
-			if(theta>3.14159/4.){
+		thetav[trackid - 1] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
+		if (aStep->GetTrack()->GetDefinition()->GetParticleName() == "gamma")
+		{
+			if (theta > 3.14159 / 4.)
+			{
 				std::cout << "Potentially dangerous behavior:  killing gammas >45deg" << std::endl;
 				aStep->GetTrack()->SetTrackStatus(fStopAndKill); // kill all gammas that are >45deg
 			}
 		}
 
-
-		ParticleNamev[trackid-1]= aStep->GetTrack()->GetDefinition()->GetParticleName();
-		if(aStep->GetTrack()->GetTrackID()>1)
-			ProcessNamev[trackid-1]= aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+		ParticleNamev[trackid - 1] = aStep->GetTrack()->GetDefinition()->GetParticleName();
+		if (aStep->GetTrack()->GetTrackID() > 1)
+			ProcessNamev[trackid - 1] = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
 		else
-			ProcessNamev[trackid-1]= "EventGenerator";
+			ProcessNamev[trackid - 1] = "EventGenerator";
 
 		entry++;
-
 	}
 
-
-	if (IsInDetector(aStep)) //in the det
+	if (IsInDetector(aStep)) // in the det
 
 	{
-	  IDv[trackid-1]= aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
-	  ParticleNamev[trackid-1]= aStep->GetTrack()->GetDefinition()->GetParticleName();
-	  if(aStep->GetTrack()->GetTrackID()>1)
-	  	ProcessNamev[trackid-1]= aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
-	  else
-	  	ProcessNamev[trackid-1]= "EventGenerator";
-	  TrackIDv[trackid-1]= aStep->GetTrack()->GetTrackID();
-	  Edepv[trackid-1] += aStep->GetTotalEnergyDeposit()/(MeV);
-	  
-	  if(Ev[trackid-1]==-1e+6){ //this track was just born
-	    Ev[trackid-1]= aStep->GetPreStepPoint()->GetKineticEnergy()/(MeV);//record the _starting_ energy
-	    Timev[trackid-1]= aStep->GetTrack()->GetGlobalTime(); //save the time, but only once!
-	    //	    std::cout << aStep->GetTrack()->GetTrackID() << "\t" << aStep->GetTrack()->GetGlobalTime() << "\t" << trackid << std::endl;
-	    X= aStep->GetPostStepPoint()->GetPosition(); //take the position from the post step position
-	    xv[trackid-1]=X.x()/(mm);
-	    yv[trackid-1]=X.y()/(mm);
-	    zv[trackid-1]=X.z()/(mm);
-	    p = aStep->GetPreStepPoint()->GetMomentum();
-		thetav[trackid-1]=asin(sqrt(pow(p.x(),2)+pow(p.y(),2))/p.mag()); //the angle of the particle relative to the Z axis
+		IDv[trackid - 1] = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
+		ParticleNamev[trackid - 1] = aStep->GetTrack()->GetDefinition()->GetParticleName();
+		if (aStep->GetTrack()->GetTrackID() > 1)
+			ProcessNamev[trackid - 1] = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+		else
+			ProcessNamev[trackid - 1] = "EventGenerator";
+		TrackIDv[trackid - 1] = aStep->GetTrack()->GetTrackID();
+		Edepv[trackid - 1] += aStep->GetTotalEnergyDeposit() / (MeV);
 
-		//here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
-		std::string detector_name=aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
-		std::string detector_base_name="det_phys";
-		int detector_number = atoi(detector_name.substr(detector_name.find("det_phys")+detector_base_name.length()).c_str());
-		detector_hit[trackid-1]=detector_number;
+		if (Ev[trackid - 1] == -1e+6)
+		{																			// this track was just born
+			Ev[trackid - 1] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV); // record the _starting_ energy
+			Timev[trackid - 1] = aStep->GetTrack()->GetGlobalTime()/ns;				// save the time, but only once!
+			//	    std::cout << aStep->GetTrack()->GetTrackID() << "\t" << aStep->GetTrack()->GetGlobalTime() << "\t" << trackid << std::endl;
+			X = aStep->GetPostStepPoint()->GetPosition(); // take the position from the post step position
+			xv[trackid - 1] = X.x() / (mm);
+			yv[trackid - 1] = X.y() / (mm);
+			zv[trackid - 1] = X.z() / (mm);
+			p = aStep->GetPreStepPoint()->GetMomentum();
+			thetav[trackid - 1] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
 
+			// here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
+			std::string detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+			std::string detector_base_name = "det_phys";
+			int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
+			detector_hit[trackid - 1] = detector_number;
 		}
 	}
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 void Analysis::OnceAWhileDoIt(const G4bool DoItNow)
 {
-  time_t Now = time(0); // get the current time (measured in seconds)
-  if ( (!DoItNow) && (LastDoItTime > (Now - 10)) ) return; // every 10 seconds
-  LastDoItTime = Now;
+	time_t Now = time(0); // get the current time (measured in seconds)
+	if ((!DoItNow) && (LastDoItTime > (Now - 10)))
+		return; // every 10 seconds
+	LastDoItTime = Now;
 
-#if defined (G4ANALYSIS_USE_ROOT)
-  if (gSystem) gSystem->ProcessEvents();
-  
+#if defined(G4ANALYSIS_USE_ROOT)
+	if (gSystem)
+		gSystem->ProcessEvents();
+
 #endif /* defined (G4ANALYSIS_USE_ROOT) */
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
-bool Analysis::TrackMustDie(const G4Step *aStep){
+bool Analysis::TrackMustDie(const G4Step *aStep)
+{
 
-  int particleid = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
-  std::string creatorprocessname;
-  if(aStep->GetTrack()->GetCreatorProcess()==NULL)
-    creatorprocessname="EventGenerator";
-  else
-    creatorprocessname=aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
-  std::string volumename=aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName(); //changed this from PostStep to PreStep, that way non-light producing particles can still be recorded at the surface, in SurfaceHit mode
-  if(volumename.compare(0,8,"det_phys")!=0){ //outside the detector
-    if(particleid!=EventGeneratorParticle && KeepOnlyMainParticle){ //only keep the main track
-      return true;
-    }
-  }
-/*
-  else{ //if inside the detector
-    if(particleid!=EventGeneratorParticle &&
-       particleid!=LightProducingParticle && 
-       creatorprocessname!="hIoni" && 
-       LightProducingParticle!=0){// checks if inside the detector, and if the "unneeded" particles (no light production).  This could cause problems in SurfaceHit mode, as the particle gets killed _before_ entering the detector
-//      return true;  //this improves the efficiency, but causes various problems
-    }
-  }
-*/
-  //Energy cuts
-  if(aStep->GetTrack()->GetDefinition()->GetPDGEncoding()==EventGeneratorParticle &&
-     aStep->GetTrack()->GetKineticEnergy()/MeV < LowEnergyCutoff){ //for the main track, kill it off below some limit
-    return true;
-  }
-	
-  return false;
+	int particleid = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
+	std::string creatorprocessname;
+	bool verbose = false;
+	if (aStep->GetTrack()->GetCreatorProcess() == NULL)
+		creatorprocessname = "EventGenerator";
+	else
+		creatorprocessname = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+	std::string volumename = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName(); // changed this from PostStep to PreStep, that way non-light producing particles can still be recorded at the surface, in SurfaceHit mode
+	if (volumename.compare(0, 8, "det_phys") != 0 && particleid != EventGeneratorParticle && KeepOnlyMainParticle)
+	{ // outside the detector, and not the main track, and we want only the main track
+		return true;
+	}
+	else if (aStep->GetTrack()->GetDefinition()->GetPDGEncoding() == EventGeneratorParticle && // Energy cuts
+			 aStep->GetTrack()->GetKineticEnergy() / MeV < LowEnergyCutoff)
+	{ // for the main track, kill it off below some limit
+		return true;
+	}
+	else if (aStep->GetPostStepPoint() == NULL || aStep->GetPostStepPoint()->GetPhysicalVolume() == NULL) // we get segfaults at World exit
+	{
+		if (verbose)
+		{
+			std::cout
+				<< EventID << "\t"
+				<< aStep->GetTrack()->GetCurrentStepNumber() << "\t"
+				<< aStep->GetTrack()->GetDefinition()->GetParticleName() << "\t"
+				<< aStep->GetTrack()->GetTrackID() << "\t"
+				//		<< aStep->GetTrack()->GetCreatorProcess()->GetProcessName() << "\t"
+				<< aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()
+				<< std::endl;
+		}
+		return true;
+	}
+	else
+		return false;
+}
+bool Analysis::EnteringDetector(const G4Step *aStep) // check if we are entering the detector for the first time
+{
+	long unsigned int trackid = aStep->GetTrack()->GetTrackID();
+
+	if (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") == 0 &&
+		aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") != 0 && // modified the code so it checks the detector entrance by comparing the Pre!=detector && Post==detector
+		IsSurfaceHit[trackid - 1] == false)														   // check that this is truly the first time we enter A detector
+	{
+		return true;
+	}
+	return false;
+}
+bool Analysis::IsInDetector(const G4Step *aStep)
+{ // check if we are in the detector
+	return aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") == 0;
 }
 void Analysis::ResetEverything()
 {
-  //reset all the class variables
-	  entry=0;
-	  E=-1;
-	  x=-1e5;
-	  y=-1e5;
-	  z=-1e5;
-	  theta=-1e5;
-	  ID=-100000;
-	  TrackID=-10;
-	  ProcID=-1;
-	  Time=-1;
-	  IsSummaryEntry=false;
-	  IsSurfaceHitTrack=false;
-	  Ev.clear();
-	  Edepv.clear();
-	  xv.clear();
-	  yv.clear();
-	  zv.clear();
-	  thetav.clear();
-	  IDv.clear();
-	  ParticleNamev.clear();
-	  ParticleName="n/a";
-	  ProcessNamev.clear();
-	  CreatorProcessName="n/a";
-	  TrackIDv.clear();
-	  EventIDv.clear();
-	  ProcIDv.clear();
-	  Timev.clear();
-	  detector_hit.clear();
-	  IsSurfaceHit.clear();
-	  IsNewTrack.clear();
-
+	// reset all the class variables
+	entry = 0;
+	E = -1;
+	x = -1e5;
+	y = -1e5;
+	z = -1e5;
+	theta = -1e5;
+	ID = -100000;
+	TrackID = -10;
+	ProcID = -1;
+	Time = -1;
+	IsSummaryEntry = false;
+	IsSurfaceHitTrack = false;
+	Ev.clear();
+	Edepv.clear();
+	xv.clear();
+	yv.clear();
+	zv.clear();
+	thetav.clear();
+	IDv.clear();
+	ParticleNamev.clear();
+	ParticleName = "n/a";
+	ProcessNamev.clear();
+	CreatorProcessName = "n/a";
+	TrackIDv.clear();
+	EventIDv.clear();
+	ProcIDv.clear();
+	Timev.clear();
+	detector_hit.clear();
+	IsSurfaceHit.clear();
+	IsNewTrack.clear();
 }
 void Analysis::CreateNewEntry(long unsigned int trackid)
 {
@@ -711,26 +726,13 @@ void Analysis::CreateNewEntry(long unsigned int trackid)
 }
 bool Analysis::IsThisANewTrack(long unsigned int trackid)
 {
-  if(trackid>0 && trackid<=Ev.size()){
-	if(Ev.at(trackid-1)==-1e+6){
-	  Ev.at(trackid-1)=0;
-	  return true;
+	if (trackid > 0 && trackid <= Ev.size())
+	{
+		if (Ev.at(trackid - 1) == -1e+6)
+		{
+			Ev.at(trackid - 1) = 0;
+			return true;
+		}
 	}
-  }
-  return false;
-}
-bool Analysis::EnteringDetector(const G4Step *aStep) //check if we are entering the detector for the first time
-{
-  long unsigned int trackid =  aStep->GetTrack()->GetTrackID();
-
-  if (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") == 0 &&
-      aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") != 0 && // modified the code so it checks the detector entrance by comparing the Pre!=detector && Post==detector
-      IsSurfaceHit[trackid - 1] == false) // check that this is truly the first time we enter A detector
-  {
-    return true;
-  }
-  return false;
-}
-bool Analysis::IsInDetector(const G4Step *aStep) { //check if we are in the detector
-  return aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") == 0;
+	return false;
 }
