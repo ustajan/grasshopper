@@ -1,3 +1,6 @@
 {
-    "makefile.makefilePath": "/Users/aregjan/git/grasshopper/GNUmakefile"
+    "makefile.makefilePath": "/Users/aregjan/git/grasshopper/GNUmakefile",
+    "files.associations": {
+        "*.icc": "cpp"
+    }
 }

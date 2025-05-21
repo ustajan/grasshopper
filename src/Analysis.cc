@@ -66,6 +66,8 @@
 extern G4String RootOutputFile;
 extern G4GDMLParser parser;
 
+#define OLD_CODE
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
 Analysis::Analysis(G4ParticleGun *particle_gun)
@@ -514,7 +516,6 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 		std::cout << "Null aStep pointer in Analysis::UserSteppingAction, exiting \n";
 		exit(8);
 	}
-	//	else{std::cout << "got here\n";}
 
 	long unsigned int trackid = aStep->GetTrack()->GetTrackID();
 
@@ -524,8 +525,12 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 		return;
 	}
 
-//	if ((long unsigned int)Ev.size() < trackid)
-	if(IsThisANewTrack(trackid))
+#ifdef OLD_CODE
+	std::string tmp1 = aStep->GetTrack()->GetDefinition()->GetParticleName();
+	//	std::string tmp2=aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+	float tmp3 = aStep->GetTrack()->GetGlobalTime() / ns;
+	//	if ((long unsigned int)Ev.size() < trackid)
+	if (IsThisANewTrack(trackid))
 	{							 // a new track.  trackid starts from 1.
 		CreateNewEntry(trackid); // create a new entry in the vector
 	}
@@ -547,7 +552,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 		xv[trackid - 1] = X.x() / (mm);
 		yv[trackid - 1] = X.y() / (mm);
 		zv[trackid - 1] = X.z() / (mm);
-		Timev[trackid - 1] = aStep->GetTrack()->GetGlobalTime()/ns;
+		Timev[trackid - 1] = aStep->GetTrack()->GetGlobalTime() / ns;
 		p = aStep->GetPreStepPoint()->GetMomentum();
 		thetav[trackid - 1] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
 		if (aStep->GetTrack()->GetDefinition()->GetParticleName() == "gamma")
@@ -583,7 +588,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 		if (Ev[trackid - 1] == -1e+6)
 		{																			// this track was just born
 			Ev[trackid - 1] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV); // record the _starting_ energy
-			Timev[trackid - 1] = aStep->GetTrack()->GetGlobalTime()/ns;				// save the time, but only once!
+			Timev[trackid - 1] = aStep->GetTrack()->GetGlobalTime() / ns;			// save the time, but only once!
 			//	    std::cout << aStep->GetTrack()->GetTrackID() << "\t" << aStep->GetTrack()->GetGlobalTime() << "\t" << trackid << std::endl;
 			X = aStep->GetPostStepPoint()->GetPosition(); // take the position from the post step position
 			xv[trackid - 1] = X.x() / (mm);
@@ -599,6 +604,83 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 			detector_hit[trackid - 1] = detector_number;
 		}
 	}
+#else
+	std::string tmp1 = aStep->GetTrack()->GetDefinition()->GetParticleName();
+	if (IsThisANewTrack(trackid))
+	{							 // a new track.  trackid starts from 1.
+		CreateNewEntry(trackid); // create a new entry in the vector
+	}
+
+	if (EnteringDetector(aStep)) // stepping into det for the first time
+	{
+
+		IsSurfaceHit[trackid - 1] = true;
+		// Find out the detector number from the name, assuming a notation of the sort "det_phys<number>"
+		// here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
+		std::string detector_name = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+		std::string detector_base_name = "det_phys";
+		int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
+		detector_hit[trackid - 1] = detector_number;
+
+		Ev[trackid - 1] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV);
+
+		X = aStep->GetPostStepPoint()->GetPosition(); // take the position from the post step position
+		xv[trackid - 1] = X.x() / (mm);
+		yv[trackid - 1] = X.y() / (mm);
+		zv[trackid - 1] = X.z() / (mm);
+		Timev[trackid - 1] = aStep->GetTrack()->GetGlobalTime() / ns;
+		p = aStep->GetPreStepPoint()->GetMomentum();
+		thetav[trackid - 1] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
+		if (aStep->GetTrack()->GetDefinition()->GetParticleName() == "gamma")
+		{
+			if (theta > 3.14159 / 4.)
+			{
+				std::cout << "Potentially dangerous behavior:  killing gammas >45deg" << std::endl;
+				aStep->GetTrack()->SetTrackStatus(fStopAndKill); // kill all gammas that are >45deg
+			}
+		}
+
+		ParticleNamev[trackid - 1] = aStep->GetTrack()->GetDefinition()->GetParticleName();
+		if (aStep->GetTrack()->GetTrackID() > 1)
+			ProcessNamev[trackid - 1] = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+		else
+			ProcessNamev[trackid - 1] = "EventGenerator";
+
+		entry++;
+	}
+
+	if (IsInDetector(aStep)) // in the det
+
+	{
+		IDv[trackid - 1] = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
+		ParticleNamev[trackid - 1] = aStep->GetTrack()->GetDefinition()->GetParticleName();
+		if (aStep->GetTrack()->GetTrackID() > 1)
+			ProcessNamev[trackid - 1] = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+		else
+			ProcessNamev[trackid - 1] = "EventGenerator";
+		TrackIDv[trackid - 1] = aStep->GetTrack()->GetTrackID();
+		Edepv[trackid - 1] += aStep->GetTotalEnergyDeposit() / (MeV);
+
+		if (Ev[trackid - 1] == -1e+6)
+		{																			// this track was just born
+			Ev[trackid - 1] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV); // record the _starting_ energy
+			Timev[trackid - 1] = aStep->GetTrack()->GetGlobalTime() / ns;			// save the time, but only once!
+			//	    std::cout << aStep->GetTrack()->GetTrackID() << "\t" << aStep->GetTrack()->GetGlobalTime() << "\t" << trackid << std::endl;
+			X = aStep->GetPostStepPoint()->GetPosition(); // take the position from the post step position
+			xv[trackid - 1] = X.x() / (mm);
+			yv[trackid - 1] = X.y() / (mm);
+			zv[trackid - 1] = X.z() / (mm);
+			p = aStep->GetPreStepPoint()->GetMomentum();
+			thetav[trackid - 1] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
+
+			// here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
+			std::string detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+			std::string detector_base_name = "det_phys";
+			int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
+			detector_hit[trackid - 1] = detector_number;
+		}
+	}
+#endif
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
@@ -662,7 +744,11 @@ bool Analysis::EnteringDetector(const G4Step *aStep) // check if we are entering
 
 	if (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") == 0 &&
 		aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") != 0 && // modified the code so it checks the detector entrance by comparing the Pre!=detector && Post==detector
-		IsSurfaceHit[trackid - 1] == false)														   // check that this is truly the first time we enter A detector
+#ifdef OLD_CODE
+		IsSurfaceHit[trackid - 1] == false	
+#else
+#endif
+	)													   // check that this is truly the first time we enter A detector
 	{
 		return true;
 	}
@@ -708,6 +794,7 @@ void Analysis::ResetEverything()
 }
 void Analysis::CreateNewEntry(long unsigned int trackid)
 {
+#ifdef OLD_CODE
 	Ev.resize(trackid, -1e+6);
 	Edepv.resize(trackid, 0);
 	xv.resize(trackid, -1e+6);
@@ -724,11 +811,39 @@ void Analysis::CreateNewEntry(long unsigned int trackid)
 	detector_hit.resize(trackid, -1e+6);
 	IsSurfaceHit.resize(trackid, false);
 	IsNewTrack.resize(trackid, false);
+#else
+	Ev.push_back( -1e+6);
+	Edepv.push_back( 0);
+	xv.push_back( -1e+6);
+	yv.push_back( -1e+6);
+	zv.push_back( -1e+6);
+	thetav.push_back( -1e+6);
+	IDv.push_back( -1e+6);
+	ParticleNamev.push_back( "");
+	ProcessNamev.push_back( "");
+	TrackIDv.push_back( -1e+6);
+	EventIDv.push_back( -1e+6);
+	ProcIDv.push_back( -1e+6);
+	Timev.push_back( -1e+6);
+	detector_hit.push_back( -1e+6);
+	IsSurfaceHit.push_back( false);
+	IsNewTrack.push_back( false);
+
+#endif
 }
 bool Analysis::IsThisANewTrack(long unsigned int trackid)
 {
-	if((long unsigned int)Ev.size() < trackid)
+#ifdef OLD_CODE
+	if ((long unsigned int)Ev.size() < trackid)
 		return true;
 	else
 		return false;
+#else
+	for (unsigned int i = 0; i < TrackIDv.size(); ++i)
+	{
+		if (TrackIDv.at(i) == trackid)
+			return false;
+	}
+	return true;
+#endif
 }
