@@ -524,7 +524,8 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 		return;
 	}
 
-	if ((long unsigned int)Ev.size() < trackid)
+//	if ((long unsigned int)Ev.size() < trackid)
+	if(IsThisANewTrack(trackid))
 	{							 // a new track.  trackid starts from 1.
 		CreateNewEntry(trackid); // create a new entry in the vector
 	}
@@ -726,13 +727,8 @@ void Analysis::CreateNewEntry(long unsigned int trackid)
 }
 bool Analysis::IsThisANewTrack(long unsigned int trackid)
 {
-	if (trackid > 0 && trackid <= Ev.size())
-	{
-		if (Ev.at(trackid - 1) == -1e+6)
-		{
-			Ev.at(trackid - 1) = 0;
-			return true;
-		}
-	}
-	return false;
+	if((long unsigned int)Ev.size() < trackid)
+		return true;
+	else
+		return false;
 }

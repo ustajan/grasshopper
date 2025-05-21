@@ -1,0 +1,5 @@
+*.wrl
+*.root
+*.log
+*.dat
+.DS_Store
