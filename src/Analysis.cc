@@ -66,7 +66,7 @@
 extern G4String RootOutputFile;
 extern G4GDMLParser parser;
 
-#define OLD_CODE
+//#define OLD_CODE //switch from the old code to the new code
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo....
 
@@ -643,7 +643,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 			entry = TrackIDv.size() - 1; // this is the number of entries in the vector, not the track id
 		}
 		else
-			entry = TrackID.size()-1; // this is the number of entries in the vector, not the track id
+			entry = TrackIDv.size()-1; // this is the number of entries in the vector, not the track id
 		IDv[entry] = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
 		ParticleNamev[entry] = aStep->GetTrack()->GetDefinition()->GetParticleName();
 		if (aStep->GetTrack()->GetTrackID() > 1)
@@ -725,14 +725,14 @@ bool Analysis::EnteringDetector(const G4Step *aStep) // check if we are entering
 {
 	long unsigned int trackid = aStep->GetTrack()->GetTrackID();
 
+#ifdef OLD_CODE
 	if (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") == 0 &&
 		aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") != 0 && // modified the code so it checks the detector entrance by comparing the Pre!=detector && Post==detector
-#ifdef OLD_CODE
-		IsSurfaceHit[trackid - 1] == false
+		IsSurfaceHit[trackid - 1] == false)
 #else
-//		IsSurfaceHit[entry] == false	//this should not be needed in the new implementation.
+	if (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") == 0 &&
+		aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") != 0) // modified the code so it checks the detector entrance by comparing the Pre!=detector && Post==detector
 #endif
-		) // check that this is truly the first time we enter A detector
 	{
 		return true;
 	}
@@ -806,7 +806,7 @@ void Analysis::CreateNewEntry(long unsigned int trackid)
 	ParticleNamev.push_back("");
 	ProcessNamev.push_back("");
 	TrackIDv.push_back(trackid);
-	EntryIDv.push_back("");
+	EntryID.push_back("");
 	EventIDv.push_back(-1e+6);
 	ProcIDv.push_back(-1e+6);
 	Timev.push_back(-1e+6);
@@ -825,7 +825,7 @@ bool Analysis::IsThisANewTrack(long unsigned int trackid)
 		return false;
 }
 #else
-bool Analysis::IsThisANewTrackInThisDetector(G4Step *aStep)
+bool Analysis::IsThisANewTrackInThisDetector(const G4Step *aStep)
 {
 	long unsigned int trackid = aStep->GetTrack()->GetTrackID();
 	std::string detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();

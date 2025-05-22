@@ -111,7 +111,7 @@ public:
   
   void CreateNewEntry(long unsigned int trackid);
   bool IsThisANewTrack(long unsigned int trackid);
-  bool IsThisANewTrackInThisDetector(G4Step *aStep);
+  bool IsThisANewTrackInThisDetector(const G4Step *aStep);
 
   bool EnteringDetector(const G4Step *aStep);
   bool IsInDetector(const G4Step *aStep);

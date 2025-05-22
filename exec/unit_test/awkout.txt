@@ -63,3 +63,8 @@ Wed May 21 00:12:57 EDT 2025
 Average beta energy, counts:	 0.947343 2448
 Average gamma full energy peak counts:	 47
 Average proton energy, counts:	 0.177157 69237
+-------------
+Thu May 22 01:03:20 EDT 2025
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 47
+Average proton energy, counts:	 0.177157 69237
