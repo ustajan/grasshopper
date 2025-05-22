@@ -539,12 +539,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 	{
 
 		IsSurfaceHit[trackid - 1] = true;
-		// Find out the detector number from the name, assuming a notation of the sort "det_phys<number>"
-		// here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
-		std::string detector_name = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName();
-		std::string detector_base_name = "det_phys";
-		int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
-		detector_hit[trackid - 1] = detector_number;
+		detector_hit[trackid - 1] = GetDetectorNumber(aStep);;
 
 		Ev[trackid - 1] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV);
 
@@ -598,39 +593,30 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 			thetav[trackid - 1] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
 
 			// here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
-			std::string detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
-			std::string detector_base_name = "det_phys";
-			int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
-			detector_hit[trackid - 1] = detector_number;
+//			std::string detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+//			std::string detector_base_name = "det_phys";
+//			int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
+			detector_hit[trackid - 1] = GetDetectorNumber(aStep);
 		}
 	}
 #else
-	std::string tmp1 = aStep->GetTrack()->GetDefinition()->GetParticleName();
-	if (IsThisANewTrack(trackid))
-	{							 // a new track.  trackid starts from 1.
-		CreateNewEntry(trackid); // create a new entry in the vector
-	}
-
 	if (EnteringDetector(aStep)) // stepping into det for the first time
 	{
+		CreateNewEntry(trackid);	 // create a new entry in the vector, independent of whether it's new track or not.
+		entry = TrackIDv.size() - 1; // this is the number of entries in the vector, not the track id
 
-		IsSurfaceHit[trackid - 1] = true;
-		// Find out the detector number from the name, assuming a notation of the sort "det_phys<number>"
-		// here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
-		std::string detector_name = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName();
-		std::string detector_base_name = "det_phys";
-		int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
-		detector_hit[trackid - 1] = detector_number;
+		IsSurfaceHit[entry] = true;
+		detector_hit[entry] = GetDetectorNumber(aStep);
 
-		Ev[trackid - 1] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV);
+		Ev[entry] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV);
 
 		X = aStep->GetPostStepPoint()->GetPosition(); // take the position from the post step position
-		xv[trackid - 1] = X.x() / (mm);
-		yv[trackid - 1] = X.y() / (mm);
-		zv[trackid - 1] = X.z() / (mm);
-		Timev[trackid - 1] = aStep->GetTrack()->GetGlobalTime() / ns;
+		xv[entry] = X.x() / (mm);
+		yv[entry] = X.y() / (mm);
+		zv[entry] = X.z() / (mm);
+		Timev[entry] = aStep->GetTrack()->GetGlobalTime() / ns;
 		p = aStep->GetPreStepPoint()->GetMomentum();
-		thetav[trackid - 1] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
+		thetav[entry] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
 		if (aStep->GetTrack()->GetDefinition()->GetParticleName() == "gamma")
 		{
 			if (theta > 3.14159 / 4.)
@@ -640,44 +626,46 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 			}
 		}
 
-		ParticleNamev[trackid - 1] = aStep->GetTrack()->GetDefinition()->GetParticleName();
+		ParticleNamev[entry] = aStep->GetTrack()->GetDefinition()->GetParticleName();
 		if (aStep->GetTrack()->GetTrackID() > 1)
-			ProcessNamev[trackid - 1] = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+			ProcessNamev[entry] = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
 		else
-			ProcessNamev[trackid - 1] = "EventGenerator";
-
-		entry++;
+			ProcessNamev[entry] = "EventGenerator";
 	}
 
 	if (IsInDetector(aStep)) // in the det
 
 	{
-		IDv[trackid - 1] = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
-		ParticleNamev[trackid - 1] = aStep->GetTrack()->GetDefinition()->GetParticleName();
-		if (aStep->GetTrack()->GetTrackID() > 1)
-			ProcessNamev[trackid - 1] = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+		//first check if this is a new track, if so, create a new entry
+		if (IsThisANewTrackInThisDetector(aStep))
+		{
+			CreateNewEntry(trackid); // create a new entry in the vector
+			entry = TrackIDv.size() - 1; // this is the number of entries in the vector, not the track id
+		}
 		else
-			ProcessNamev[trackid - 1] = "EventGenerator";
-		TrackIDv[trackid - 1] = aStep->GetTrack()->GetTrackID();
-		Edepv[trackid - 1] += aStep->GetTotalEnergyDeposit() / (MeV);
+			entry = TrackID.size()-1; // this is the number of entries in the vector, not the track id
+		IDv[entry] = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
+		ParticleNamev[entry] = aStep->GetTrack()->GetDefinition()->GetParticleName();
+		if (aStep->GetTrack()->GetTrackID() > 1)
+			ProcessNamev[entry] = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
+		else
+			ProcessNamev[entry] = "EventGenerator";
+		TrackIDv[entry] = aStep->GetTrack()->GetTrackID();
+		Edepv[entry] += aStep->GetTotalEnergyDeposit() / (MeV);
 
-		if (Ev[trackid - 1] == -1e+6)
-		{																			// this track was just born
-			Ev[trackid - 1] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV); // record the _starting_ energy
-			Timev[trackid - 1] = aStep->GetTrack()->GetGlobalTime() / ns;			// save the time, but only once!
+		if (Ev[entry] == -1e+6)
+		{																	  // this track was just born
+			Ev[entry] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV); // record the _starting_ energy
+			Timev[entry] = aStep->GetTrack()->GetGlobalTime() / ns;			  // save the time, but only once!
 			//	    std::cout << aStep->GetTrack()->GetTrackID() << "\t" << aStep->GetTrack()->GetGlobalTime() << "\t" << trackid << std::endl;
 			X = aStep->GetPostStepPoint()->GetPosition(); // take the position from the post step position
-			xv[trackid - 1] = X.x() / (mm);
-			yv[trackid - 1] = X.y() / (mm);
-			zv[trackid - 1] = X.z() / (mm);
+			xv[entry] = X.x() / (mm);
+			yv[entry] = X.y() / (mm);
+			zv[entry] = X.z() / (mm);
 			p = aStep->GetPreStepPoint()->GetMomentum();
-			thetav[trackid - 1] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
+			thetav[entry] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
 
-			// here we want to determine the detector number that the track hit or was created in.  This is done only once in track's history, at its inseption
-			std::string detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
-			std::string detector_base_name = "det_phys";
-			int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
-			detector_hit[trackid - 1] = detector_number;
+			detector_hit[entry] = GetDetectorNumber(aStep);
 		}
 	}
 #endif
@@ -704,12 +692,7 @@ bool Analysis::TrackMustDie(const G4Step *aStep)
 {
 
 	int particleid = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
-	std::string creatorprocessname;
 	bool verbose = false;
-	if (aStep->GetTrack()->GetCreatorProcess() == NULL)
-		creatorprocessname = "EventGenerator";
-	else
-		creatorprocessname = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
 	std::string volumename = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName(); // changed this from PostStep to PreStep, that way non-light producing particles can still be recorded at the surface, in SurfaceHit mode
 	if (volumename.compare(0, 8, "det_phys") != 0 && particleid != EventGeneratorParticle && KeepOnlyMainParticle)
 	{ // outside the detector, and not the main track, and we want only the main track
@@ -745,10 +728,11 @@ bool Analysis::EnteringDetector(const G4Step *aStep) // check if we are entering
 	if (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") == 0 &&
 		aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName().compare(0, 8, "det_phys") != 0 && // modified the code so it checks the detector entrance by comparing the Pre!=detector && Post==detector
 #ifdef OLD_CODE
-		IsSurfaceHit[trackid - 1] == false	
+		IsSurfaceHit[trackid - 1] == false
 #else
+//		IsSurfaceHit[entry] == false	//this should not be needed in the new implementation.
 #endif
-	)													   // check that this is truly the first time we enter A detector
+		) // check that this is truly the first time we enter A detector
 	{
 		return true;
 	}
@@ -812,38 +796,54 @@ void Analysis::CreateNewEntry(long unsigned int trackid)
 	IsSurfaceHit.resize(trackid, false);
 	IsNewTrack.resize(trackid, false);
 #else
-	Ev.push_back( -1e+6);
-	Edepv.push_back( 0);
-	xv.push_back( -1e+6);
-	yv.push_back( -1e+6);
-	zv.push_back( -1e+6);
-	thetav.push_back( -1e+6);
-	IDv.push_back( -1e+6);
-	ParticleNamev.push_back( "");
-	ProcessNamev.push_back( "");
-	TrackIDv.push_back( -1e+6);
-	EventIDv.push_back( -1e+6);
-	ProcIDv.push_back( -1e+6);
-	Timev.push_back( -1e+6);
-	detector_hit.push_back( -1e+6);
-	IsSurfaceHit.push_back( false);
-	IsNewTrack.push_back( false);
+	Ev.push_back(-1e+6);
+	Edepv.push_back(0);
+	xv.push_back(-1e+6);
+	yv.push_back(-1e+6);
+	zv.push_back(-1e+6);
+	thetav.push_back(-1e+6);
+	IDv.push_back(-1e+6);
+	ParticleNamev.push_back("");
+	ProcessNamev.push_back("");
+	TrackIDv.push_back(trackid);
+	EntryIDv.push_back("");
+	EventIDv.push_back(-1e+6);
+	ProcIDv.push_back(-1e+6);
+	Timev.push_back(-1e+6);
+	detector_hit.push_back(-1e+6);
+	IsSurfaceHit.push_back(false);
+	IsNewTrack.push_back(false);
 
 #endif
 }
+#ifdef OLD_CODE
 bool Analysis::IsThisANewTrack(long unsigned int trackid)
 {
-#ifdef OLD_CODE
 	if ((long unsigned int)Ev.size() < trackid)
 		return true;
 	else
 		return false;
+}
 #else
+bool Analysis::IsThisANewTrackInThisDetector(G4Step *aStep)
+{
+	long unsigned int trackid = aStep->GetTrack()->GetTrackID();
+	std::string detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+	std::string detector_base_name = "det_phys";
+	int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
+
 	for (unsigned int i = 0; i < TrackIDv.size(); ++i)
 	{
-		if (TrackIDv.at(i) == trackid)
+		if (TrackIDv.at(i) == trackid && detector_number == detector_hit.at(i))
 			return false;
 	}
 	return true;
+}
 #endif
+int Analysis::GetDetectorNumber(const G4Step *aStep)
+{
+	std::string detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+	std::string detector_base_name = "det_phys";
+	int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
+	return detector_number;
 }

@@ -1,6 +1,36 @@
 {
     "makefile.makefilePath": "/Users/aregjan/git/grasshopper/GNUmakefile",
     "files.associations": {
-        "*.icc": "cpp"
+        "*.icc": "cpp",
+        "__hash_table": "cpp",
+        "__split_buffer": "cpp",
+        "array": "cpp",
+        "bitset": "cpp",
+        "deque": "cpp",
+        "initializer_list": "cpp",
+        "queue": "cpp",
+        "stack": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "vector": "cpp",
+        "__tree": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "regex": "cpp",
+        "set": "cpp",
+        "fsize": "cpp",
+        "dps": "cpp",
+        "img": "cpp",
+        "vec2": "cpp",
+        "vec3": "cpp",
+        "vec4": "cpp",
+        "buffer": "cpp",
+        "iros": "cpp",
+        "obj_list": "cpp",
+        "bmf": "cpp",
+        "group": "cpp",
+        "complex": "cpp"
     }
 }

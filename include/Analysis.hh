@@ -111,8 +111,11 @@ public:
   
   void CreateNewEntry(long unsigned int trackid);
   bool IsThisANewTrack(long unsigned int trackid);
+  bool IsThisANewTrackInThisDetector(G4Step *aStep);
+
   bool EnteringDetector(const G4Step *aStep);
   bool IsInDetector(const G4Step *aStep);
+  int GetDetectorNumber(const G4Step *aStep);
 
 private:
   void ResetEverything();
@@ -149,6 +152,7 @@ private:
   std::vector<double> Ev,Edepv,xv,yv,zv,thetav;
   std::vector<long long> IDv,TrackIDv,EventIDv,ProcIDv;
   std::vector<std::string> ParticleNamev,ProcessNamev;
+  std::vector<std::string> EntryID;
   std::vector<bool> IsSurfaceHit,IsNewTrack;
   std::string ParticleName,CreatorProcessName;
   std::vector<float> Timev;
