@@ -115,7 +115,7 @@ public:
 
   bool EnteringDetector(const G4Step *aStep);
   bool IsInDetector(const G4Step *aStep);
-  int GetDetectorNumber(const G4Step *aStep);
+  int GetDetectorNumber(const G4Step *aStep, bool);
 
 private:
   void ResetEverything();

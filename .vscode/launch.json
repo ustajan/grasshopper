@@ -9,7 +9,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "/Users/aregjan/geant4_workdir/bin/Darwin-clang/grasshopper",
-            "args": ["exec/Examples/beta/debug/beta_debug.gdml", "/tmp/output.root"],
+            "args": ["exec/kosmos/detector_small.gdml", "/tmp/output.root"],
             "cwd": "${workspaceFolder}"/*,//,
 //            "stopAtEntry": false
             "environment": [],

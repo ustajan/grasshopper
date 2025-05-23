@@ -539,7 +539,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 	{
 
 		IsSurfaceHit[trackid - 1] = true;
-		detector_hit[trackid - 1] = GetDetectorNumber(aStep);;
+		detector_hit[trackid - 1] = GetDetectorNumber(aStep,true);;
 
 		Ev[trackid - 1] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV);
 
@@ -596,17 +596,18 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 //			std::string detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
 //			std::string detector_base_name = "det_phys";
 //			int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
-			detector_hit[trackid - 1] = GetDetectorNumber(aStep);
+			detector_hit[trackid - 1] = GetDetectorNumber(aStep,false);
 		}
 	}
 #else
+	std::string tmp=aStep->GetTrack()->GetDefinition()->GetParticleName();
 	if (EnteringDetector(aStep)) // stepping into det for the first time
 	{
 		CreateNewEntry(trackid);	 // create a new entry in the vector, independent of whether it's new track or not.
 		entry = TrackIDv.size() - 1; // this is the number of entries in the vector, not the track id
 
 		IsSurfaceHit[entry] = true;
-		detector_hit[entry] = GetDetectorNumber(aStep);
+		detector_hit[entry] = GetDetectorNumber(aStep,true);
 
 		Ev[entry] = aStep->GetPreStepPoint()->GetKineticEnergy() / (MeV);
 
@@ -665,7 +666,7 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 			p = aStep->GetPreStepPoint()->GetMomentum();
 			thetav[entry] = asin(sqrt(pow(p.x(), 2) + pow(p.y(), 2)) / p.mag()); // the angle of the particle relative to the Z axis
 
-			detector_hit[entry] = GetDetectorNumber(aStep);
+			detector_hit[entry] = GetDetectorNumber(aStep,false);
 		}
 	}
 #endif
@@ -840,10 +841,40 @@ bool Analysis::IsThisANewTrackInThisDetector(const G4Step *aStep)
 	return true;
 }
 #endif
-int Analysis::GetDetectorNumber(const G4Step *aStep)
+int Analysis::GetDetectorNumber(const G4Step *aStep,bool stepping_into_detector)
 {
-	std::string detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
+	std::string detector_name;
+	if(stepping_into_detector)
+		detector_name = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+	else
+		detector_name = aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName();
 	std::string detector_base_name = "det_phys";
+	/*
 	int detector_number = atoi(detector_name.substr(detector_name.find("det_phys") + detector_base_name.length()).c_str());
 	return detector_number;
+	*/
+    // Check if detector_name starts with detector_base_name
+    if (detector_name.find(detector_base_name) != 0) {
+        return -1;
+    }
+
+    // If detector_name exactly matches detector_base_name, return 0
+    if (detector_name == detector_base_name) {
+        return 0;
+    }
+
+    size_t i = detector_name.size();
+
+    // Walk backward to find where the trailing number starts
+    while (i > detector_base_name.length() && std::isdigit(detector_name[i - 1])) {
+        --i;
+    }
+
+    if (i == detector_name.size()) {
+        // No digits found after base
+        return -1;
+    }
+
+    std::string numberPart = detector_name.substr(i);
+    return std::stoi(numberPart);
 }
