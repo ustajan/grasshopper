@@ -88,10 +88,10 @@
     <!-- world volume -->
     <box lunit="mm" name="world_solid" x="300" y="300" z="300"/>    
     <!-- the horizontal absorber plate and the holder for the assembly -->
-    <tube name="plate_solid" rmin="0" rmax="14.99" z="0.25" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/> <!-- this is the absorber plate -->
-    <tube name= "holder_solid" rmin="15" rmax="18" z="200" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm" /> 
+    <tube name="plate_solid" rmin="0" rmax="14.99" z="0.25" deltaphi="360" startphi="0" aunit="deg" lunit="mm"/> <!-- this is the absorber plate -->
+    <tube name="holder_solid" rmin="15" rmax="18" z="200" deltaphi="360" startphi="0" aunit="deg" lunit="mm"/> 
     <!-- the horizontal detection plane -->
-    <tube name = "det_plane_solid" rmin="0" rmax="12.7" z="1" deltaphi="6.28318" startphi="0" aunit="rad" lunit= "mm"/> <!-- this is the detector volume -->
+    <tube name="det_plane_solid" rmin="0" rmax="12.7" z="1" deltaphi="360" startphi="0" aunit="deg" lunit="mm"/> <!-- this is the detector volume -->
   </solids>
 
 

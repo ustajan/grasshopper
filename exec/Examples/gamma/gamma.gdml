@@ -90,7 +90,7 @@
     <!-- the horizontal absorber plate -->
     <box lunit="mm" name="plate_solid" unit="mm" x="100" y="100" z="5"/>
     <!-- the horizontal detection plane -->
-    <tube name = "det_plane_solid" rmin="0" rmax="25.4" z="50.8" deltaphi="360" startphi="0" aunit="deg" lunit= "mm"/> <!-- This is the 2" NaI.  Change the geometry for LaBr3 and HPGe.  Don't forget to change the material too beloe! -->
+    <tube name="det_plane_solid" rmin="0" rmax="25.4" z="50.8" deltaphi="360" startphi="0" aunit="deg" lunit="mm"/> <!-- This is the 2" NaI.  Change the geometry for LaBr3 and HPGe.  Don't forget to change the material too beloe! -->
   </solids>
 
 

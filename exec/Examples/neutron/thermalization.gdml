@@ -85,7 +85,7 @@
     <!-- the horizontal absorber plate -->
     <box lunit="mm" name="plate_solid" unit="mm" x="200" y="200" z="200"/>
     <!-- the horizontal detection plane -->
-    <tube name = "det_plane_solid" rmin="0" rmax="800" z="2" deltaphi="360" startphi="0" aunit="deg" lunit= "mm"/>
+    <tube name="det_plane_solid" rmin="0" rmax="800" z="2" deltaphi="360" startphi="0" aunit="deg" lunit="mm"/>
   </solids>
 
 

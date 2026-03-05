@@ -12,6 +12,7 @@ fi
 
 INPUT_GDML="$1"
 OUT_PREFIX="$2"
+START="${3:-0}"
 
 # ---------- 2. Determine how many CPU cores we can use ----------
 if CORES=$(getconf _NPROCESSORS_ONLN 2>/dev/null); then
@@ -28,7 +29,7 @@ echo "Detected $CORES logical core(s). Launching that many parallel grasshopper 
 # ---------- 3. Launch one grasshopper job per core ----------
 declare -a pids=()   # keep track of PIDs so we can wait for them
 
-for (( seed=0; seed<CORES; seed++ )); do
+for (( seed=START; seed<CORES+START; seed++ )); do
   OUTFILE="${OUT_PREFIX}${seed}.root"
   LOGFILE="${OUT_PREFIX}${seed}.log"
 

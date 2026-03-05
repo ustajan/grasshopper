@@ -65,7 +65,7 @@ physicsList::physicsList() : G4VModularPhysicsList()
   cutForGamma = defaultCutValue;
   cutForElectron = defaultCutValue;
   cutForPositron = defaultCutValue;
-  cutForProton = defaultCutValue;
+  cutForProton = 0.1*mm; //default is 0.7 mm, but for protons we want to be more accurate
 
   verboseLevel = 0;
 

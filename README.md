@@ -1,11 +1,15 @@
 grasshopper
 ===========
 
-This application is based on the geant4 development toolkit, which allows to program complex particle
+<img src="figures/icon.png" width="100" height="auto" alt="icon">
+
+This application is based on the Geant4 development toolkit, which allows to program complex particle
 tracking (e.g. gamma, electrons, protons, etc) and particle-matter interaction MC simulations.
-Grasshopper is a simple geant4 application, where all the geometries and even generators parameters are 
-defined in a gdml file, with the purpose of setting up quick and simple simulations.  The
+Grasshopper is a simple Geant4 application, where all the geometries and even generators parameters are 
+defined in a GDML file, with the purpose of setting up quick and simple simulations.  The
 goal is to allow users with no C++ and Geant4 knowledge *quickly* set up and run simulations.
+
+<span style="color: red;">**Discussion Forum**</span>: you can join grasshopper's WhatsApp community using this [link here](https://chat.whatsapp.com/LCp8bb2xUJY3eZ1OngeuRs?mode=gi_t).
 
 Author:  		Areg Danagoulian
 
