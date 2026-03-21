@@ -6,7 +6,7 @@ set -euo pipefail
 
 # ---------- 1. Check arguments ----------
 if [[ $# -lt 2 ]]; then
-  echo "Usage: $0 <input.gdml> <output-prefix>"
+  echo "Usage: $0 <input.gdml> <output-prefix> [start]"
   exit 1
 fi
 

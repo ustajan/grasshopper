@@ -108,7 +108,7 @@
       <solidref ref="world_solid"/>  <!-- This should NEVER be changed -->
 
       <!-- flux planes -->
-      <physvol name="det_phys"> <!-- This should NEVER be changed -->
+      <physvol name="det_phys"> <!-- grasshopper looks for det_phys to identify this as a sensitirve/detector volume.  You can chane this to det_phys0, det_phys1 etc, but ensure that det_phys is in the name -->
         <volumeref ref="det_plane_log"/>
         <position name="det_phys3_pos" unit="mm" x="0" y="0" z="100"/>
       </physvol>

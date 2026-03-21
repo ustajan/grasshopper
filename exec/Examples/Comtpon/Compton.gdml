@@ -118,12 +118,12 @@
       	<position name="plate_phys_pos" unit="mm" x="0" y="0" z="-200"/>
       </physvol>
       <!-- flux planes -->
-      <physvol name="det_phys0"> <!-- This should NEVER be changed -->
+      <physvol name="det_phys0"> <!-- grasshopper looks for det_phys string in the name to identify this as a sensitirve/detector volume.  You can chane this to det_phys0, det_phys1 etc, but ensure that det_phys is in the name.  The output will tag this as detector 0 -->
         <volumeref ref="det_plane_log"/>
         <position name="det_phys3_pos" unit="mm" x="0" y="0" z="0"/>
         <rotationref ref="rotateDetector"/>
       </physvol>
-      <physvol name="det_phys1"> <!-- This should NEVER be changed -->
+      <physvol name="det_phys1"> <!-- grasshopper looks for det_phys string in the name to identify this as a sensitirve/detector volume.  You can chane this to det_phys0, det_phys1 etc, but ensure that det_phys is in the name. The detector will tag this as detector 1 -->
         <volumeref ref="det_plane_log"/>
         <position name="det_phys3_pos" unit="mm" x="-200" y="0" z="0"/>
         <rotationref ref="rotateDetector"/>

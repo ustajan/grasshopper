@@ -64,6 +64,7 @@
 #include <fstream>
 
 #include "G4GDMLParser.hh"
+#include <filesystem>
 
 G4bool drawEvent;
 G4String RootOutputFile;
@@ -198,8 +199,8 @@ int main(int argc,char** argv)
 
 
   //get the UImanager going, run a few events, produce a VRML file, and then delete everything.
+  G4UImanager* UI = G4UImanager::GetUIpointer();
   if(parser.GetConstant("VRMLvisualizationOn")){
-    G4UImanager* UI = G4UImanager::GetUIpointer();
     UI->ApplyCommand("/vis/scene/create");
     UI->ApplyCommand("/vis/open VRML2FILE");
     UI->ApplyCommand("/vis/viewer/flush");
@@ -213,7 +214,19 @@ int main(int argc,char** argv)
     UI->ApplyCommand("exit");
     std::cout << std::endl << " == Produced a visualization wrl file. ==" << std::endl;
   }
-
+  if (std::filesystem::exists("vis.mac"))
+  {
+    UI->ApplyCommand("/control/execute vis.mac");
+    std::cout << std::endl << " == Found and executed vis.mac == " << std::endl;
+  }
+  else  {
+    std::cout << std::endl << " == No vis.mac file found. ==" << std::endl;
+  }
+//  UI->ApplyCommand("/process/had/particle_hp/use_NRESP71_model true");
+/*  std::string command="/run/beamOn "+std::to_string((int)parser.GetConstant("EventsToAccumulate"));
+  UI->ApplyCommand(command.c_str());
+  UI->ApplyCommand("exit");
+*/
 
   runManager->BeamOn(run_evnt); //now do the big run
 
