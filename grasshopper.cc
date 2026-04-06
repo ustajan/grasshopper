@@ -201,18 +201,31 @@ int main(int argc,char** argv)
   //get the UImanager going, run a few events, produce a VRML file, and then delete everything.
   G4UImanager* UI = G4UImanager::GetUIpointer();
   if(parser.GetConstant("VRMLvisualizationOn")){
-    UI->ApplyCommand("/vis/scene/create");
-    UI->ApplyCommand("/vis/open VRML2FILE");
-    UI->ApplyCommand("/vis/viewer/flush");
-    UI->ApplyCommand("/tracking/storeTrajectory 1");
-    UI->ApplyCommand("/vis/scene/add/trajectories");
-    UI->ApplyCommand("/vis/scene/endOfEventAction accumulate");
-    std::string command="/run/beamOn "+std::to_string((int)parser.GetConstant("EventsToAccumulate"));
-    UI->ApplyCommand(command.c_str());
-    UI->ApplyCommand("/vis/close");
-    UI->ApplyCommand("/vis/disable");
-    UI->ApplyCommand("exit");
-    std::cout << std::endl << " == Produced a visualization wrl file. ==" << std::endl;
+    bool opened_vrml = false;
+#ifdef G4VIS_USE
+    const std::vector<std::string> vrml_drivers = {"VRML2FILE", "VRML2"};
+    for (const std::string& driver : vrml_drivers) {
+      if (UI->ApplyCommand(("/vis/open " + driver).c_str()) == 0) {
+        opened_vrml = true;
+        std::cout << std::endl << " == Opened visualization driver " << driver << ". ==" << std::endl;
+        break;
+      }
+    }
+#endif
+    if (opened_vrml) {
+      UI->ApplyCommand("/vis/drawVolume");
+      UI->ApplyCommand("/tracking/storeTrajectory 1");
+      UI->ApplyCommand("/vis/scene/add/trajectories");
+      UI->ApplyCommand("/vis/scene/endOfEventAction accumulate");
+      UI->ApplyCommand("/vis/viewer/flush");
+      std::string command="/run/beamOn "+std::to_string((int)parser.GetConstant("EventsToAccumulate"));
+      UI->ApplyCommand(command.c_str());
+      UI->ApplyCommand("/vis/close");
+      UI->ApplyCommand("/vis/disable");
+      std::cout << std::endl << " == Produced a visualization wrl file. ==" << std::endl;
+    } else {
+      std::cout << std::endl << " == Unable to open a VRML visualization driver. No wrl file was produced. ==" << std::endl;
+    }
   }
   if (std::filesystem::exists("vis.mac"))
   {
@@ -232,11 +245,11 @@ int main(int argc,char** argv)
 
   //DONE
   //Now do a cleanup, print CPU/time diagnostics, and exit
-
+/*
   if (analysis == AnalysisManager::GetAnalysisManager()){
     std::cout << "\nDeleting the analysis object.\n";
-  	delete analysis;
-  }
+  	delete analysis; //causes errors
+  }*/
 
   // job termination
 	
@@ -263,8 +276,5 @@ int main(int argc,char** argv)
 
   return 0;
 }
-
-
-
 
 

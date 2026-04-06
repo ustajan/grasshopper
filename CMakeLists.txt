@@ -2,6 +2,7 @@
 # Setup the project
 cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 project(grasshopper)
+include(CheckIncludeFileCXX)
 # Allow User Build Options Here...
 option(WITH_GEANT4_UIVIS "Build with Geant4 UI and Vis drivers" ON) # Can switch to OFF if not building with vis drivers --> NOT recommended 
 option(WITH_ROOT "Build with ROOT" OFF) # Can switch off if ROOT Output not desired 
@@ -33,6 +34,26 @@ endif()
 # Setup Geant4 include directories and compile definitions
 #
 include(${Geant4_USE_FILE})
+
+if(WITH_GEANT4_UIVIS)
+  set(CMAKE_REQUIRED_INCLUDES ${Geant4_INCLUDE_DIRS} ${Geant4_INCLUDE_DIR})
+
+  check_include_file_cxx("G4DAWNFILE.hh" HAVE_G4DAWNFILE_HH)
+  check_include_file_cxx("G4VRML2.hh" HAVE_G4VRML2_HH)
+  check_include_file_cxx("G4VRML2File.hh" HAVE_G4VRML2FILE_HH)
+
+  if(HAVE_G4DAWNFILE_HH)
+    add_compile_definitions(G4VIS_USE_DAWNFILE)
+  endif()
+
+  if(HAVE_G4VRML2_HH)
+    add_compile_definitions(G4VIS_USE_VRML)
+  endif()
+
+  if(HAVE_G4VRML2FILE_HH)
+    add_compile_definitions(G4VIS_USE_VRMLFILE)
+  endif()
+endif()
 
 # Find ROOT (required package)
 if(WITH_ROOT)

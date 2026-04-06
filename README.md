@@ -45,7 +45,11 @@ To build with GNUmake
 cd grasshopper
 make -jN
 ```
-where N is the number of your cores.
+where N is the number of your cores.  
+To run, do   
+`grasshopper input.gdml output.root`   
+for example:  
+`grasshopper exec/Examples/beta/beta_lite.gdml test.root`
 
 To build with CMake
 ==
@@ -58,11 +62,15 @@ where N is the number of your cores.  This will locally generate a binary, `gras
 
 `./grasshopper ../exec/Examples/beta/beta_lite.gdml test.root`
 
-Note: cmake build doesn't include visualization.  See Issues.
 
-To run
+
+
+Visualization
 ==
-`grasshopper input.gdml output.root`
+With 
+If you would like to have grasshopper automatically open the visualization `.wrl` file, do this before running:   
+`export G4VRMLFILE_VIEWER=paraview`  
+Here we use paraview, and the syntax corresponds to bash. If you are using a different software for rendering the .wrl files, change [paraview] accordingly. 
 
 
 Tutorial

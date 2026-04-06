@@ -645,12 +645,15 @@ void Analysis::UserSteppingAction(const G4Step *aStep)
 		}
 		else
 			entry = TrackIDv.size()-1; // this is the number of entries in the vector, not the track id
+
 		IDv[entry] = aStep->GetTrack()->GetDefinition()->GetPDGEncoding();
 		ParticleNamev[entry] = aStep->GetTrack()->GetDefinition()->GetParticleName();
+
 		if (aStep->GetTrack()->GetTrackID() > 1)
 			ProcessNamev[entry] = aStep->GetTrack()->GetCreatorProcess()->GetProcessName();
 		else
 			ProcessNamev[entry] = "EventGenerator";
+
 		TrackIDv[entry] = aStep->GetTrack()->GetTrackID();
 		Edepv[entry] += aStep->GetTotalEnergyDeposit() / (MeV);
 
