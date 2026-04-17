@@ -65,12 +65,22 @@ where N is the number of your cores.  This will locally generate a binary, `gras
 
 
 
+Python GUI frontend
+==
+A point-and-click interface for Grasshopper is provided in the `gui/` directory.  It covers the full workflow — defining the simulation, generating the GDML file, running the executable, and inspecting the output — without any command-line or XML editing.
+
+```bash
+pip install -r gui/requirements.txt   # matplotlib, numpy; vtk optional
+python3 gui/grasshopper_gui.py
+```
+
+See [`gui/README.md`](gui/README.md) for full installation instructions and a description of each tab.
+
 Visualization
 ==
-With 
 If you would like to have grasshopper automatically open the visualization `.wrl` file, do this before running:   
 `export G4VRMLFILE_VIEWER=paraview`  
-Here we use paraview, and the syntax corresponds to bash. If you are using a different software for rendering the .wrl files, change [paraview] accordingly. 
+Here we use paraview, and the syntax corresponds to bash. If you are using a different software for rendering the .wrl files, change [paraview] accordingly.
 
 
 Tutorial
@@ -150,6 +160,6 @@ To do
 ==
 Below is a prioritized list of future tasks.
 
-* Write the python/javascript front end to the gdml? <<===== need a UROP
+* ~~Write the python/javascript front end to the gdml?~~ — done, see `gui/`
 * General code improvements
 

@@ -1,0 +1,18 @@
+# ── Required ──────────────────────────────────────────────────────────────────
+# tkinter is part of the Python standard library but requires a separate
+# Homebrew package on macOS:
+#   brew install python-tk@3.13   (match your Python version)
+# On Linux: sudo apt install python3-tk  (Debian/Ubuntu)
+#            sudo dnf install python3-tkinter  (Fedora/RHEL)
+
+# ── Analysis tab (histogram plotting) ─────────────────────────────────────────
+matplotlib>=3.5
+numpy>=1.21
+
+# ── Visualization tab (3D WRL preview) ────────────────────────────────────────
+# Install one of the following for 3D visualization.
+# If VTK was built without Tk support (e.g. the ROOT-bundled build), the GUI
+# automatically falls back to opening a standalone VTK window instead of an
+# embedded viewport.
+vtk>=9.0          # pip install vtk
+# pyvista>=0.43   # alternative: pip install pyvista  (wraps VTK, not used directly)
