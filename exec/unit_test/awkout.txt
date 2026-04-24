@@ -73,3 +73,33 @@ Fri May 23 00:41:33 EDT 2025
 Average beta energy, counts:	 0.924847 2621
 Average gamma full energy peak counts:	 47
 Average proton energy, counts:	 0.177157 69237
+-------------
+Thu Apr 23 18:08:32 EDT 2026
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 47
+Average proton energy, counts:	 0.177157 69237
+-------------
+Thu Apr 23 18:12:24 EDT 2026
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 47
+Average proton energy, counts:	 0.177157 69237
+-------------
+Thu Apr 23 18:25:26 EDT 2026
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 47
+Average proton energy, counts:	 0.177157 69237
+-------------
+Thu Apr 23 23:23:57 EDT 2026
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 47
+Average proton energy, counts:	 0.177157 69237
+-------------
+Thu Apr 23 23:38:02 EDT 2026
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 47
+Average proton energy, counts:	 0.177157 69237
+-------------
+Fri Apr 24 12:41:34 EDT 2026
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 50
+Average proton energy, counts:	 0.177157 69237

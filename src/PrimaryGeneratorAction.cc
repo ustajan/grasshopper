@@ -31,13 +31,22 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   G4String particleName;
 
   int  particleNumber=parser.GetConstant("ParticleNumber");
+  particlePDG = particleNumber;
   //  particle = particleTable->FindParticle(particleName="e-");
+  // For ion PDG codes (e.g. alpha = 1000020040), FindParticle returns nullptr
+  // at construction time because Geant4's ion table is not populated until
+  // after the physics list is initialized. Defer the lookup to GeneratePrimaries
+  // in that case.
   G4ParticleDefinition *particle = particleTable->FindParticle(particleNumber);
   //  particle = particleTable->FindParticle(particleName="geantino");
-  particleGun->SetParticleDefinition(particle);
-
-
-  particleGun->SetParticleDefinition(particle);
+  if (particle) {
+    particleGun->SetParticleDefinition(particle);
+  }
+  else {
+    G4cerr << "PrimaryGeneratorAction: unable to find particle for PDG code "
+           << particleNumber << G4endl;
+    exit(9);
+  }
 
   energy = parser.GetQuantity("BeamEnergy");
   if(energy<0){
@@ -56,8 +65,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
   }
   else doing_continuous_spectrum=false;
 
-  z0 = parser.GetQuantity("BeamOffsetZ")*CLHEP::mm;
-  //std::cout<<"x0: "<<x0<<" y0: "<<y0<<" z0: "<<z0<<"\n";
+  z0 = parser.GetQuantity("BeamOffsetZ");
   beam_offset_x = parser.GetQuantity("BeamOffsetX");
   beam_offset_y = parser.GetQuantity("BeamOffsetY");
   beam_size = parser.GetQuantity("BeamSize");
@@ -93,6 +101,15 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
     fan_beam=false;
     omnidirectional=true;
     isotropic_extended=false;
+    try {
+      worldRadius = parser.GetQuantity("WorldRadius");
+    } catch (...) {
+      G4cerr << "\nERROR: WorldRadius is not defined in the GDML.\n"
+             << "  Please add it to the <define> section, e.g.:\n"
+             << "    <quantity name=\"WorldRadius\" type=\"length\" value=\"500\" unit=\"mm\"/>\n"
+             << G4endl;
+      exit(10);
+    }
   }
   else if(beam_size/CLHEP::mm < 0 ){ // any negative number other than -1, -2 --> the user wants an isotropic, extended source
     beam_size= fabs(beam_size/(CLHEP::mm)); //actual spot size
@@ -103,10 +120,8 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
     //Eventually we should migrate this into the .gdml file too.
     std::ifstream f("beam_width.txt");
     if(f.is_open()) { //check that the file is open, i.e. it's there
-      while(!f.eof()) {
-    	  float a;
-    	  f>>a;
-    	  source_width=a*CLHEP::mm;
+      while(f>>source_width) { //read the content, should be just one number, the width of the source along the beam direction (z)
+    	  source_width*=CLHEP::mm; //convert to mm, since that's the unit we are using in the code.  This allows the user to specify the width in mm, cm, m, etc. as they please in the text file
       }
     }
     else {
@@ -129,6 +144,25 @@ PrimaryGeneratorAction::~PrimaryGeneratorAction()
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
+
+  // Lazily resolve the particle definition for ions, whose ion table is not
+  // populated until after the physics list has been initialized.
+  if (!particleGun->GetParticleDefinition()) {
+    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+    G4ParticleDefinition* particle = particleTable->FindParticle(particlePDG);
+    if (!particle && particlePDG > 1000000000) {
+      // Ion PDG code: 10LZZZAAAI. Extract Z and A and fetch from the ion table.
+      G4int Z = (particlePDG / 10000) % 1000;
+      G4int A = (particlePDG / 10) % 1000;
+      particle = particleTable->GetIonTable()->GetIon(Z, A, 0);
+    }
+    if (!particle) {
+      G4cerr << "PrimaryGeneratorAction: unable to resolve particle for PDG code "
+             << particlePDG << G4endl;
+      exit(9);
+    }
+    particleGun->SetParticleDefinition(particle);
+  }
 
 #if defined (G4ANALYSIS_USE_ROOT)
   const float pi=TMath::Pi();
@@ -169,7 +203,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double x_r, y_r, z_r;
 
   if (omnidirectional){
-    r = parser.GetQuantity("WorldRadius"); // WORLD RADIUS
+    r = worldRadius; // WORLD RADIUS
     
     ph = 360.*G4UniformRand()*CLHEP::deg;
     G4double u = 2*G4UniformRand()-1;

@@ -36,6 +36,88 @@ except Exception:
     HAS_VTK = False
 
 
+# ── Dark theme palette ────────────────────────────────────────────────────────
+
+_DARK = {
+    "bg":     "#1e1e1e",   # root / notebook background
+    "bg2":    "#2d2d2d",   # panel / button background
+    "bg3":    "#3a3a3a",   # hover / active
+    "fg":     "#dcdcdc",   # primary text
+    "fg_dim": "#7a7a7a",   # hints / secondary text
+    "entry":  "#252525",   # text-entry / text-widget background
+    "sel":    "#3a6ea8",   # selection blue
+    "border": "#444444",   # borders / separators
+    "accent": "#5a9e5a",   # green (grasshopper!)
+}
+
+
+def _apply_dark_theme(root: tk.Tk) -> None:
+    """Configure ttk styles and root background for night mode."""
+    D = _DARK
+    root.configure(bg=D["bg"])
+
+    style = ttk.Style(root)
+    style.theme_use("clam")
+
+    style.configure(".",
+        background=D["bg"], foreground=D["fg"],
+        fieldbackground=D["entry"],
+        bordercolor=D["border"],
+        darkcolor=D["bg"], lightcolor=D["bg2"],
+        troughcolor=D["bg2"],
+        selectbackground=D["sel"], selectforeground=D["fg"],
+        insertcolor=D["fg"],
+    )
+    style.configure("TFrame",          background=D["bg"])
+    style.configure("TLabel",          background=D["bg"],  foreground=D["fg"])
+    style.configure("TLabelframe",     background=D["bg"],  bordercolor=D["border"])
+    style.configure("TLabelframe.Label", background=D["bg"], foreground=D["fg"])
+    style.configure("TSeparator",      background=D["border"])
+    style.configure("TButton",
+        background=D["bg2"], foreground=D["fg"],
+        bordercolor=D["border"], focuscolor=D["bg2"], padding=4)
+    style.map("TButton",
+        background=[("active", D["bg3"]), ("pressed", D["bg3"])],
+        relief=[("pressed", "sunken")])
+    style.configure("TEntry",
+        fieldbackground=D["entry"], foreground=D["fg"],
+        bordercolor=D["border"], insertcolor=D["fg"])
+    style.configure("TCombobox",
+        fieldbackground=D["entry"], foreground=D["fg"],
+        background=D["bg2"], bordercolor=D["border"], arrowcolor=D["fg"])
+    style.map("TCombobox",
+        fieldbackground=[("readonly", D["entry"])],
+        selectbackground=[("readonly", D["sel"])])
+    style.configure("TCheckbutton",
+        background=D["bg"], foreground=D["fg"],
+        indicatorbackground=D["entry"], indicatorforeground=D["fg"])
+    style.map("TCheckbutton",
+        background=[("active", D["bg"])],
+        indicatorcolor=[("selected", D["accent"])])
+    style.configure("TNotebook",       background=D["bg"],  bordercolor=D["border"])
+    style.configure("TNotebook.Tab",
+        background=D["bg2"], foreground=D["fg"],
+        padding=[10, 4], bordercolor=D["border"])
+    style.map("TNotebook.Tab",
+        background=[("selected", D["bg"]), ("active", D["bg3"])],
+        foreground=[("selected", D["accent"])])
+    style.configure("TScrollbar",
+        background=D["bg2"], troughcolor=D["bg"],
+        bordercolor=D["border"], arrowcolor=D["fg"])
+    style.map("TScrollbar", background=[("active", D["bg3"])])
+    style.configure("Treeview",
+        background=D["entry"], foreground=D["fg"],
+        fieldbackground=D["entry"], bordercolor=D["border"])
+    style.configure("Treeview.Heading",
+        background=D["bg2"], foreground=D["fg"],
+        bordercolor=D["border"], relief="flat")
+    style.map("Treeview",
+        background=[("selected", D["sel"])],
+        foreground=[("selected", D["fg"])])
+    style.map("Treeview.Heading",
+        background=[("active", D["bg3"])])
+
+
 # ── Material library ──────────────────────────────────────────────────────────
 # Each entry: density_g_cm3, [(element_symbol, fraction), ...], state
 # Elements: symbol -> (Z, atomic_mass_g_mol)
@@ -134,6 +216,7 @@ class VolumeDialog(tk.Toplevel):
         self.grab_set()
         self.transient(parent)
 
+        self.configure(bg=_DARK["bg"])
         self._v = volume or {}
         self._shape_var = tk.StringVar(value=self._v.get("shape", "Box"))
         self._dim_vars: Dict[str, tk.StringVar] = {}
@@ -250,6 +333,18 @@ class GrasshopperGUI:
         self._volumes: List[dict] = []
         self._dat_data: Dict[str, list] = {}
         self._proc: Optional[subprocess.Popen] = None
+        self._header_icon: Optional[tk.PhotoImage] = None
+
+        # Load icon (figures/icon.png relative to repo root)
+        icon_path = Path(__file__).parent.parent / "figures" / "icon.png"
+        if icon_path.exists():
+            try:
+                raw = tk.PhotoImage(file=str(icon_path))
+                root.iconphoto(True, raw)
+                factor = max(1, raw.width() // 64)
+                self._header_icon = raw.subsample(factor, factor)
+            except Exception:
+                pass
 
         self._build_ui()
         root.protocol("WM_DELETE_WINDOW", self._save_settings)
@@ -257,8 +352,21 @@ class GrasshopperGUI:
     # ── UI ────────────────────────────────────────────────────────────────────
 
     def _build_ui(self):
+        # ── Header bar ──
+        hf = tk.Frame(self.root, bg=_DARK["bg2"], pady=6)
+        hf.pack(fill="x")
+        if self._header_icon:
+            tk.Label(hf, image=self._header_icon,
+                     bg=_DARK["bg2"]).pack(side="left", padx=(10, 6))
+        tk.Label(hf, text="Grasshopper",
+                 font=("TkDefaultFont", 15, "bold"),
+                 fg=_DARK["accent"], bg=_DARK["bg2"]).pack(side="left")
+        tk.Label(hf, text="  Geant4 Simulation Frontend",
+                 font=("TkDefaultFont", 10),
+                 fg=_DARK["fg_dim"], bg=_DARK["bg2"]).pack(side="left", pady=2)
+
         self._nb = ttk.Notebook(self.root)
-        self._nb.pack(fill="both", expand=True, padx=6, pady=6)
+        self._nb.pack(fill="both", expand=True, padx=6, pady=(0, 6))
         for label, builder in [
             ("Beam & Physics", self._build_beam_tab),
             ("Output Options", self._build_output_tab),
@@ -590,7 +698,10 @@ class GrasshopperGUI:
         self._gdml_path_lbl.pack(side="left", padx=10)
 
         self._gdml_text = scrolledtext.ScrolledText(
-            parent, wrap="none", font=("Courier New", 11))
+            parent, wrap="none", font=("Courier New", 11),
+            bg=_DARK["entry"], fg=_DARK["fg"],
+            insertbackground=_DARK["fg"],
+            selectbackground=_DARK["sel"], selectforeground=_DARK["fg"])
         self._gdml_text.pack(fill="both", expand=True, padx=6, pady=4)
 
     # ── Tab: Run ──────────────────────────────────────────────────────────────
@@ -632,7 +743,10 @@ class GrasshopperGUI:
         ttk.Label(parent, text="Output log:").grid(
             row=5, column=0, columnspan=3, sticky="w", padx=8)
         self._log = scrolledtext.ScrolledText(
-            parent, wrap="word", font=("Courier New", 10), height=14)
+            parent, wrap="word", font=("Courier New", 10), height=14,
+            bg=_DARK["entry"], fg=_DARK["fg"],
+            insertbackground=_DARK["fg"],
+            selectbackground=_DARK["sel"], selectforeground=_DARK["fg"])
         self._log.grid(row=6, column=0, columnspan=3, sticky="nsew", padx=8, pady=4)
 
         parent.rowconfigure(6, weight=1)
@@ -863,12 +977,30 @@ class GrasshopperGUI:
         ttk.Label(ff, text="leave min/max blank for no limit", foreground="gray").grid(
             row=0, column=6, rowspan=2, padx=10)
 
-        # Matplotlib canvas
-        self._fig = Figure(figsize=(6, 4), dpi=100)
+        # Matplotlib canvas — dark theme
+        self._fig = Figure(figsize=(6, 4), dpi=100, facecolor=_DARK["bg"])
         self._ax  = self._fig.add_subplot(111)
+        self._style_ax()
         self._canvas = FigureCanvasTkAgg(self._fig, parent)
-        NavigationToolbar2Tk(self._canvas, parent)
+        toolbar = NavigationToolbar2Tk(self._canvas, parent)
+        toolbar.config(background=_DARK["bg2"])
+        for w in toolbar.winfo_children():
+            try:
+                w.config(background=_DARK["bg2"])
+            except Exception:
+                pass
         self._canvas.get_tk_widget().pack(fill="both", expand=True, padx=8, pady=4)
+
+    def _style_ax(self) -> None:
+        """Apply dark-mode colours to the matplotlib axes."""
+        D = _DARK
+        self._ax.set_facecolor(D["entry"])
+        self._ax.tick_params(colors=D["fg"])
+        self._ax.xaxis.label.set_color(D["fg"])
+        self._ax.yaxis.label.set_color(D["fg"])
+        self._ax.title.set_color(D["fg"])
+        for spine in self._ax.spines.values():
+            spine.set_edgecolor(D["border"])
 
     # ── Actions ───────────────────────────────────────────────────────────────
 
@@ -1088,14 +1220,15 @@ class GrasshopperGUI:
                 pass
 
         self._ax.clear()
+        self._style_ax()
         if len(nums) >= len(raw) * 0.5:
             arr = np.array(nums)
             try:
                 bins = max(1, int(self._bins_var.get()))
             except ValueError:
                 bins = 100
-            self._ax.hist(arr, bins=bins, color="steelblue",
-                          edgecolor="white", linewidth=0.3)
+            self._ax.hist(arr, bins=bins, facecolor="white",
+                          edgecolor="white", histtype="stepfilled", linewidth=.1)
             self._ax.set_xlabel(col)
             self._ax.set_ylabel("Counts")
         else:
@@ -1283,11 +1416,7 @@ def main():
         root.tk.call("tk", "scaling", 1.25)
     except Exception:
         pass
-    style = ttk.Style()
-    for theme in ("clam", "alt", "default"):
-        if theme in style.theme_names():
-            style.theme_use(theme)
-            break
+    _apply_dark_theme(root)
     GrasshopperGUI(root)
     root.mainloop()
 

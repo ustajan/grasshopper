@@ -34,19 +34,18 @@ public:
   protected:
 
   G4ParticleGun*                particleGun;
-  G4double r0;
-  G4double phi0;
-  G4double cth0;
-  G4double x0,y0,z0;
-  G4double phi1;
-  G4double cth1;
-  G4double x1,y1,z1;
-  G4bool randomizePrimary;
-  G4float beam_offset_x,beam_offset_y,beam_size,source_width;
-  float energy;
-  bool doing_continuous_spectrum;
-  bool interpolate,inter2ndOrder;
-  bool fan_beam,isotropic_beam,isotropic_extended,omnidirectional;
+  G4int                         particlePDG = 0;
+  G4double r0 = 0, phi0 = 0, cth0 = 0;
+  G4double x0 = 0, y0 = 0, z0 = 0;
+  G4double phi1 = 0, cth1 = 0;
+  G4double x1 = 0, y1 = 0, z1 = 0;
+  G4bool randomizePrimary = false;
+  G4float beam_offset_x = 0, beam_offset_y = 0, beam_size = 0, source_width = 0;
+  float energy = 0;
+  bool doing_continuous_spectrum = false;
+  bool interpolate = false, inter2ndOrder = false;
+  bool fan_beam = false, isotropic_beam = false, isotropic_extended = false, omnidirectional = false;
+  G4double worldRadius = 0.0;
 
   std::vector<float> e,dNde,N; //the input from the file
 
