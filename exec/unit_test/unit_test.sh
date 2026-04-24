@@ -30,19 +30,23 @@ awk '{if(NR>1 && $2>4) m++;} END {print "Average gamma full energy peak counts:\
 grasshopper test3He.gdml 3He.root
 echo -n "proton " >> md5out.txt 
 md5 3He.dat >> md5out.txt
-awk '{if(NR>1 && $4=="triton") {n+=$2;m++;}} END {print "Average proton energy, counts:\t", n/m,m;}' 3He.dat >> awkout.txt
+awk '{if(NR>1 && $4=="triton") {n+=$2;m++;}} END {print "Average triton energy, counts:\t", n/m,m;}' 3He.dat >> awkout.txt
+
+# next run neutrons into polyethylene, check LightProducingParticle=2212 filter
+grasshopper neutron_lpp.gdml neutron_lpp.root
+echo -n "neutron_lpp " >> md5out.txt
+md5 neutron_lpp.dat >> md5out.txt
+awk '{if(NR>1 && $4=="proton") {n+=$2;m++;}} END {print "Average proton recoil energy, counts:\t", n/m,m;}' neutron_lpp.dat >> awkout.txt
 
 echo ""
 echo "***********************"
 echo "RESULTS:"
 echo "OLD -->"
-tail -6 md5out.txt | head -3
+tail -8 md5out.txt | head -4
 echo "NEW -->"
-tail -3 md5out.txt
+tail -4 md5out.txt
 echo "====="
 echo "OLD -->"
-tail -8 awkout.txt | head -3
+tail -10 awkout.txt | head -4
 echo "NEW -->"
-tail -3 awkout.txt
-
-# next run gamma
+tail -4 awkout.txt
