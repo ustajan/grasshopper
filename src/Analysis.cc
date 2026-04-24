@@ -276,6 +276,12 @@ void Analysis::BeginOfEventAction(const G4Event *anEvent)
 void Analysis::EndOfEventAction(const G4Event *anEvent)
 {
 
+	// Event-level filter: only write per-track output if at least one track
+	// in this event is an alpha particle.
+	bool has_alpha = false;
+	for (const auto &name : ParticleNamev)
+		if (name == "alpha") { has_alpha = true; break; }
+
 	for (unsigned int i = 0; i < Ev.size(); ++i)
 	{ // looping over all the tracks in the detector
 		if (IsSurfaceHit.at(i))
@@ -295,7 +301,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 		IsSurfaceHitTrack = IsSurfaceHit.at(i);
 		channel = detector_hit.at(i);
 
-		if (detector_hit.at(i) >= 0 && ((IsSurfaceHitTrack && SaveSurfaceHitTrack) || SaveTrackInfo))
+		if (has_alpha && detector_hit.at(i) >= 0 && ((IsSurfaceHitTrack && SaveSurfaceHitTrack) || SaveTrackInfo))
 		{ // filter out the empty stuff
 			if (textoutput)
 			{
