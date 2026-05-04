@@ -9,12 +9,12 @@
   "boffz": "-10",
   "ecut": "0",
   "prodcut": "1",
-  "lightpar": "11",
+  "lightpar": "0",
   "keepmain": false,
   "text_out": true,
   "brief": false,
   "vrml": true,
-  "surf_hit": true,
+  "surf_hit": false,
   "track": false,
   "edep": true,
   "vrml_acc": "100",
@@ -26,7 +26,7 @@
     {
       "name": "detector",
       "shape": "Tube",
-      "material": "NaI",
+      "material": "G4_SODIUM_IODIDE",
       "is_detector": true,
       "det_idx": "0",
       "dim_rmin": "0",
@@ -42,7 +42,7 @@
     {
       "name": "target",
       "shape": "Tube",
-      "material": "G4_U",
+      "material": "G4_1,2-DICHLOROBENZENE",
       "is_detector": false,
       "det_idx": "0",
       "dim_rmin": "0",
@@ -56,7 +56,7 @@
       "rot_z": "0"
     }
   ],
-  "wrl": "g4_13.wrl",
+  "wrl": "g4_15.wrl",
   "wrl_viewer": "open",
   "exe": "grasshopper",
   "gdml_in": "default.gdml",
@@ -67,7 +67,7 @@
   "filt1_col": "",
   "filt1_min": "0.",
   "filt1_max": "0.1",
-  "filt2_col": "IsSurfaceHitTrack",
-  "filt2_min": "0",
-  "filt2_max": "0"
+  "filt2_col": "IsEdepositedTotalEntry",
+  "filt2_min": "1",
+  "filt2_max": "1"
 }
