@@ -146,118 +146,132 @@ _CUSTOM_MATERIALS: Dict[str, tuple] = {
                                 ("B",  0.0500), ("O",  0.1952)],                    "solid"),
 }
 
-# G4 NIST materials: referenced by name only — no definition block needed in GDML
-_G4_MATERIALS = [
-    # Numbered / special
+# G4 NIST materials: referenced by name only — no definition block needed in GDML.
+# Listed in two groups: simple elements (Z = 1..98, periodic-table order) followed by
+# compounds and mixtures (alphabetical by leading letter).
+_G4_ELEMENTS = [
+    "G4_H",  "G4_He", "G4_Li", "G4_Be", "G4_B",  "G4_C",  "G4_N",  "G4_O",  "G4_F",  "G4_Ne",
+    "G4_Na", "G4_Mg", "G4_Al", "G4_Si", "G4_P",  "G4_S",  "G4_Cl", "G4_Ar", "G4_K",  "G4_Ca",
+    "G4_Sc", "G4_Ti", "G4_V",  "G4_Cr", "G4_Mn", "G4_Fe", "G4_Co", "G4_Ni", "G4_Cu", "G4_Zn",
+    "G4_Ga", "G4_Ge", "G4_As", "G4_Se", "G4_Br", "G4_Kr", "G4_Rb", "G4_Sr", "G4_Y",  "G4_Zr",
+    "G4_Nb", "G4_Mo", "G4_Tc", "G4_Ru", "G4_Rh", "G4_Pd", "G4_Ag", "G4_Cd", "G4_In", "G4_Sn",
+    "G4_Sb", "G4_Te", "G4_I",  "G4_Xe", "G4_Cs", "G4_Ba", "G4_La", "G4_Ce", "G4_Pr", "G4_Nd",
+    "G4_Pm", "G4_Sm", "G4_Eu", "G4_Gd", "G4_Tb", "G4_Dy", "G4_Ho", "G4_Er", "G4_Tm", "G4_Yb",
+    "G4_Lu", "G4_Hf", "G4_Ta", "G4_W",  "G4_Re", "G4_Os", "G4_Ir", "G4_Pt", "G4_Au", "G4_Hg",
+    "G4_Tl", "G4_Pb", "G4_Bi", "G4_Po", "G4_At", "G4_Rn", "G4_Fr", "G4_Ra", "G4_Ac", "G4_Th",
+    "G4_Pa", "G4_U",  "G4_Np", "G4_Pu", "G4_Am", "G4_Cm", "G4_Bk", "G4_Cf",
+]
+
+_G4_COMPOUNDS = [
+    # Numbered
     "G4_1,2-DICHLOROBENZENE", "G4_1,2-DICHLOROETHANE",
     # A
-    "G4_A-150_TISSUE", "G4_Ac", "G4_ACETONE", "G4_ACETYLENE", "G4_ADENINE",
-    "G4_ADIPOSE_TISSUE_ICRP", "G4_Ag", "G4_AIR", "G4_Al", "G4_ALANINE",
-    "G4_ALUMINUM_OXIDE", "G4_Am", "G4_AMBER", "G4_AMMONIA", "G4_ANILINE",
-    "G4_ANTHRACENE", "G4_Ar", "G4_As", "G4_At", "G4_Au",
+    "G4_A-150_TISSUE", "G4_ACETONE", "G4_ACETYLENE", "G4_ADENINE",
+    "G4_ADIPOSE_TISSUE_ICRP", "G4_AIR", "G4_ALANINE", "G4_ALUMINUM_OXIDE",
+    "G4_AMBER", "G4_AMMONIA", "G4_ANILINE", "G4_ANTHRACENE",
     # B
-    "G4_B", "G4_B-100_BONE", "G4_Ba", "G4_BAKELITE", "G4_BARIUM_FLUORIDE",
-    "G4_BARIUM_SULFATE", "G4_Be", "G4_BENZENE", "G4_BERYLLIUM_OXIDE", "G4_BGO",
-    "G4_Bi", "G4_Bk", "G4_BLOOD_ICRP", "G4_BONE_COMPACT_ICRU",
-    "G4_BONE_CORTICAL_ICRP", "G4_BORON_CARBIDE", "G4_BORON_OXIDE", "G4_Br",
-    "G4_BRAIN_ICRP", "G4_BRASS", "G4_BRONZE", "G4_BUTANE",
+    "G4_B-100_BONE", "G4_BAKELITE", "G4_BARIUM_FLUORIDE", "G4_BARIUM_SULFATE",
+    "G4_BENZENE", "G4_BERYLLIUM_OXIDE", "G4_BGO", "G4_BLOOD_ICRP",
+    "G4_BONE_COMPACT_ICRU", "G4_BONE_CORTICAL_ICRP", "G4_BORON_CARBIDE",
+    "G4_BORON_OXIDE", "G4_BRAIN_ICRP", "G4_BRASS", "G4_BRONZE", "G4_BUTANE",
     # C
-    "G4_C", "G4_C-552", "G4_Ca", "G4_CADMIUM_TELLURIDE", "G4_CADMIUM_TUNGSTATE",
+    "G4_C-552", "G4_CADMIUM_TELLURIDE", "G4_CADMIUM_TUNGSTATE",
     "G4_CALCIUM_CARBONATE", "G4_CALCIUM_FLUORIDE", "G4_CALCIUM_OXIDE",
     "G4_CALCIUM_SULFATE", "G4_CALCIUM_TUNGSTATE", "G4_CARBON_DIOXIDE",
-    "G4_CARBON_TETRACHLORIDE", "G4_Cd", "G4_Ce", "G4_CELLULOSE_BUTYRATE",
+    "G4_CARBON_TETRACHLORIDE", "G4_CELLULOSE_BUTYRATE",
     "G4_CELLULOSE_CELLOPHANE", "G4_CELLULOSE_NITRATE", "G4_CERIC_SULFATE",
-    "G4_CESIUM_FLUORIDE", "G4_CESIUM_IODIDE", "G4_Cf", "G4_CHLOROBENZENE",
-    "G4_CHLOROFORM", "G4_Cl", "G4_Cm", "G4_Co", "G4_CONCRETE", "G4_Cr",
-    "G4_CR39", "G4_Cs", "G4_Cu", "G4_CYCLOHEXANE", "G4_CYTOSINE",
+    "G4_CESIUM_FLUORIDE", "G4_CESIUM_IODIDE", "G4_CHLOROBENZENE",
+    "G4_CHLOROFORM", "G4_CONCRETE", "G4_CR39", "G4_CYCLOHEXANE", "G4_CYTOSINE",
     # D
     "G4_DACRON", "G4_DICHLORODIETHYL_ETHER", "G4_DIETHYL_ETHER",
     "G4_DIMETHYL_SULFOXIDE", "G4_DNA_A", "G4_DNA_ADENINE", "G4_DNA_ADENOSINE",
     "G4_DNA_C", "G4_DNA_CYTIDINE", "G4_DNA_CYTOSINE", "G4_DNA_G",
     "G4_DNA_GUANINE", "G4_DNA_GUANOSINE", "G4_DNA_METHYLURIDINE",
     "G4_DNA_MONOPHOSPHATE", "G4_DNA_MU", "G4_DNA_THYMINE", "G4_DNA_U",
-    "G4_DNA_URACIL", "G4_DNA_URIDINE", "G4_Dy",
+    "G4_DNA_URACIL", "G4_DNA_URIDINE",
     # E
-    "G4_Er", "G4_ETHANE", "G4_ETHYL_ALCOHOL", "G4_ETHYL_CELLULOSE",
-    "G4_ETHYLENE", "G4_Eu", "G4_EYE_LENS_ICRP",
+    "G4_ETHANE", "G4_ETHYL_ALCOHOL", "G4_ETHYL_CELLULOSE", "G4_ETHYLENE",
+    "G4_EYE_LENS_ICRP",
     # F
-    "G4_F", "G4_Fe", "G4_FERRIC_OXIDE", "G4_FERROBORIDE", "G4_FERROUS_OXIDE",
-    "G4_FERROUS_SULFATE", "G4_Fr", "G4_FREON-12", "G4_FREON-12B2",
-    "G4_FREON-13", "G4_FREON-13B1", "G4_FREON-13I1",
+    "G4_FERRIC_OXIDE", "G4_FERROBORIDE", "G4_FERROUS_OXIDE",
+    "G4_FERROUS_SULFATE", "G4_FREON-12", "G4_FREON-12B2", "G4_FREON-13",
+    "G4_FREON-13B1", "G4_FREON-13I1",
     # G
-    "G4_Ga", "G4_GADOLINIUM_OXYSULFIDE", "G4_Galactic", "G4_GALLIUM_ARSENIDE",
-    "G4_Gd", "G4_Ge", "G4_GEL_PHOTO_EMULSION", "G4_GLASS_LEAD",
-    "G4_GLASS_PLATE", "G4_GLUTAMINE", "G4_GLYCEROL", "G4_GRAPHITE",
-    "G4_GRAPHITE_POROUS", "G4_GUANINE", "G4_GYPSUM",
-    # H
-    "G4_H", "G4_He", "G4_Hf", "G4_Hg", "G4_Ho",
-    # I
-    "G4_I", "G4_In", "G4_Ir",
+    "G4_GADOLINIUM_OXYSULFIDE", "G4_Galactic", "G4_GALLIUM_ARSENIDE",
+    "G4_GEL_PHOTO_EMULSION", "G4_GLASS_LEAD", "G4_GLASS_PLATE", "G4_GLUTAMINE",
+    "G4_GLYCEROL", "G4_GRAPHITE", "G4_GRAPHITE_POROUS", "G4_GUANINE",
+    "G4_GYPSUM",
     # K
-    "G4_K", "G4_KAPTON", "G4_KEVLAR", "G4_Kr",
-    # L
-    "G4_La", "G4_lAr", "G4_lBr", "G4_LANTHANUM_OXYBROMIDE",
-    "G4_LANTHANUM_OXYSULFIDE", "G4_LEAD_OXIDE", "G4_lH2", "G4_Li",
-    "G4_LITHIUM_AMIDE", "G4_LITHIUM_CARBONATE", "G4_LITHIUM_FLUORIDE",
-    "G4_LITHIUM_HYDRIDE", "G4_LITHIUM_IODIDE", "G4_LITHIUM_OXIDE",
-    "G4_LITHIUM_TETRABORATE", "G4_lKr", "G4_lN2", "G4_lO2", "G4_lPROPANE",
-    "G4_Lu", "G4_LUCITE", "G4_LUNG_ICRP", "G4_lXe",
+    "G4_KAPTON", "G4_KEVLAR",
+    # L (includes liquid-element forms: G4_lAr, G4_lH2, etc.)
+    "G4_lAr", "G4_lBr", "G4_LANTHANUM_OXYBROMIDE", "G4_LANTHANUM_OXYSULFIDE",
+    "G4_LEAD_OXIDE", "G4_lH2", "G4_LITHIUM_AMIDE", "G4_LITHIUM_CARBONATE",
+    "G4_LITHIUM_FLUORIDE", "G4_LITHIUM_HYDRIDE", "G4_LITHIUM_IODIDE",
+    "G4_LITHIUM_OXIDE", "G4_LITHIUM_TETRABORATE", "G4_lKr", "G4_lN2", "G4_lO2",
+    "G4_lPROPANE", "G4_LUCITE", "G4_LUNG_ICRP", "G4_lXe",
     # M
     "G4_M3_WAX", "G4_MAGNESIUM_CARBONATE", "G4_MAGNESIUM_FLUORIDE",
     "G4_MAGNESIUM_OXIDE", "G4_MAGNESIUM_TETRABORATE", "G4_MERCURIC_IODIDE",
-    "G4_METHANE", "G4_METHANOL", "G4_Mg", "G4_MIX_D_WAX", "G4_Mn", "G4_Mo",
-    "G4_MS20_TISSUE", "G4_MUSCLE_SKELETAL_ICRP", "G4_MUSCLE_STRIATED_ICRU",
+    "G4_METHANE", "G4_METHANOL", "G4_MIX_D_WAX", "G4_MS20_TISSUE",
+    "G4_MUSCLE_SKELETAL_ICRP", "G4_MUSCLE_STRIATED_ICRU",
     "G4_MUSCLE_WITH_SUCROSE", "G4_MUSCLE_WITHOUT_SUCROSE", "G4_MYLAR",
     # N
-    "G4_N", "G4_N-BUTYL_ALCOHOL", "G4_N-HEPTANE", "G4_N-HEXANE",
-    "G4_N-PENTANE", "G4_N-PROPYL_ALCOHOL", "G4_N,N-DIMETHYL_FORMAMIDE",
-    "G4_Na", "G4_NAPHTHALENE", "G4_Nb", "G4_Nd", "G4_Ne", "G4_NEOPRENE",
-    "G4_Ni", "G4_NITROBENZENE", "G4_NITROUS_OXIDE", "G4_Np",
-    "G4_NYLON-11_RILSAN", "G4_NYLON-6-10", "G4_NYLON-6-6", "G4_NYLON-8062",
+    "G4_N-BUTYL_ALCOHOL", "G4_N-HEPTANE", "G4_N-HEXANE", "G4_N-PENTANE",
+    "G4_N-PROPYL_ALCOHOL", "G4_N,N-DIMETHYL_FORMAMIDE", "G4_NAPHTHALENE",
+    "G4_NEOPRENE", "G4_NITROBENZENE", "G4_NITROUS_OXIDE", "G4_NYLON-11_RILSAN",
+    "G4_NYLON-6-10", "G4_NYLON-6-6", "G4_NYLON-8062",
     # O
-    "G4_O", "G4_OCTADECANOL", "G4_OCTANE", "G4_Os",
+    "G4_OCTADECANOL", "G4_OCTANE",
     # P
-    "G4_P", "G4_Pa", "G4_PARAFFIN", "G4_Pb", "G4_PbWO4", "G4_Pd",
-    "G4_PHOTO_EMULSION", "G4_PLASTIC_SC_VINYLTOLUENE", "G4_PLEXIGLASS",
-    "G4_PLUTONIUM_DIOXIDE", "G4_Pm", "G4_Po", "G4_POLYACRYLONITRILE",
-    "G4_POLYCARBONATE", "G4_POLYCHLOROSTYRENE", "G4_POLYETHYLENE",
-    "G4_POLYOXYMETHYLENE", "G4_POLYPROPYLENE", "G4_POLYSTYRENE",
-    "G4_POLYTRIFLUOROCHLOROETHYLENE", "G4_POLYVINYL_ACETATE",
+    "G4_PARAFFIN", "G4_PbWO4", "G4_PHOTO_EMULSION",
+    "G4_PLASTIC_SC_VINYLTOLUENE", "G4_PLEXIGLASS", "G4_PLUTONIUM_DIOXIDE",
+    "G4_POLYACRYLONITRILE", "G4_POLYCARBONATE", "G4_POLYCHLOROSTYRENE",
+    "G4_POLYETHYLENE", "G4_POLYOXYMETHYLENE", "G4_POLYPROPYLENE",
+    "G4_POLYSTYRENE", "G4_POLYTRIFLUOROCHLOROETHYLENE", "G4_POLYVINYL_ACETATE",
     "G4_POLYVINYL_ALCOHOL", "G4_POLYVINYL_BUTYRAL", "G4_POLYVINYL_CHLORIDE",
     "G4_POLYVINYL_PYRROLIDONE", "G4_POLYVINYLIDENE_CHLORIDE",
     "G4_POLYVINYLIDENE_FLUORIDE", "G4_POTASSIUM_IODIDE", "G4_POTASSIUM_OXIDE",
-    "G4_Pr", "G4_PROPANE", "G4_Pt", "G4_Pu", "G4_Pyrex_Glass", "G4_PYRIDINE",
+    "G4_PROPANE", "G4_Pyrex_Glass", "G4_PYRIDINE",
     # R
-    "G4_Ra", "G4_Rb", "G4_Re", "G4_Rh", "G4_Rn", "G4_Ru", "G4_RUBBER_BUTYL",
-    "G4_RUBBER_NATURAL", "G4_RUBBER_NEOPRENE",
+    "G4_RUBBER_BUTYL", "G4_RUBBER_NATURAL", "G4_RUBBER_NEOPRENE",
     # S
-    "G4_S", "G4_Sb", "G4_Sc", "G4_Se", "G4_Si", "G4_SILICON_DIOXIDE",
-    "G4_SILVER_BROMIDE", "G4_SILVER_CHLORIDE", "G4_SILVER_HALIDES",
-    "G4_SILVER_IODIDE", "G4_SKIN_ICRP", "G4_Sm", "G4_Sn",
+    "G4_SILICON_DIOXIDE", "G4_SILVER_BROMIDE", "G4_SILVER_CHLORIDE",
+    "G4_SILVER_HALIDES", "G4_SILVER_IODIDE", "G4_SKIN_ICRP",
     "G4_SODIUM_CARBONATE", "G4_SODIUM_IODIDE", "G4_SODIUM_MONOXIDE",
-    "G4_SODIUM_NITRATE", "G4_Sr", "G4_STAINLESS-STEEL", "G4_STILBENE",
-    "G4_SUCROSE",
+    "G4_SODIUM_NITRATE", "G4_STAINLESS-STEEL", "G4_STILBENE", "G4_SUCROSE",
     # T
-    "G4_Ta", "G4_Tb", "G4_Tc", "G4_Te", "G4_TEFLON", "G4_TERPHENYL",
-    "G4_TESTIS_ICRP", "G4_TETRACHLOROETHYLENE", "G4_Th", "G4_THALLIUM_CHLORIDE",
-    "G4_THYMINE", "G4_Ti", "G4_TISSUE_SOFT_ICRP", "G4_TISSUE_SOFT_ICRU-4",
-    "G4_TISSUE-METHANE", "G4_TISSUE-PROPANE", "G4_TITANIUM_DIOXIDE", "G4_Tl",
-    "G4_Tm", "G4_TOLUENE", "G4_TRICHLOROETHYLENE", "G4_TRIETHYL_PHOSPHATE",
-    "G4_TUNGSTEN_HEXAFLUORIDE",
+    "G4_TEFLON", "G4_TERPHENYL", "G4_TESTIS_ICRP", "G4_TETRACHLOROETHYLENE",
+    "G4_THALLIUM_CHLORIDE", "G4_THYMINE", "G4_TISSUE_SOFT_ICRP",
+    "G4_TISSUE_SOFT_ICRU-4", "G4_TISSUE-METHANE", "G4_TISSUE-PROPANE",
+    "G4_TITANIUM_DIOXIDE", "G4_TOLUENE", "G4_TRICHLOROETHYLENE",
+    "G4_TRIETHYL_PHOSPHATE", "G4_TUNGSTEN_HEXAFLUORIDE",
     # U
-    "G4_U", "G4_URACIL", "G4_URANIUM_DICARBIDE", "G4_URANIUM_MONOCARBIDE",
+    "G4_URACIL", "G4_URANIUM_DICARBIDE", "G4_URANIUM_MONOCARBIDE",
     "G4_URANIUM_OXIDE", "G4_UREA",
     # V
-    "G4_V", "G4_VALINE", "G4_VITON",
+    "G4_VALINE", "G4_VITON",
     # W
-    "G4_W", "G4_WATER", "G4_WATER_VAPOR",
+    "G4_WATER", "G4_WATER_VAPOR",
     # X
-    "G4_Xe", "G4_XYLENE",
-    # Y–Z
-    "G4_Y", "G4_Yb", "G4_Zn", "G4_Zr",
+    "G4_XYLENE",
 ]
 
-_MAT_CHOICES = sorted(_CUSTOM_MATERIALS.keys()) + ["─── G4 NIST ───"] + _G4_MATERIALS
+_G4_MATERIALS = _G4_ELEMENTS + _G4_COMPOUNDS
+
+# Divider rows shown in the material combobox — they are not real materials and
+# must be filtered out before GDML emission.  `_is_divider` is used at GDML
+# generation time to guard against the user accidentally clicking one.
+_DIV_ELEMENTS  = "─── G4 NIST: elements ───"
+_DIV_COMPOUNDS = "─── G4 NIST: compounds ───"
+
+def _is_divider(name: str) -> bool:
+    return name.startswith("───")
+
+_MAT_CHOICES = (
+    sorted(_CUSTOM_MATERIALS.keys())
+    + [_DIV_ELEMENTS]  + _G4_ELEMENTS
+    + [_DIV_COMPOUNDS] + _G4_COMPOUNDS
+)
 
 _PARTICLES = {
     "Electron (e-)": 11,
@@ -1078,8 +1092,12 @@ class GrasshopperGUI:
                 var = tk.StringVar()
                 setattr(self, attr, var)
                 ttk.Entry(ff, textvariable=var, width=10).grid(row=i, column=3 + j*2, padx=2)
-        ttk.Label(ff, text="leave min/max blank for no limit", foreground="gray").grid(
-            row=0, column=6, rowspan=2, padx=10)
+        ttk.Label(ff,
+                  text="numeric: blank = no limit\n"
+                       "string: put match value(s) in Min and/or Max\n"
+                       "          (comma-separated = any-of)",
+                  foreground="gray", justify="left").grid(
+            row=0, column=6, rowspan=2, padx=10, sticky="w")
 
         # Matplotlib canvas — dark theme
         self._fig = Figure(figsize=(6, 4), dpi=100, facecolor=_DARK["bg"])
@@ -1297,23 +1315,37 @@ class GrasshopperGUI:
             fmax_s = getattr(self, f"_filt{i}_max").get().strip()
             if not fcol or fcol not in self._dat_data or (not fmin_s and not fmax_s):
                 continue
-            fcol_nums = []
-            for v in self._dat_data[fcol]:
+
+            def _as_float(s):
                 try:
-                    fcol_nums.append(float(v))
+                    return float(s)
                 except ValueError:
-                    fcol_nums.append(float("nan"))
-            farr = np.array(fcol_nums)
-            if fmin_s:
-                try:
-                    mask &= farr >= float(fmin_s)
-                except ValueError:
-                    pass
-            if fmax_s:
-                try:
-                    mask &= farr <= float(fmax_s)
-                except ValueError:
-                    pass
+                    return None
+
+            fmin_n = _as_float(fmin_s) if fmin_s else None
+            fmax_n = _as_float(fmax_s) if fmax_s else None
+            # If either entered value isn't a number, treat as string match:
+            # row passes if column value equals any comma-separated token.
+            string_mode = (fmin_s and fmin_n is None) or (fmax_s and fmax_n is None)
+
+            if string_mode:
+                allowed = set()
+                for s in (fmin_s, fmax_s):
+                    if s:
+                        allowed.update(t.strip() for t in s.split(",") if t.strip())
+                mask &= np.array([str(v) in allowed for v in self._dat_data[fcol]])
+            else:
+                fcol_nums = []
+                for v in self._dat_data[fcol]:
+                    try:
+                        fcol_nums.append(float(v))
+                    except ValueError:
+                        fcol_nums.append(float("nan"))
+                farr = np.array(fcol_nums)
+                if fmin_n is not None:
+                    mask &= farr >= fmin_n
+                if fmax_n is not None:
+                    mask &= farr <= fmax_n
 
         raw = [v for v, keep in zip(self._dat_data[col], mask) if keep]
         nums = []
@@ -1356,11 +1388,20 @@ class GrasshopperGUI:
     def _make_gdml(self) -> str:
         pdg = _PARTICLES.get(self._particle_var.get(), 22)
 
+        # Reject divider rows from the material combobox before they make it
+        # into the GDML — Geant4 will not load a materialref to "─── … ───".
+        world_mat = self._world_mat.get()
+        if _is_divider(world_mat):
+            raise ValueError("World material is not selected — pick a real material.")
+        for v in self._volumes:
+            if _is_divider(v["material"]):
+                raise ValueError(
+                    f"Volume {v['name']!r} has no material selected — pick a real material.")
+
         # Collect materials used
-        mats_used = {self._world_mat.get()}
+        mats_used = {world_mat}
         for v in self._volumes:
             mats_used.add(v["material"])
-        mats_used.discard("─── G4 NIST ───")
 
         lines = [
             '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>',
