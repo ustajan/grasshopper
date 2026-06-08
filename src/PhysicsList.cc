@@ -18,6 +18,7 @@
 
 #include "G4HadronPhysicsQGSP_BIC_HP.hh"
 #include "G4HadronPhysicsQGSP_BIC.hh"
+#include "G4HadronPhysicsFTFP_BERT_HP.hh"
 
 #include "G4HadronPhysicsINCLXX.hh"
 
@@ -125,7 +126,8 @@ void physicsList::ConstructPhysics()
   // extended neutron XS data set for improved non-HP neutron physics
   else{
 //    RegisterPhysics( new G4HadronPhysicsINCLXX(verboseLevel)); //better for spallation. This and the lower line conflict
-    RegisterPhysics( new G4HadronPhysicsQGSP_BIC(verboseLevel)); //this is more accurate for low energy interractions
+//    RegisterPhysics( new G4HadronPhysicsQGSP_BIC(verboseLevel)); //this is more accurate for low energy interractions
+    RegisterPhysics( new G4HadronPhysicsFTFP_BERT_HP(verboseLevel)); //Claude says this is best for 0.1-1GeV
     RegisterPhysics( new G4HadronElasticPhysics(verboseLevel) );
     RegisterPhysics( new G4NeutronCrossSectionXS(verboseLevel));
   }

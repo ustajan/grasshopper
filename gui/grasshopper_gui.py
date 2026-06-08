@@ -1367,6 +1367,16 @@ class GrasshopperGUI:
                           edgecolor="white", histtype="stepfilled", linewidth=.1)
             self._ax.set_xlabel(col)
             self._ax.set_ylabel("Counts")
+            stats = (f"Entries: {arr.size}\n"
+                     f"Mean: {arr.mean():.4g}\n"
+                     f"Std Dev: {arr.std(ddof=0):.4g}")
+            self._ax.text(0.98, 0.98, stats,
+                          transform=self._ax.transAxes,
+                          ha="right", va="top",
+                          color=_DARK["fg"], fontsize=9, family="monospace",
+                          bbox=dict(boxstyle="round,pad=0.4",
+                                    facecolor=_DARK["entry"],
+                                    edgecolor=_DARK["border"]))
         else:
             from collections import Counter
             counts = Counter(raw)
