@@ -541,6 +541,9 @@ class GrasshopperGUI:
             "filt2_col":  self._filt2_col_var.get() if hasattr(self, "_filt2_col_var") else "",
             "filt2_min":  self._filt2_min.get() if hasattr(self, "_filt2_min") else "",
             "filt2_max":  self._filt2_max.get() if hasattr(self, "_filt2_max") else "",
+            "filt3_col":  self._filt3_col_var.get() if hasattr(self, "_filt3_col_var") else "",
+            "filt3_min":  self._filt3_min.get() if hasattr(self, "_filt3_min") else "",
+            "filt3_max":  self._filt3_max.get() if hasattr(self, "_filt3_max") else "",
         }
         try:
             _SETTINGS_PATH.write_text(json.dumps(settings, indent=2), encoding="utf-8")
@@ -607,6 +610,12 @@ class GrasshopperGUI:
             sv(self._filt2_min,    "filt2_min")
         if hasattr(self, "_filt2_max"):
             sv(self._filt2_max,    "filt2_max")
+        if hasattr(self, "_filt3_col_var"):
+            sv(self._filt3_col_var, "filt3_col")
+        if hasattr(self, "_filt3_min"):
+            sv(self._filt3_min,    "filt3_min")
+        if hasattr(self, "_filt3_max"):
+            sv(self._filt3_max,    "filt3_max")
 
         for v in s.get("volumes", []):
             self._volumes.append(v)
@@ -1075,11 +1084,11 @@ class GrasshopperGUI:
         ttk.Checkbutton(cf, text="Log Y", variable=self._logy_var).pack(side="left", padx=(8, 0))
         ttk.Button(cf, text="Plot", command=self._on_plot).pack(side="left", padx=8)
 
-        # Two-column row filters
-        ff = ttk.LabelFrame(parent, text="Row filters — select up to 2 columns to cut on (leave blank to skip)")
+        # Row filters
+        ff = ttk.LabelFrame(parent, text="Row filters — select up to 3 columns to cut on (leave blank to skip)")
         ff.pack(fill="x", padx=8, pady=2)
         self._filt_col_cbs: List[ttk.Combobox] = []
-        for i in range(2):
+        for i in range(3):
             ttk.Label(ff, text=f"Filter {i+1}:").grid(row=i, column=0, padx=6, pady=3, sticky="e")
             col_var = tk.StringVar()
             setattr(self, f"_filt{i+1}_col_var", col_var)
@@ -1097,7 +1106,7 @@ class GrasshopperGUI:
                        "string: put match value(s) in Min and/or Max\n"
                        "          (comma-separated = any-of)",
                   foreground="gray", justify="left").grid(
-            row=0, column=6, rowspan=2, padx=10, sticky="w")
+            row=0, column=6, rowspan=3, padx=10, sticky="w")
 
         # Matplotlib canvas — dark theme
         self._fig = Figure(figsize=(6, 4), dpi=100, facecolor=_DARK["bg"])
@@ -1306,10 +1315,10 @@ class GrasshopperGUI:
             messagebox.showwarning("No data", "Load a .dat file and select a column.")
             return
 
-        # Build row mask from the two column filters
+        # Build row mask from the column filters
         n = len(next(iter(self._dat_data.values())))
         mask = np.ones(n, dtype=bool)
-        for i in (1, 2):
+        for i in (1, 2, 3):
             fcol = getattr(self, f"_filt{i}_col_var").get().strip()
             fmin_s = getattr(self, f"_filt{i}_min").get().strip()
             fmax_s = getattr(self, f"_filt{i}_max").get().strip()

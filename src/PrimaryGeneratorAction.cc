@@ -17,6 +17,9 @@
 #include "G4ParticleDefinition.hh"
 #include "G4GDMLParser.hh"
 
+#include <sstream>
+#include <string>
+
 extern G4GDMLParser parser;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -103,6 +106,7 @@ PrimaryGeneratorAction::PrimaryGeneratorAction()
     isotropic_extended=false;
     try {
       worldRadius = parser.GetQuantity("WorldRadius");
+      std::cout << "Doing Omnidirectional Source with WorldRadius: " << worldRadius/CLHEP::mm << " mm" << std::endl;
     } catch (...) {
       G4cerr << "\nERROR: WorldRadius is not defined in the GDML.\n"
              << "  Please add it to the <define> section, e.g.:\n"
@@ -262,10 +266,17 @@ void PrimaryGeneratorAction::ReadInputSpectrumFile(std::string filename){
   std::ifstream f(filename);
   if(f.is_open()) { //check that the file is open
     std::cout<<"oooooooooooooo Reading input file for beam energies oooooooooooo"<<std::endl;
-    float a,b;
-    while(f >> a >> b) {
-      e.push_back(a);
-      dNde.push_back(b);
+    std::string line;
+    while (std::getline(f, line)) {
+      std::size_t start = line.find_first_not_of(" \t\r\n");
+      if (start == std::string::npos) continue;          // blank line
+      if (line[start] == '#') continue;                  // comment line
+      std::istringstream iss(line);
+      float a, b;
+      if (iss >> a >> b) {
+        e.push_back(a);
+        dNde.push_back(b);
+      }
     }
     if (interpolate) N.push_back(0);
     else N.push_back(dNde.at(0));

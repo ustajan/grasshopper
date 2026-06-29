@@ -14,7 +14,7 @@ goal is to allow users with no C++ and Geant4 knowledge *quickly* set up and run
 Author:  		Areg Danagoulian
 
 Creation time:  11/2015  
-Last update:    continous
+Last update:    continuous
 
 For copyright and licensing see files COPYRIGHT and LICENSE.
 
@@ -26,10 +26,10 @@ The user is required/advised to have the following:
 * xerces.  This will allow the GDML parser capability.
 * Built and installed geant4 libraries.  
 	* In the cmake configuration stage, the following flag needs to be passed: `-DGEANT4_USE_GDML=ON`.  
-	* Here's an example of what a Geant4 cmake command looks like(to be ran from `geant_build`): `cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DCMAKE_INSTALL_PREFIX=../geant4-v11.3.2-install ../geant4-v11.3.2 `
+	* Here's an example of what a Geant4 cmake command looks like(to be ran from `geant_build`): `cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DCMAKE_INSTALL_PREFIX=../geant4-v11.4.2-install ../geant4-v11.4.2 `
 * ROOT -- optional.  Has been tested with version 6.32.12.  If you do not have ROOT the make process will recognize that and exclude it from the build.
 
-__Geant4 compatibility__:  most recently, grasshopper and been built against and tested with **Geant4 versions 11.2.2, 11.3.2, and 11.4**.
+__Geant4 compatibility__:  most recently, grasshopper and been built against and tested with Geant4 versions 11.2.2, 11.3.2, and **11.4.2**.
 
 __Important note__:  these days geant4 primarily works via the cmake framework.  However grasshopper can also use the older Makefile framework.  It is important that you source the appropriate shell script in geant4 directories to enable all the env. variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
 

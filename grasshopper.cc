@@ -245,11 +245,11 @@ int main(int argc,char** argv)
 
   //DONE
   //Now do a cleanup, print CPU/time diagnostics, and exit
-/*
+
   if (analysis == AnalysisManager::GetAnalysisManager()){
     std::cout << "\nDeleting the analysis object.\n";
   	delete analysis; //causes errors
-  }*/
+  }
 
   // job termination
 	

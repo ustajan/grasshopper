@@ -109,3 +109,27 @@ Average beta energy, counts:	 0.924847 2621
 Average gamma full energy peak counts:	 50
 Average triton energy, counts:	 0.177157 69237
 Average proton recoil energy, counts:	 0.491211 1041
+-------------
+Wed Jun 17 16:33:40 EDT 2026
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 50
+Average triton energy, counts:	 0.177157 69237
+Average proton recoil energy, counts:	 0.491211 1041
+-------------
+Tue Jun 23 02:14:31 EDT 2026
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 50
+Average triton energy, counts:	 0.177157 69237
+Average proton recoil energy, counts:	 0.491211 1041
+-------------
+Mon Jun 29 13:55:52 EDT 2026
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 41
+Average triton energy, counts:	 0.177142 69246
+Average proton recoil energy, counts:	 0.481461 1115
+-------------
+Mon Jun 29 14:11:36 EDT 2026
+Average beta energy, counts:	 0.924847 2621
+Average gamma full energy peak counts:	 41
+Average triton energy, counts:	 0.177142 69246
+Average proton recoil energy, counts:	 0.481461 1115
