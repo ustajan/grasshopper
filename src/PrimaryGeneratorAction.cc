@@ -217,7 +217,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   }
   else{
 //    r = beam_size*acos(G4UniformRand())/pi*2.;
-    r = beam_size*sqrt(G4UniformRand()) ;
+    r = beam_size*sqrt(G4UniformRand());
     ph = 360.*G4UniformRand()*CLHEP::deg;
 
     x_r = r*cos(ph);
