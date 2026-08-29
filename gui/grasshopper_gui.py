@@ -452,6 +452,7 @@ class GrasshopperGUI:
         self._dat_data: Dict[str, list] = {}
         self._proc: Optional[subprocess.Popen] = None
         self._header_icon: Optional[tk.PhotoImage] = None
+        self._settings_path: Path = _SETTINGS_PATH
 
         # Load icon (figures/icon.png relative to repo root)
         icon_path = Path(__file__).parent.parent / "figures" / "icon.png"
@@ -465,11 +466,28 @@ class GrasshopperGUI:
                 pass
 
         self._build_ui()
-        root.protocol("WM_DELETE_WINDOW", self._save_settings)
+        root.protocol("WM_DELETE_WINDOW", self._on_close)
 
     # ── UI ────────────────────────────────────────────────────────────────────
 
     def _build_ui(self):
+        # ── Menu bar ──
+        menubar = tk.Menu(self.root)
+        filemenu = tk.Menu(menubar, tearoff=0)
+        filemenu.add_command(label="Open Settings…", accelerator="Ctrl+O",
+                             command=self._on_open_settings)
+        filemenu.add_command(label="Save Settings", accelerator="Ctrl+S",
+                             command=self._on_save_settings)
+        filemenu.add_command(label="Save Settings As…", accelerator="Ctrl+Shift+S",
+                             command=self._on_save_settings_as)
+        filemenu.add_separator()
+        filemenu.add_command(label="Quit", command=self._on_close)
+        menubar.add_cascade(label="File", menu=filemenu)
+        self.root.config(menu=menubar)
+        self.root.bind_all("<Control-o>", lambda _e: self._on_open_settings())
+        self.root.bind_all("<Control-s>", lambda _e: self._on_save_settings())
+        self.root.bind_all("<Control-S>", lambda _e: self._on_save_settings_as())
+
         # ── Header bar ──
         hf = tk.Frame(self.root, bg=_DARK["bg2"], pady=6)
         hf.pack(fill="x")
@@ -482,6 +500,10 @@ class GrasshopperGUI:
         tk.Label(hf, text="  Geant4 Simulation Frontend",
                  font=("TkDefaultFont", 10),
                  fg=_DARK["fg_dim"], bg=_DARK["bg2"]).pack(side="left", pady=2)
+        self._settings_label = tk.Label(hf, text=self._settings_path.name,
+                                        font=("TkDefaultFont", 9),
+                                        fg=_DARK["fg_dim"], bg=_DARK["bg2"])
+        self._settings_label.pack(side="right", padx=10, pady=2)
 
         self._nb = ttk.Notebook(self.root)
         self._nb.pack(fill="both", expand=True, padx=6, pady=(0, 6))
@@ -501,8 +523,8 @@ class GrasshopperGUI:
 
     # ── Settings persistence ──────────────────────────────────────────────────
 
-    def _save_settings(self):
-        settings = {
+    def _collect_settings(self) -> dict:
+        return {
             "particle":  self._particle_var.get(),
             "energy":    self._energy_var.get(),
             "events":    self._events_var.get(),
@@ -545,20 +567,67 @@ class GrasshopperGUI:
             "filt3_min":  self._filt3_min.get() if hasattr(self, "_filt3_min") else "",
             "filt3_max":  self._filt3_max.get() if hasattr(self, "_filt3_max") else "",
         }
+
+    def _write_settings(self, path: Path, quiet: bool = False) -> bool:
         try:
-            _SETTINGS_PATH.write_text(json.dumps(settings, indent=2), encoding="utf-8")
-        except Exception:
-            pass
+            path.write_text(json.dumps(self._collect_settings(), indent=2),
+                            encoding="utf-8")
+        except Exception as e:
+            if not quiet:
+                messagebox.showerror("Save Settings", f"Could not write:\n{path}\n\n{e}")
+            return False
+        return True
+
+    def _on_close(self):
+        self._write_settings(self._settings_path, quiet=True)
         self.root.destroy()
 
-    def _load_settings(self):
-        if not _SETTINGS_PATH.exists():
-            return
-        try:
-            s = json.loads(_SETTINGS_PATH.read_text(encoding="utf-8"))
-        except Exception:
-            return
+    def _on_save_settings(self):
+        self._write_settings(self._settings_path)
 
+    def _on_save_settings_as(self):
+        path = filedialog.asksaveasfilename(
+            title="Save settings as",
+            initialdir=str(self._settings_path.parent),
+            initialfile=self._settings_path.name,
+            defaultextension=".json",
+            filetypes=[("JSON settings", "*.json"), ("All files", "*.*")])
+        if not path:
+            return
+        if self._write_settings(Path(path)):
+            self._set_settings_path(Path(path))
+
+    def _on_open_settings(self):
+        path = filedialog.askopenfilename(
+            title="Open settings",
+            initialdir=str(self._settings_path.parent),
+            filetypes=[("JSON settings", "*.json"), ("All files", "*.*")])
+        if not path:
+            return
+        if self._load_settings(Path(path), quiet=False):
+            self._set_settings_path(Path(path))
+
+    def _set_settings_path(self, path: Path):
+        self._settings_path = path
+        if hasattr(self, "_settings_label"):
+            self._settings_label.config(text=path.name)
+
+    def _load_settings(self, path: Optional[Path] = None, quiet: bool = True) -> bool:
+        path = path or self._settings_path
+        if not path.exists():
+            if not quiet:
+                messagebox.showerror("Open Settings", f"File not found:\n{path}")
+            return False
+        try:
+            s = json.loads(path.read_text(encoding="utf-8"))
+        except Exception as e:
+            if not quiet:
+                messagebox.showerror("Open Settings", f"Could not read:\n{path}\n\n{e}")
+            return False
+        self._apply_settings(s)
+        return True
+
+    def _apply_settings(self, s: dict):
         def sv(var, key):
             if key in s:
                 var.set(s[key])
@@ -617,6 +686,9 @@ class GrasshopperGUI:
         if hasattr(self, "_filt3_max"):
             sv(self._filt3_max,    "filt3_max")
 
+        self._volumes.clear()
+        for iid in self._vol_tree.get_children():
+            self._vol_tree.delete(iid)
         for v in s.get("volumes", []):
             self._volumes.append(v)
             self._vol_tree.insert("", "end", values=self._vol_tree_values(v))
