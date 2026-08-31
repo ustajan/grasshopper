@@ -425,7 +425,7 @@ void Analysis::EndOfEventAction(const G4Event *anEvent)
 		tree->AutoSave("SaveSelf");
 #endif
 
-	if (anEvent->GetEventID() % 100 == 0)
+	if (anEvent->GetEventID() % 1000 == 0)
 		std::cout << "\r\tEvent, and tracks:\t" << anEvent->GetEventID() << "\t\t" << Ev.size() << std::flush;
 
 	OnceAWhileDoIt();
