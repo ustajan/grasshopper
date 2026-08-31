@@ -1007,6 +1007,8 @@ class GrasshopperGUI:
         ttk.Button(tb, text="Load / Reload", command=self._on_load_wrl).pack(side="left", padx=4)
         ttk.Button(tb, text="Reset camera",  command=self._on_vtk_reset_camera).pack(
             side="left", padx=4)
+        ttk.Button(tb, text="Export image…", command=self._on_vtk_export).pack(
+            side="left", padx=4)
         self._wrl_status = ttk.Label(tb, text="No file loaded", foreground="gray")
         self._wrl_status.pack(side="left", padx=10)
 
@@ -1123,6 +1125,60 @@ class GrasshopperGUI:
         if getattr(self, "_vtk_embedded", False) and hasattr(self, "_vtk_renderer"):
             self._vtk_renderer.ResetCamera()
             self._vtk_win.Render()
+
+    def _vtk_viewer_module(self):
+        import sys as _sys
+        d = str(Path(__file__).parent)
+        if d not in _sys.path:
+            _sys.path.insert(0, d)
+        import grasshopper_vtk_viewer
+        return grasshopper_vtk_viewer
+
+    def _on_vtk_export(self):
+        if not getattr(self, "_vtk_embedded", False) or not hasattr(self, "_vtk_win"):
+            return
+        if not self._vtk_renderer.GetViewProps().GetNumberOfItems():
+            messagebox.showwarning("Nothing to export",
+                                   "Load a WRL file into the 3D view first.")
+            return
+
+        viewer = self._vtk_viewer_module()
+        vector_ok = viewer.has_vector_export()
+        types = [("PNG image", "*.png"), ("TIFF image", "*.tif")]
+        if vector_ok:
+            types = [("PDF (vector)", "*.pdf"), ("SVG (vector)", "*.svg"),
+                     ("EPS (vector)", "*.eps")] + types
+        else:
+            messagebox.showinfo(
+                "Vector export unavailable",
+                "This VTK build has no vtkGL2PSExporter, so PDF/SVG/EPS output is "
+                "not possible.\n\nFalling back to high-resolution PNG (4x).")
+
+        src = self._wrl_var.get().strip()
+        stem = Path(src).stem if src else "grasshopper_view"
+        path = filedialog.asksaveasfilename(
+            title="Export 3D view",
+            initialfile=stem + (".pdf" if vector_ok else ".png"),
+            defaultextension=".pdf" if vector_ok else ".png",
+            filetypes=types)
+        if not path:
+            return
+
+        try:
+            out = viewer.export_scene(self._vtk_win, path)
+        except Exception as e:
+            messagebox.showerror("Export failed", str(e))
+            return
+
+        size_mb = out.stat().st_size / 1e6 if out.exists() else 0.0
+        self._wrl_status.configure(
+            text=f"Exported {out.name} ({size_mb:.1f} MB)", foreground="black")
+        if out.suffix.lower() in viewer.VECTOR_FORMATS and size_mb > 20:
+            messagebox.showinfo(
+                "Large vector file",
+                f"{out.name} is {size_mb:.0f} MB — every visible triangle became a "
+                "vector path.\n\nFor a lighter figure, hide detector solids and export "
+                "trajectories only, or use PNG.")
 
     # ── Tab: Analysis ─────────────────────────────────────────────────────────
 
