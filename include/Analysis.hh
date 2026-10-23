@@ -55,12 +55,6 @@ class G4Step;
 
 #include <time.h>
 
-#if defined (G4UI_USE_ROOT) || defined (G4UI_BUILD_ROOT_SESSION)
-#if !defined (G4ANALYSIS_USE_ROOT)
-#define G4ANALYSIS_USE_ROOT 1
-#endif /* !defined (G4ANALYSIS_USE_ROOT) */
-#endif /* defined (G4UI_USE_ROOT) || defined (G4UI_BUILD_ROOT_SESSION) */
-
 #if defined (G4ANALYSIS_USE_ROOT)
 
 class TH1D;

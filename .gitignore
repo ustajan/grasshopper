@@ -3,3 +3,13 @@
 *.log
 *.dat
 .DS_Store
+__pycache__/
+*.pyc
+.vscode/
+.fuse_hidden*
+awkout*.txt
+md5out.txt
+build/
+dist/
+*.egg-info/
+gui/grasshopper_gui_settings.json

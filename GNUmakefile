@@ -1,3 +1,5 @@
+# NOTE: legacy geant4make build (requires $G4INSTALL/config/binmake.gmk from a
+# geant4make-enabled Geant4 install). The supported build is CMake; see README.md.
 # $Id: GNUmakefile,v 1.5 2000/06/14 17:51:35 flei Exp $
 # --------------------------------------------------------------
 # GNUmakefile for examples module.  Gabriele Cosmo, 06/04/98.
