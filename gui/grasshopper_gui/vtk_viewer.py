@@ -110,8 +110,20 @@ def view_wrl(path: str) -> None:
     interactor.Start()
 
 
+def main(argv=None):
+    args = sys.argv[1:] if argv is None else argv
+    if args and args[0] in ("--version", "-V"):
+        from ._paths import package_version
+        print(f"grasshopper-vtk-viewer {package_version()}")
+        return 0
+    if len(args) < 1 or args[0] in ("-h", "--help"):
+        print("Usage: grasshopper-vtk-viewer <file.wrl>\n"
+              "Opens a VRML file written by grasshopper (g4_NN.wrl) in an interactive VTK window.\n"
+              "Press 'x' in the window to export the current view.", file=sys.stderr)
+        return 0 if args else 1
+    view_wrl(args[0])
+    return 0
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: grasshopper_vtk_viewer.py <file.wrl>", file=sys.stderr)
-        sys.exit(1)
-    view_wrl(sys.argv[1])
+    sys.exit(main())

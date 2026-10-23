@@ -5,10 +5,13 @@ Requires: Python 3.8+, tkinter (stdlib)
 Optional: matplotlib, numpy  (needed for the Analysis tab)
 
 Usage:
-    python grasshopper_gui.py
+    grasshopper-gui                 (installed console script)
+    python -m grasshopper_gui.app   (from a source checkout, after `pip install -e .`)
 """
 
+import argparse
 import json
+import shutil
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, scrolledtext
 import subprocess
@@ -16,7 +19,9 @@ import threading
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-_SETTINGS_PATH = Path(__file__).parent / "grasshopper_gui_settings.json"
+from ._paths import settings_path, icon_file, package_version
+
+_SETTINGS_PATH = settings_path()
 
 try:
     import matplotlib
@@ -454,8 +459,8 @@ class GrasshopperGUI:
         self._header_icon: Optional[tk.PhotoImage] = None
         self._settings_path: Path = _SETTINGS_PATH
 
-        # Load icon (figures/icon.png relative to repo root)
-        icon_path = Path(__file__).parent.parent / "figures" / "icon.png"
+        # Load the icon bundled with the package (assets/icon.png)
+        icon_path = icon_file()
         if icon_path.exists():
             try:
                 raw = tk.PhotoImage(file=str(icon_path))
@@ -917,7 +922,8 @@ class GrasshopperGUI:
             ttk.Button(parent, text="Browse…", command=browse_cmd).grid(
                 row=row, column=2, sticky="w", padx=4)
 
-        path_row(0, "Grasshopper executable:", "_exe_var",      "grasshopper",  self._on_browse_exe)
+        path_row(0, "Grasshopper executable:", "_exe_var",
+                 shutil.which("grasshopper") or "grasshopper", self._on_browse_exe)
         path_row(1, "GDML input file:",        "_gdml_in_var",  "default.gdml", self._on_browse_gdml_in)
         path_row(2, "ROOT output file:",       "_root_out_var", "output.root",     self._on_browse_root_out)
 
@@ -1075,8 +1081,7 @@ class GrasshopperGUI:
             messagebox.showwarning("File not found",
                                    "Please select or find a WRL file first.")
             return
-        viewer_script = Path(__file__).parent / "grasshopper_vtk_viewer.py"
-        subprocess.Popen([_sys.executable, str(viewer_script), path])
+        subprocess.Popen([_sys.executable, "-m", "grasshopper_gui.vtk_viewer", path])
         if hasattr(self, "_wrl_status"):
             self._wrl_status.configure(
                 text=f"Opened {Path(path).name} in VTK window", foreground="black")
@@ -1127,12 +1132,8 @@ class GrasshopperGUI:
             self._vtk_win.Render()
 
     def _vtk_viewer_module(self):
-        import sys as _sys
-        d = str(Path(__file__).parent)
-        if d not in _sys.path:
-            _sys.path.insert(0, d)
-        import grasshopper_vtk_viewer
-        return grasshopper_vtk_viewer
+        from . import vtk_viewer
+        return vtk_viewer
 
     def _on_vtk_export(self):
         if not getattr(self, "_vtk_embedded", False) or not hasattr(self, "_vtk_win"):
@@ -1702,7 +1703,17 @@ class GrasshopperGUI:
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
-def main():
+def _parse_args(argv=None):
+    parser = argparse.ArgumentParser(
+        prog="grasshopper-gui",
+        description="Tkinter front end for the grasshopper Geant4 simulation.")
+    parser.add_argument("--version", action="version",
+                        version=f"grasshopper-gui {package_version()}")
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
+    _parse_args(argv)
     root = tk.Tk()
     try:
         root.tk.call("tk", "scaling", 1.25)

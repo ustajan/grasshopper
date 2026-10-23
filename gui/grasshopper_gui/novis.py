@@ -8,6 +8,7 @@ Usage:
     python grasshopper_gui.py
 """
 
+import argparse
 import json
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, scrolledtext
@@ -16,7 +17,9 @@ import threading
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-_SETTINGS_PATH = Path(__file__).parent / "grasshopper_gui_settings.json"
+from ._paths import settings_path, package_version
+
+_SETTINGS_PATH = settings_path()
 
 try:
     import matplotlib
@@ -1088,7 +1091,13 @@ class GrasshopperGUI:
 
 # ── Entry point ───────────────────────────────────────────────────────────────
 
-def main():
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        prog="grasshopper-gui-novis",
+        description="Tkinter front end for grasshopper (no visualization tab).")
+    parser.add_argument("--version", action="version",
+                        version=f"grasshopper-gui {package_version()}")
+    parser.parse_args(argv)
     root = tk.Tk()
     try:
         root.tk.call("tk", "scaling", 1.25)
