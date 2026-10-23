@@ -64,12 +64,53 @@
 #include <fstream>
 
 #include "G4GDMLParser.hh"
+#include "G4Version.hh"
 #include <filesystem>
+#include <string>
+
+// Set by CMake from the top-level VERSION file and the install prefix.
+#ifndef GRASSHOPPER_VERSION
+#define GRASSHOPPER_VERSION "unknown"
+#endif
+#ifndef GRASSHOPPER_DATADIR
+#define GRASSHOPPER_DATADIR "<prefix>/share/grasshopper"
+#endif
 
 G4bool drawEvent;
 G4String RootOutputFile;
 
 G4GDMLParser parser;
+
+static void print_usage(std::ostream& os)
+{
+  os << "Usage: grasshopper <gdml_configuration_file> <output_name> [seed]\n"
+        "       grasshopper --version | --help\n"
+        "\n"
+        "The GDML file defines everything: geometry, materials, beam, physics cuts\n"
+        "and output options. See the examples for a starting point:\n"
+        "  GitHub:    https://github.com/ustajan/grasshopper/tree/master/examples\n"
+        "  Installed: " GRASSHOPPER_DATADIR "/examples\n"
+        "\n"
+        "Arguments:\n"
+        "  <gdml_configuration_file>  GDML input (validated against schema/gdml.xsd,\n"
+        "                             resolved relative to the GDML file)\n"
+        "  <output_name>              Output base name; a trailing .root is stripped\n"
+        "  [seed]                     Random seed; overrides RandomGenSeed in the GDML\n"
+        "\n"
+        "Output (in the current directory):\n"
+        "  <output_name>.dat          tab-separated results, when TextOutputOn=1\n"
+        "  <output_name>.root         ROOT TTree, only when built with ROOT support\n"
+        "  g4_NN.wrl                  VRML geometry + tracks, when VRMLvisualizationOn=1\n"
+        "\n"
+        "Files read from the current directory on demand:\n"
+        "  input_spectrum.txt         energy spectrum, used when BeamEnergy < 0\n"
+        "  beam_width.txt             extended isotropic source width (BeamSize < -3)\n"
+        "  vis.mac                    extra Geant4 visualization commands, if present\n"
+        "\n"
+        "Reference: A. Danagoulian et al., IEEE NSS/MIC 2021,\n"
+        "           doi:10.1109/NSS/MIC44867.2021.9875720\n"
+        "Homepage:  https://github.com/ustajan/grasshopper\n";
+}
 
 //#define G4VIS_USE //in principle this should be passed by the compiler, during cmake
 
@@ -93,6 +134,18 @@ int main(int argc,char** argv)
   clock_t t0,t1,t2;
   G4int start_time = time(NULL);
   t0=clock();
+  if (argc >= 2) {
+    const std::string arg1 = argv[1];
+    if (arg1 == "--version" || arg1 == "-v") {
+      std::cout << "grasshopper " << GRASSHOPPER_VERSION << " (" << G4Version << ")" << std::endl;
+      return 0;
+    }
+    if (arg1 == "--help" || arg1 == "-h") {
+      print_usage(std::cout);
+      return 0;
+    }
+  }
+
   // check that the number of input parameters is consistent with expected
   if(argc==3 || argc==4){  // output configurations information:  either no seed (read from gdml) or set seed explicitly
     parser.Read(argv[1]);
@@ -104,8 +157,9 @@ int main(int argc,char** argv)
       }
   }
   else{
-    std::cout<<"Wrong input! Usage:\n grasshopper <gdml_configuration_file> <root_output_filename> [seed] \n\n";
-    return -1;
+    std::cerr << "Wrong input!\n\n";
+    print_usage(std::cerr);
+    return 2;
   }
 
   G4int run_evnt;

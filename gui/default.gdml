@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="../schema/gdml.xsd">
+
+  <materials>
+
+
+  </materials>
+
+  <!-- output settings -->
+  <define>
+    <constant name="TextOutputOn"        value="1"/>
+    <constant name="BriefOutputOn"       value="0"/>
+    <constant name="VRMLvisualizationOn" value="1"/>
+    <constant name="EventsToAccumulate"  value="100"/>
+  </define>
+
+  <!-- physics cuts -->
+  <define>
+    <constant name="LightProducingParticle" value="0"/>
+    <constant name="LowEnergyCutoff"        value="0"/>
+    <constant name="KeepOnlyMainParticle"   value="1"/>
+    <quantity name="ProductionLowLimit" type="threshold" value="1" unit="keV"/>
+  </define>
+
+  <!-- output filters -->
+  <define>
+    <constant name="SaveSurfaceHitTrack"      value="1"/>
+    <constant name="SaveTrackInfo"            value="0"/>
+    <constant name="SaveEdepositedTotalEntry" value="0"/>
+  </define>
+
+  <!-- beam definition -->
+  <define>
+    <constant name="RandomGenSeed"  value="1"/>
+    <quantity name="BeamOffsetX" type="coordinate" value="0" unit="mm"/>
+    <quantity name="BeamOffsetY" type="coordinate" value="0" unit="mm"/>
+    <quantity name="BeamOffsetZ" type="coordinate" value="-100" unit="mm"/>
+    <quantity name="BeamSize"    type="coordinate" value="5" unit="mm"/>
+    <quantity name="BeamEnergy"  type="energy"     value="350" unit="MeV"/>
+    <constant name="EventsToRun"    value="10000"/>
+    <constant name="ParticleNumber" value="2212"/>
+    <!-- e- is 11, gamma is 22, neutron is 2112, proton is 2212, alpha is 1000020040 -->
+  </define>
+
+  <solids>
+    <box lunit="mm" name="world_solid" x="300" y="300" z="300"/>
+    <tube lunit="mm" name="detector_solid" rmin="0" rmax="50" z="1" startphi="0" deltaphi="360" aunit="deg"/>
+    <tube lunit="mm" name="target_solid" rmin="0" rmax="50" z="50" startphi="0" deltaphi="360" aunit="deg"/>
+  </solids>
+
+  <structure>
+    <volume name="detector_log">
+      <materialref ref="G4_SODIUM_IODIDE"/>
+      <solidref ref="detector_solid"/>
+    </volume>
+    <volume name="target_log">
+      <materialref ref="G4_U"/>
+      <solidref ref="target_solid"/>
+    </volume>
+    <volume name="world_log">
+      <materialref ref="G4_AIR"/>
+      <solidref ref="world_solid"/>
+      <physvol name="det_phys0">
+        <volumeref ref="detector_log"/>
+        <position name="detector_pos" unit="mm" x="0" y="0" z="100"/>
+      </physvol>
+      <physvol name="target_phys">
+        <volumeref ref="target_log"/>
+        <position name="target_pos" unit="mm" x="0" y="0" z="0"/>
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="world_log"/>
+  </setup>
+
+</gdml>

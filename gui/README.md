@@ -1,6 +1,6 @@
 # Grasshopper GUI
 
-A Python/Tkinter frontend for the [Grasshopper](https://github.com/mit-quest/grasshopper) Geant4 simulation toolkit.  
+A Python/Tkinter frontend for the [Grasshopper](https://github.com/ustajan/grasshopper) Geant4 simulation toolkit.  
 The GUI lets you define a simulation, generate the GDML input file, run Grasshopper, and inspect the results — all without touching the command line or editing XML by hand.
 
 ## Requirements
@@ -28,19 +28,33 @@ sudo apt install python3-tk
 sudo dnf install python3-tkinter
 ```
 
-### Install Python dependencies
+### Install
+
+From conda-forge (recommended, alongside the `grasshopper` package):
 
 ```bash
-pip install -r gui/requirements.txt
+conda install -c conda-forge grasshopper-gui      # add vtk for the 3D viewer
 ```
+
+From a source checkout (run in the repository root, where `pyproject.toml` lives):
+
+```bash
+pip install .            # or: pip install -e ".[vtk]" for an editable install with VTK
+```
+
+`gui/requirements.txt` lists the same dependencies for a manual `pip install -r`.
 
 ## Running
 
 ```bash
-python3 gui/grasshopper_gui.py
+grasshopper-gui            # full GUI
+grasshopper-gui-novis      # without the Visualization tab
+grasshopper-vtk-viewer g4_00.wrl   # standalone VRML viewer
 ```
 
-The GUI saves all settings to `gui/grasshopper_gui_settings.json` when you close the window and restores them on the next launch.
+From a checkout without installing: `python -m grasshopper_gui.app` (with `gui/` on `PYTHONPATH`).
+
+The GUI saves all settings when you close the window and restores them on the next launch. The settings file lives in the per-user config directory: `~/Library/Application Support/grasshopper/gui_settings.json` on macOS, `$XDG_CONFIG_HOME/grasshopper/gui_settings.json` (default `~/.config/grasshopper/`) on Linux. Use **Settings → Save As…** to keep several configurations.
 
 ## Tabs
 

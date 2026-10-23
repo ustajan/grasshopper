@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grasshopper-gui"
+dynamic = ["version"]
+description = "Tkinter GUI for grasshopper, a Geant4 front end driven by GDML files"
+readme = "gui/README.md"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "Areg Danagoulian" }]
+dependencies = [
+    "numpy>=1.21",
+    "matplotlib>=3.5",
+    "platformdirs>=3",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Environment :: X11 Applications",
+    "Environment :: MacOS X",
+]
+
+[project.optional-dependencies]
+vtk = ["vtk>=9.0"]
+
+[project.urls]
+Homepage = "https://github.com/ustajan/grasshopper"
+Repository = "https://github.com/ustajan/grasshopper"
+Documentation = "https://github.com/ustajan/grasshopper/wiki"
+
+[project.scripts]
+grasshopper-gui = "grasshopper_gui.app:main"
+grasshopper-gui-novis = "grasshopper_gui.novis:main"
+grasshopper-vtk-viewer = "grasshopper_gui.vtk_viewer:main"
+
+[tool.setuptools.dynamic]
+version = { file = "VERSION" }
+
+[tool.setuptools.packages.find]
+where = ["gui"]
+include = ["grasshopper_gui*"]
+
+[tool.setuptools.package-data]
+grasshopper_gui = ["assets/*.png"]
