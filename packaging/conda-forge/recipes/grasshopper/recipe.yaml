@@ -14,7 +14,7 @@ recipe:
 
 source:
   url: https://github.com/ustajan/grasshopper/archive/refs/tags/v${{ version }}.tar.gz
-  sha256: 0000000000000000000000000000000000000000000000000000000000000000  # TODO: fill after tagging
+  sha256: 644dee6b0b9f65cc9b6fb19851d86ee267adbc92535b43dec34b39b4e9a6c34d
 
 build:
   number: 0
