@@ -39,6 +39,11 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_PREFIX_PATH="$CONDA_PREFIX"
           -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX"
+          -DCMAKE_FIND_FRAMEWORK=LAST
+          -DEXPAT_ROOT="$CONDA_PREFIX"
+          -DZLIB_ROOT="$CONDA_PREFIX"
+          -DXercesC_ROOT="$CONDA_PREFIX"
+          -DFreetype_ROOT="$CONDA_PREFIX"
           -DWITH_GEANT4_UIVIS=OFF
           -DWITH_ROOT=OFF
 
