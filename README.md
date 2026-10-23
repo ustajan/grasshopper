@@ -18,7 +18,29 @@ Last update:    continuous
 
 For copyright and licensing see files COPYRIGHT and LICENSE.
 
-To install
+Install with conda (recommended)
+==
+
+Pre-built packages for macOS (Apple silicon and Intel) and Linux (x86_64 and aarch64) are published on [conda-forge](https://conda-forge.org/), which also provides Geant4 itself (built with GDML support) and all of its datasets:
+
+```bash
+conda create -n grasshopper -c conda-forge grasshopper grasshopper-gui
+conda activate grasshopper
+grasshopper --help
+```
+
+`grasshopper-gui` is optional; add `vtk` to the install line for the 3D viewer. `micromamba`/`mamba` work the same way. The example GDML inputs are installed under `$CONDA_PREFIX/share/grasshopper/examples/` (also [on GitHub](https://github.com/ustajan/grasshopper/tree/master/examples)):
+
+```bash
+cp -r $CONDA_PREFIX/share/grasshopper/examples/beta . && cd beta
+grasshopper beta_lite.gdml test
+```
+
+Homebrew and Debian/Ubuntu packages are not offered because neither distribution carries Geant4 (a licensing question on their side); conda-forge is the supported channel. The conda package is built without ROOT support (ASCII `.dat` output only); build from source if you need `.root` output.
+
+Versioning: a grasshopper release number is the Geant4 release it was validated against (e.g. `11.4.3`), with an optional fourth component for grasshopper-only fixes (`11.4.3.1`).
+
+Build from source
 ==
 
 The user is required/advised to have the following:
@@ -29,7 +51,7 @@ The user is required/advised to have the following:
 	* Here's an example of what a Geant4 cmake command looks like(to be ran from `geant_build`): `cmake -DGEANT4_USE_GDML=ON -DGEANT4_INSTALL_DATA=ON -DCMAKE_INSTALL_PREFIX=../geant4-v11.4.2-install ../geant4-v11.4.2 `
 * ROOT -- optional.  Has been tested with version 6.32.12.  If you do not have ROOT the make process will recognize that and exclude it from the build.
 
-__Geant4 compatibility__:  most recently, grasshopper and been built against and tested with Geant4 versions 11.2.2, 11.3.2, and **11.4.2**.
+__Geant4 compatibility__:  most recently, grasshopper and been built against and tested with Geant4 versions 11.2.2, 11.3.2, 11.4.2 and **11.4.3**. Geant4 11.0 or newer is required.
 
 __Important note__:  these days geant4 primarily works via the cmake framework.  However grasshopper can also use the older Makefile framework.  It is important that you source the appropriate shell script in geant4 directories to enable all the env. variables that are necessary for Makefile to work correctly.  In my particular case I have the following line in my .bashrc file, please modify this accordingly for your build/configuration:
 
@@ -49,7 +71,7 @@ where N is the number of your cores.
 To run, do   
 `grasshopper input.gdml output.root`   
 for example:  
-`grasshopper exec/Examples/beta/beta_lite.gdml test.root`
+`grasshopper examples/beta/beta_lite.gdml test.root`
 
 To build with CMake
 ==
@@ -60,7 +82,9 @@ cmake .. && make -jN
 ```
 where N is the number of your cores.  This will locally generate a binary, `grasshopper`, which you can then run something like the following:
 
-`./grasshopper ../exec/Examples/beta/beta_lite.gdml test.root`
+`./grasshopper ../examples/beta/beta_lite.gdml test.root`
+
+Useful CMake options: `-DWITH_ROOT=ON` for ROOT output, `-DWITH_GEANT4_UIVIS=OFF` to skip Geant4's interactive OpenGL/Qt drivers (the VRML `.wrl` output does not need them), `-DCMAKE_INSTALL_PREFIX=...` followed by `make install` to install the binary plus `share/grasshopper/{schema,examples}`.  `ctest` runs a short smoke simulation (`tests/smoke_test.sh`); the longer physics regression test lives in `exec/unit_test/`.  `grasshopper --version` and `grasshopper --help` are available.
 
 
 
@@ -70,9 +94,16 @@ Python GUI frontend
 A point-and-click interface for Grasshopper is provided in the `gui/` directory.  It covers the full workflow — defining the simulation, generating the GDML file, running the executable, and inspecting the output — without any command-line or XML editing.
 
 ```bash
-pip install -r gui/requirements.txt   # matplotlib, numpy; vtk optional
-python3 gui/grasshopper_gui.py
+# from conda-forge (with the grasshopper package):
+conda install -c conda-forge grasshopper-gui   # add vtk for the 3D viewer
+grasshopper-gui
+
+# or from a source checkout:
+pip install .          # or: pip install -e ".[vtk]"
+grasshopper-gui
 ```
+
+The GUI stores its settings in the per-user config directory (`~/Library/Application Support/grasshopper/` on macOS, `~/.config/grasshopper/` on Linux).
 
 See [`gui/README.md`](gui/README.md) for full installation instructions and a description of each tab.
 
