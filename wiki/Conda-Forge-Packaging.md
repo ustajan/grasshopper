@@ -83,7 +83,7 @@ grasshopper --help
 
 ## Status
 
-As of 2026-10-23. Everything in the "Done" rows lives uncommitted in the working tree of branch `conda-forge-packaging`; nothing has been pushed, tagged or released.
+As of 2026-10-23. Phase A is merged into `master` and released as v11.4.3; the recipe is submitted to conda-forge.
 
 | # | Item | State |
 |---|---|---|
@@ -93,14 +93,14 @@ As of 2026-10-23. Everything in the "Done" rows lives uncommitted in the working
 | A3 | `grasshopper --version` / `--help`, usage on wrong arguments (exit 2), dead `G4UI_USE_ROOT` block removed | Done |
 | A4 | GUI as an installable Python package (`gui/grasshopper_gui/`, root `pyproject.toml`, console scripts, per-user settings dir); verified with `pip install` into a venv | Done |
 | A5 | `tests/smoke_test.sh` (portable bash, 500-event `beta_lite` run); `ctest` passes locally in about 4 s against Geant4 11.3.2 | Done |
-| A6 | `.github/workflows/ci.yml` (4-runner matrix, micromamba env with `geant4=11.4.3`) | Written, **not yet run** (nothing pushed) |
+| A6 | `.github/workflows/ci.yml` (4-runner matrix, micromamba env with `geant4=11.4.3`) | Done, green on all four runners (PR #25; the Apple-silicon runner needed `<Pkg>_ROOT` hints so CMake does not pick the SDK's old expat.h) |
 | A7 | README (conda install section, versioning, build options), `gui/README.md`, `ReleaseNotes.md` (v11.4.3 section), `CLAUDE.md` | Done |
 | A8 | Local build against the conda-forge `geant4` package (micromamba installed at `~/.local/bin/micromamba`, env `g4` under `~/micromamba`) | Done: configure/build/ctest/install/smoke test and GUI `pip install` all pass; needed `-DCMAKE_PREFIX_PATH=$CONDA_PREFIX` so CMake does not pick the macOS SDK libexpat |
-| A9 | Commit, push, GitHub Actions green on all runners | Todo |
-| A10 | Tag `v11.4.3`, create GitHub Release, record tarball sha256 | Todo |
+| A9 | Commit, push, GitHub Actions green on all runners | Done: [PR #25](https://github.com/ustajan/grasshopper/pull/25) merged 2026-10-23 |
+| A10 | Tag `v11.4.3`, create GitHub Release, record tarball sha256 | Done: [release v11.4.3](https://github.com/ustajan/grasshopper/releases/tag/v11.4.3), sha256 `644dee6b0b9f65cc9b6fb19851d86ee267adbc92535b43dec34b39b4e9a6c34d` in the recipe |
 | B1 | `recipe.yaml` + `build_grasshopper.sh` written under `packaging/conda-forge/recipes/grasshopper/` (with a `packaging/conda-forge/README.md`); `sha256` is a placeholder until the tag exists | Done (unsubmitted) |
 | B2 | Local `rattler-build` of both outputs from the working tree (`path:` source) with the conda-forge pinning variant config; embedded package tests (`--version`, file checks, 500-event smoke run, GUI imports/`pip check`) pass; both `.conda` files installed into a fresh env from a local channel and an installed example run end to end with VRML output | Done (osx-arm64 only; conda-forge CI covers the rest) |
-| C1 | PR to `conda-forge/staged-recipes` | Todo |
+| C1 | PR to `conda-forge/staged-recipes` | Submitted: [staged-recipes #35332](https://github.com/conda-forge/staged-recipes/pull/35332) (awaiting CI + volunteer review) |
 | C2 | Feedstock created, `linux_aarch64` confirmed, first packages on the channel | Todo |
 | C3 | End-to-end check from the conda-forge channel (install, run example, open `.wrl` with the VTK viewer) | Todo (done locally from the rattler-build output channel; repeat after publication) |
 
