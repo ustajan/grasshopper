@@ -1,6 +1,6 @@
 # conda-forge deployment: status report
 
-**Date:** 2026-10-23
+**Date:** 2026-10-23, updated 2026-11-17
 **Overall state:** release published, recipe submitted to conda-forge, waiting for volunteer review.
 Companion page with the full plan and background: [Conda-Forge-Packaging](Conda-Forge-Packaging.md).
 
@@ -67,8 +67,12 @@ Two problems were found and fixed along the way:
   comment mentions `conda-forge/help-c-cpp`.
 - The author (`ustajan`) posted the required maintainer confirmation.
 - Watch progress on the PR page or with `gh pr view 35332 --repo conda-forge/staged-recipes`.
-- If there is no response after about a week, comment `@conda-forge-admin, please ping team` again
-  or ask on the conda-forge Zulip chat.
+- Re-pinged via the bot on 2026-11-04 and 2026-11-10; the recipe was also updated on 2026-11-04 to run the
+  GUI import test on both the minimum and latest Python (a linter suggestion). CI green after each push.
+- Posted in the conda-forge Zulip channel `review-requests` on 2026-11-16:
+  [topic grasshopper (#35332)](https://conda-forge.zulipchat.com/#narrow/channel/622631-review-requests/topic/grasshopper.20.28.2335332.29/with/641037851).
+- If there is still no response after about a week, repeat the bot comment `@conda-forge-admin, please ping team`
+  and follow up in the Zulip topic.
 
 ## What happens after the merge
 
